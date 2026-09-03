@@ -1,4 +1,4 @@
-# Joyería Olimpo
+# POS Olimpo
 PI Tercer Semestre Punto de Venta
 
  ## Descripción:
