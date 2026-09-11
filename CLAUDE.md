@@ -40,7 +40,7 @@ Sistema web de Punto de Venta e Inventarios para joyerías, desarrollado como pr
 
 ```
 PUNTO-DE-VENTA-JOYERIA/
-├── backend/
+├── server/                  # backend (Node.js + TypeScript)
 │   ├── src/
 │   │   ├── controllers/     # reciben la petición HTTP, delegan a services, responden
 │   │   ├── services/        # lógica de negocio (cálculo de precios, validación de stock, reglas de apartado)
@@ -54,7 +54,7 @@ PUNTO-DE-VENTA-JOYERIA/
 │   ├── tsconfig.json
 │   └── package.json
 │
-├── frontend/                # proyecto Angular (generado con Angular CLI)
+├── client/                  # frontend, proyecto Angular (generado con Angular CLI)
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── components/  # componentes reutilizables de UI
@@ -63,13 +63,13 @@ PUNTO-DE-VENTA-JOYERIA/
 │   │   │   ├── guards/      # protección de rutas por rol (RBAC en el frontend)
 │   │   │   ├── models/      # interfaces TypeScript de las entidades
 │   │   │   └── pipes/       # transformaciones de datos en plantillas (formato de moneda, peso, etc.)
-│   │   ├── assets/
-│   │   └── styles/
+│   │   └── styles.scss
+│   ├── public/
 │   ├── angular.json
 │   └── package.json
 │
 ├── docs/
-│   ├── imagenes/            # capturas de avance / mockups (documentación, no parte de la app)
+│   ├── img/                 # capturas de avance / mockups (documentación, no parte de la app)
 │   ├── protocolo/
 │   └── minutas-semanales/
 │

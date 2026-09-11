@@ -8,12 +8,12 @@ Joyería Olimpo es un punto de venta y Sistema web integral de punto de venta e 
 ## Objetivo:
 Desarrollar un módulo de punto de venta (POS) que permita gestionar las ventas de manera rápida, precisa y organizada.
 ## Inicio de Secion
-![Pantalla de inicio de sesión - Joyería Olimpo](docs/imagenes/inicio.png)
+![Pantalla de inicio de sesión - Joyería Olimpo](docs/img/inicio.png)
 ### Primera vista del sistema
-![Primera vista del sistema](docs/imagenes/primera_vista.png)
+![Primera vista del sistema](docs/img/primera_vista.png)
 ### Dashboard
-![Dashboard - vista 1](docs/imagenes/Dashboard_2.png)
-![Dashboard - vista 2](docs/imagenes/Dashboard_3.png)
+![Dashboard - vista 1](docs/img/Dashboard_2.png)
+![Dashboard - vista 2](docs/img/Dashboard_3.png)
 ## Equipo de Desarrollo - Equipo 5
 - Carlos Arturo Argüellez Ruiz
 - Jesús Enrique Ibarra Figueroa
