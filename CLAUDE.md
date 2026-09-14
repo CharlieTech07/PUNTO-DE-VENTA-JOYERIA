@@ -11,7 +11,7 @@ Sistema web de Punto de Venta e Inventarios para joyerías, desarrollado como pr
 **Equipo (Equipo 5):**
 - Argüellez Ruiz Carlos Arturo — líder de equipo
 - Amador Benítez Juan
-- Escobar Nuñez Cristian Alexander — (yo, quien te da este contexto)
+- Escobar Nuñez Cristian Alexander — 
 - Ibarra Figueroa Jesús Enrique
 - Juárez Cano Alan Yakxel
 
@@ -38,51 +38,48 @@ Sistema web de Punto de Venta e Inventarios para joyerías, desarrollado como pr
 
 ## Estructura de carpetas
 
-**Estado real en el repo ahora mismo:** solo existen `client/` (proyecto Angular generado con Angular CLI, sin subcarpetas propias todavía dentro de `app/`) y `server/` (solo `package.json`, `package-lock.json` y `tsconfig.json`, sin `src/` todavía), más `docs/img/` con las capturas. Las subcarpetas de capas de abajo (`controllers`, `services`, `guards`, `docs/protocolo`, `docs/minutas-semanales`, etc.) son el **objetivo a crear conforme se reparta el trabajo por sprint**, no lo que ya existe. No las vuelvas a crear vacías sin que alguien las use — créalas cuando efectivamente vayas a meter el primer archivo de esa capa.
+**Estado real en el repo ahora mismo** (última sincronización con `main`, la rama de Carlos):
 
 ```
 PUNTO-DE-VENTA-JOYERIA/
-├── server/                  # backend (Node.js + TypeScript)
+├── server/                  # backend (Node.js + TypeScript, Express)
 │   ├── src/
-│   │   ├── controllers/     # reciben la petición HTTP, delegan a services, responden
-│   │   ├── services/        # lógica de negocio (cálculo de precios, validación de stock, reglas de apartado)
-│   │   ├── models/          # entidades / esquemas de PostgreSQL
-│   │   ├── routes/          # definición de endpoints REST
-│   │   ├── middlewares/     # autenticación, RBAC, validación, manejo de errores
-│   │   ├── config/          # conexión a PostgreSQL, variables de entorno
-│   │   └── utils/           # funciones auxiliares reutilizables
-│   ├── tests/
-│   ├── .env.example
+│   │   ├── db.ts            # conexión a PostgreSQL
+│   │   ├── index.ts         # entrypoint del servidor Express
+│   │   └── routes/          # auth, caja, clientes, inventario, productos, ventas
 │   ├── tsconfig.json
 │   └── package.json
 │
-├── client/                  # frontend, proyecto Angular (generado con Angular CLI)
+├── client/                  # frontend Angular (generado con Angular CLI, SIN carpeta app/)
 │   ├── src/
-│   │   ├── app/
-│   │   │   ├── components/  # componentes reutilizables de UI
-│   │   │   ├── pages/       # vistas principales (login, caja, inventario, apartados, reportes)
-│   │   │   ├── services/    # servicios que consumen la API del backend (HttpClient)
-│   │   │   ├── guards/      # protección de rutas por rol (RBAC en el frontend)
-│   │   │   ├── models/      # interfaces TypeScript de las entidades
-│   │   │   └── pipes/       # transformaciones de datos en plantillas (formato de moneda, peso, etc.)
-│   │   └── styles.scss
+│   │   ├── components/      # menu, modal, navbar, tabla
+│   │   ├── pages/           # clientes, inicio, inventario, login, productos, ventas
+│   │   ├── services/        # auth, caja, clientes, productos, ventas (consumen la API)
+│   │   ├── models/          # interfaces TS: cliente, producto, usuario, venta
+│   │   └── styles/
+│   │       └── global.css
 │   ├── public/
 │   ├── angular.json
 │   └── package.json
 │
 ├── docs/
-│   ├── img/                 # capturas de avance / mockups (documentación, no parte de la app)
+│   ├── img/                 # capturas de avance / mockups
 │   ├── protocolo/
 │   └── minutas-semanales/
 │
+├── AGENTS.md                # contexto de proyecto para otros agentes/herramientas de IA
+├── .github/chatmodes/       # chatmode de Carlos para este repo
 ├── .gitignore
 └── README.md
 ```
 
+**Importante:** `server/src/routes/*.ts` todavía tienen datos de prueba embebidos directamente en el handler (sin `controllers/services/models` separados) — es un scaffold inicial de Carlos, no el diseño final. Cuando se implemente lógica de negocio real ahí, sí debe separarse en capas (ver regla de abajo) en vez de seguir agregándola directo en las rutas. Tampoco existen ya `client/src/index.html`, `main.ts` ni el componente raíz (`app.ts`/`app.html`/`app.config.ts`/`app.routes.ts`) — Carlos los quitó al reestructurar; probablemente haga falta recrearlos para que la app Angular arranque, coméntalo si te pones a tocar `client/`.
+
 **Reglas de arquitectura del backend (capas):**
-- `controllers` NO deben tener lógica de negocio — solo reciben, delegan a `services` y responden
+- Cuando existan `controllers`/`services`/`models` en `server/src/`: `controllers` NO deben tener lógica de negocio — solo reciben, delegan a `services` y responden
 - `services` es donde vive el cálculo y las reglas de negocio
 - `models` solo define estructura de datos, no lógica
+- No crear esas carpetas vacías por adelantado — créalas junto con el primer archivo real que le corresponda a cada capa
 
 ---
 
@@ -144,11 +141,12 @@ Tipos de prueba contemplados: **unitarias, de integración y de usabilidad**.
 
 ## Estado actual del proyecto
 
-- `main` ya tiene el esqueleto inicial: `client/` (Angular CLI ya generado por Carlos) y `server/` (Node/TypeScript, dependencias instaladas pero sin `src/` aún)
-- Las subcarpetas de capas (`controllers`, `services`, `models`, `guards`, `pages`, etc.) todavía NO existen en el repo — se crean bajo demanda cuando cada quien empiece su módulo
-- `docs/img/` ya tiene las capturas de avance; `docs/protocolo/` y `docs/minutas-semanales/` aún no existen como carpetas en el repo
+- `main` ya tiene rutas de Express con datos de prueba (`server/src/routes/*.ts`) y páginas/componentes/servicios/modelos de Angular con HTML/CSS aún vacíos o mínimos (`client/src/{pages,components,services,models}`)
+- Sin capas `controllers`/`services`/`models` en el backend todavía — la lógica está directa en las rutas, es un scaffold inicial
+- Falta el bootstrap de Angular (`main.ts`, `index.html`, componente raíz) — se perdió al reestructurar `client/src/app/` hacia `client/src/{components,pages,...}`
+- `docs/img/` tiene las capturas de avance; `docs/protocolo/` y `docs/minutas-semanales/` existen como carpetas locales pero sin contenido trackeado en git aún
 - Diagrama de casos de uso elaborado
-- Código de negocio aún no desarrollado — el siguiente paso es repartir módulos del backend entre el equipo por sprint
+- Código de negocio real (cálculo de precio por peso, apartados, auditoría, RBAC) aún no implementado
 
 ---
 
