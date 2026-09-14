@@ -12,8 +12,8 @@ Desarrollar un módulo de punto de venta (POS) que permita gestionar las ventas 
 ### Primera vista del sistema
 ![Primera vista del sistema](imagenes/primera_vista.png)
 ### Dashboard
-![Dashboard - vista 1](imagenes/Dashboard_2.png)
-![Dashboard - vista 2](imagenes/Dashboard_3.png)
+![Dashboard - vista 1](img/Dashboard_2.png)
+![Dashboard - vista 2](img/Dashboard_3.png)
 ## Equipo de Desarrollo - Equipo 5
 - Carlos Arturo Argüellez Ruiz
 - Jesús Enrique Ibarra Figueroa
