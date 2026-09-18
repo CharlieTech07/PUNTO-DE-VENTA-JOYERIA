@@ -38,7 +38,7 @@ Sistema web de Punto de Venta e Inventarios para joyerías, desarrollado como pr
 
 ## Estructura de carpetas
 
-**Estado real en el repo ahora mismo** (última sincronización con `main`, la rama de Carlos):
+**Estado real en el repo ahora mismo** (lo de `main`, la rama de Carlos, más la maqueta del dashboard hecha en la rama `Cristian`):
 
 ```
 PUNTO-DE-VENTA-JOYERIA/
@@ -52,20 +52,23 @@ PUNTO-DE-VENTA-JOYERIA/
 │
 ├── client/                  # frontend Angular (generado con Angular CLI, SIN carpeta app/)
 │   ├── src/
-│   │   ├── components/      # menu, modal, navbar, tabla
+│   │   ├── components/      # menu, modal, navbar, tabla (por ahora .html vacíos)
 │   │   ├── pages/           # clientes, inicio, inventario, login, productos, ventas
+│   │   │   └── dashboard/   # maqueta del panel de administración (ver abajo)
 │   │   ├── services/        # auth, caja, clientes, productos, ventas (consumen la API)
 │   │   ├── models/          # interfaces TS: cliente, producto, usuario, venta
 │   │   └── styles/
 │   │       └── global.css
 │   ├── public/
+│   │   ├── logo.png         # emblema de la joyería, con transparencia real
+│   │   └── favicon.ico
 │   ├── angular.json
+│   ├── tsconfig.app.json
 │   └── package.json
 │
 ├── docs/
 │   ├── img/                 # capturas de avance / mockups
-│   ├── protocolo/
-│   └── minutas-semanales/
+│   └── minutas-semanales/   # minutas en .docx
 │
 ├── AGENTS.md                # contexto de proyecto para otros agentes/herramientas de IA
 ├── .github/chatmodes/       # chatmode de Carlos para este repo
@@ -80,6 +83,32 @@ PUNTO-DE-VENTA-JOYERIA/
 - `services` es donde vive el cálculo y las reglas de negocio
 - `models` solo define estructura de datos, no lógica
 - No crear esas carpetas vacías por adelantado — créalas junto con el primer archivo real que le corresponda a cada capa
+
+---
+
+## El panel de administración (`client/src/pages/dashboard/`)
+
+Maqueta del dashboard: modo oscuro, con el mismo lenguaje visual del punto de venta (café oscuro, dorado, títulos serif). Tiene 8 secciones — resumen, ventas, ingresos, inventario, apartados, empleados, precio del metal y auditoría — con datos ficticios escritos a mano, todavía sin conectar a la API.
+
+| Archivo | Rol |
+|---|---|
+| `dashboard.ts` | **Código fuente.** Es el archivo que se edita |
+| `dashboard.js` | **Generado por `tsc`.** No editar a mano |
+| `dashboard.html` | Las 8 secciones |
+| `dashboard.css` | Sistema de diseño: tokens, componentes, modo claro y oscuro |
+| `tsconfig.json` | Config para compilar solo este archivo (`strict` activado) |
+
+Después de tocar el `.ts`, hay que recompilar:
+
+```
+cd client/src/pages/dashboard && npx tsc -p .
+```
+
+Detalles que no son obvios y conviene respetar:
+
+- **No es un componente Angular todavía**, es HTML/CSS/TS plano que se abre con doble clic. Por eso el `.ts` va envuelto en una función y NO usa `import`/`export`: como módulo ES, el navegador lo bloquearía por CORS al abrirlo con `file://`.
+- Por lo mismo, `client/tsconfig.app.json` **excluye** `src/pages/dashboard/dashboard.ts`. Sin esa exclusión Angular intenta compilarlo y rompe el build, porque `isolatedModules` exige que todo `.ts` sea un módulo.
+- Las rutas a recursos son relativas (`../../../public/logo.png`). Al migrar a componente Angular pasan a ser absolutas (`/logo.png`).
 
 ---
 
@@ -143,10 +172,11 @@ Tipos de prueba contemplados: **unitarias, de integración y de usabilidad**.
 
 - `main` ya tiene rutas de Express con datos de prueba (`server/src/routes/*.ts`) y páginas/componentes/servicios/modelos de Angular con HTML/CSS aún vacíos o mínimos (`client/src/{pages,components,services,models}`)
 - Sin capas `controllers`/`services`/`models` en el backend todavía — la lógica está directa en las rutas, es un scaffold inicial
-- Falta el bootstrap de Angular (`main.ts`, `index.html`, componente raíz) — se perdió al reestructurar `client/src/app/` hacia `client/src/{components,pages,...}`
-- `docs/img/` tiene las capturas de avance; `docs/protocolo/` y `docs/minutas-semanales/` existen como carpetas locales pero sin contenido trackeado en git aún
-- Diagrama de casos de uso elaborado
-- Código de negocio real (cálculo de precio por peso, apartados, auditoría, RBAC) aún no implementado
+- **Falta el bootstrap de Angular** (`main.ts`, `index.html`, componente raíz) — se perdió al reestructurar `client/src/app/` hacia `client/src/{components,pages,...}`. Mientras no se recree, `ng serve` y `ng build` no arrancan, y `angular.json` sigue apuntando a `src/main.ts` y `src/styles.scss`, que tampoco existen
+- La maqueta del dashboard ya está hecha (Cristian) y se abre sola en el navegador, sin depender del build de Angular
+- `docs/img/` tiene las capturas de avance y `docs/minutas-semanales/` las minutas en `.docx`. No existe carpeta `docs/protocolo/`
+- Diagrama de casos de uso elaborado, y diagrama de flujo general del sistema
+- Código de negocio real (cálculo de precio por peso, apartados, auditoría, RBAC) aún no implementado — todo lo que se ve son datos de prueba
 
 ---
 
