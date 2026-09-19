@@ -1,54 +1,22 @@
-import { Router, type Request, type Response } from 'express';
+import { Router } from 'express';
+import { db } from '../db.js';
 
 const router = Router();
 
-router.get('/', async (_req: Request, res: Response) => {
-  res.status(200).json([
-    {
-      id: 1,
-      codigo: 'PRD-001',
-      nombre: 'Anillo de oro',
-      categoria: 'Anillos',
-      precioCompra: 1200,
-      precioVenta: 1800,
-      stock: 15,
-    },
-  ]);
-});
+router.get('/', async (_req, res) => {
+  try {
+    const resultado = await db.query(
+      'SELECT * FROM productos ORDER BY id'
+    );
 
-router.get('/:id', async (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.status(200).json({
-    id: Number(id),
-    codigo: 'PRD-001',
-    nombre: 'Anillo de oro',
-    categoria: 'Anillos',
-    precioCompra: 1200,
-    precioVenta: 1800,
-    stock: 15,
-  });
-});
+    res.json(resultado.rows);
+  } catch (error) {
+    console.error('Error al consultar productos:', error);
 
-router.post('/', async (req: Request, res: Response) => {
-  res.status(201).json({
-    message: 'Producto creado correctamente',
-    data: req.body,
-  });
-});
-
-router.put('/:id', async (req: Request, res: Response) => {
-  res.status(200).json({
-    message: 'Producto actualizado correctamente',
-    id: req.params.id,
-    data: req.body,
-  });
-});
-
-router.delete('/:id', async (req: Request, res: Response) => {
-  res.status(200).json({
-    message: 'Producto eliminado correctamente',
-    id: req.params.id,
-  });
+    res.status(500).json({
+      mensaje: 'Error al obtener productos'
+    });
+  }
 });
 
 export default router;
