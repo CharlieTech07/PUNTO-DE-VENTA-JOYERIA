@@ -106,9 +106,47 @@ cd client/src/pages/dashboard && npx tsc -p .
 
 Detalles que no son obvios y conviene respetar:
 
-- **No es un componente Angular todavía**, es HTML/CSS/TS plano que se abre con doble clic. Por eso el `.ts` va envuelto en una función y NO usa `import`/`export`: como módulo ES, el navegador lo bloquearía por CORS al abrirlo con `file://`.
-- Por lo mismo, `client/tsconfig.app.json` **excluye** `src/pages/dashboard/dashboard.ts`. Sin esa exclusión Angular intenta compilarlo y rompe el build, porque `isolatedModules` exige que todo `.ts` sea un módulo.
-- Las rutas a recursos son relativas (`../../../public/logo.png`). Al migrar a componente Angular pasan a ser absolutas (`/logo.png`).
+- **El menú lateral no vive aquí.** Es el componente de `components/menu/`, que se monta solo con una etiqueta `<script>` al final del HTML. `dashboard.ts` solo se encarga de lo propio del dashboard: cambiar de sección, los filtros y la fecha.
+- Como el menú se monta después, sus botones no existen cuando corre `dashboard.ts`. Por eso la navegación se conecta hasta el evento `menu:listo`.
+- **No es un componente Angular todavía.** Por eso el `.ts` va envuelto en una función y NO usa `import`/`export`: como módulo ES el navegador lo bloquearía, y además `document.currentScript` deja de funcionar.
+- Por lo mismo, `client/tsconfig.app.json` **excluye** los `.ts` de la maqueta. Sin esa exclusión Angular intenta compilarlos y rompe el build, porque `isolatedModules` exige que todo `.ts` sea un módulo.
+
+---
+
+## El menú lateral (`client/src/components/menu/`)
+
+Componente compartido: la barra con las 8 secciones, la tarjeta de usuario y el cambio de modo claro. **Es la única copia** — si le agregas una opción, les aparece a todas las pantallas.
+
+| Archivo | Rol |
+|---|---|
+| `menu.ts` | **Código fuente.** Es el que se edita |
+| `menu.js` | **Generado por `tsc`.** No editar a mano |
+| `menu.html` | El marcado, como fragmento |
+| `menu.css` | Sus estilos |
+| `vista-previa.html` | Para verlo funcionando y copiar el ejemplo |
+
+Para montarlo en una pantalla basta **una línea**, antes de cerrar el `<body>`:
+
+```html
+<script src="../../components/menu/menu.js" data-activo="ventas"></script>
+```
+
+No hay que tocar el CSS ni la estructura de la página que lo usa. Tres decisiones lo hacen posible:
+
+- **Va en `position: fixed`** y él mismo le pone `padding-left` al `<body>`. Así no depende de si la página usa flex, grid o lo que sea. La vitrina de Alan lo monta así, con una sola línea agregada a su archivo.
+- **Resuelve sus rutas contra sí mismo** con `document.currentScript.src`, no contra la página. Por eso funciona sin importar en qué carpeta esté quien lo llama, y el logo siempre carga.
+- **Todas sus clases llevan el prefijo `menu-olimpo`** y sus colores van como `var(--token, respaldo)`. Así no choca con el CSS de nadie y se ve bien aunque la pantalla no tenga los tokens del sistema de diseño.
+
+`data-activo` marca la sección seleccionada y es opcional. Para conectar los botones con tu lógica, escucha `menu:listo`:
+
+```ts
+document.addEventListener('menu:listo', (evento) => {
+  const { menu } = (evento as CustomEvent).detail;
+  // cada botón trae data-vista
+});
+```
+
+Después de tocar el `.ts`: `cd client/src/components/menu && npx tsc -p .`
 
 ---
 

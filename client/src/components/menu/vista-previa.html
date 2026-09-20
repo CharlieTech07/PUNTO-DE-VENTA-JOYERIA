@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vista previa del menú</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        background: #241c14;
+        font-family: "Jost", system-ui, sans-serif;
+        min-height: 100vh;
+      }
+
+      .texto {
+        padding: 48px;
+        max-width: 640px;
+        color: #d6c7b2;
+        line-height: 1.7;
+        font-size: 14px;
+      }
+
+      .texto h1 {
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-weight: 500;
+        font-size: 30px;
+        color: #f6eee2;
+        margin: 0 0 18px;
+      }
+
+      .texto code {
+        background: #3a2e22;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: #e0c289;
+      }
+
+      .texto pre {
+        background: #1c1610;
+        border: 1px solid rgba(224, 194, 137, 0.18);
+        border-radius: 10px;
+        padding: 16px;
+        overflow-x: auto;
+        font-size: 12.5px;
+        color: #d6c7b2;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="texto">
+      <h1>Vista previa del menú</h1>
+
+      <p>
+        Esta página no hace nada especial: solo carga el menú con la misma
+        línea que usarías tú. Si abres <code>menu.html</code> directamente se
+        ve sin formato, porque es un fragmento y no enlaza su propio CSS.
+      </p>
+
+      <p>Para montarlo en tu pantalla, pega esto antes de cerrar el body:</p>
+
+      <pre>&lt;script src="../../components/menu/menu.js" data-activo="ventas"&gt;&lt;/script&gt;</pre>
+
+      <p>
+        Eso es todo. No tienes que tocar tu CSS ni tu HTML: el menú va en
+        <code>position: fixed</code> y él solo le deja el espacio a tu página.
+        Ajusta la ruta según dónde esté tu pantalla.
+      </p>
+
+      <p>
+        <code>data-activo</code> marca qué sección se ve seleccionada, y es
+        opcional. Si quieres conectar los botones con tu lógica, escucha el
+        evento <code>menu:listo</code>; cada botón trae su
+        <code>data-vista</code>.
+      </p>
+    </div>
+
+    <script src="menu.js" data-activo="resumen"></script>
+  </body>
+</html>
