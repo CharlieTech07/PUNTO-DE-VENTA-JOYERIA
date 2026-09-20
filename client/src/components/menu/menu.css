@@ -23,9 +23,11 @@ body.menu-olimpo-activo {
   z-index: 40;
   width: var(--barra-ancho, 264px);
   height: 100vh;
-  overflow-y: auto;
+  /* El menú completo nunca se desplaza: así el logo y el pie siempre
+     quedan a la vista. Si algo no cabe, se desplaza solo la lista. */
+  overflow: hidden;
   box-sizing: border-box;
-  padding: 28px 22px 22px;
+  padding: 18px 18px 14px;
   display: flex;
   flex-direction: column;
   background: var(--fondo-barra, #1c1610);
@@ -52,20 +54,20 @@ body.menu-olimpo-activo {
 
 .menu-olimpo__marca {
   text-align: center;
-  padding-bottom: 26px;
+  padding-bottom: 14px;
 }
 
 .menu-olimpo__emblema {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto 14px;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 8px;
   display: block;
   object-fit: contain;
 }
 
 .menu-olimpo__nombre {
   font-family: var(--serif, "Cormorant Garamond", Georgia, serif);
-  font-size: 30px;
+  font-size: 24px;
   line-height: 1;
   color: var(--texto, #f6eee2);
 }
@@ -81,14 +83,25 @@ body.menu-olimpo-activo {
 /* Navegación */
 
 .menu-olimpo__titulo {
-  margin: 8px 0 12px;
+  margin: 2px 0 8px;
   padding-left: 6px;
 }
 
+/* Si las secciones no caben, se desplaza esta lista y no el menú entero.
+   La barra se oculta porque afea el diseño: se desplaza con la rueda. */
 .menu-olimpo__lista {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.menu-olimpo__lista::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
 
 /* Son enlaces <a>, no botones: navegan de una pantalla a otra */
@@ -96,7 +109,7 @@ body.menu-olimpo-activo {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 14px;
+  padding: 7px 14px;
   margin: 0;
   border: 0;
   border-radius: var(--radio-sm, 10px);
@@ -147,16 +160,16 @@ body.menu-olimpo-activo {
 /* Pie: usuario y acciones */
 
 .menu-olimpo__pie {
-  margin-top: auto;
-  padding-top: 20px;
+  flex-shrink: 0;
+  padding-top: 12px;
 }
 
 .menu-olimpo__usuario {
   background: var(--superficie, #3a2e22);
   border: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.18));
   border-radius: var(--radio-sm, 10px);
-  padding: 14px 16px;
-  margin-bottom: 16px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
 }
 
 .menu-olimpo__usuario-nombre {
@@ -172,7 +185,7 @@ body.menu-olimpo-activo {
   justify-content: center;
   gap: 9px;
   width: 100%;
-  padding: 9px;
+  padding: 7px;
   border: 0;
   background: transparent;
   color: var(--oro, #e0c289);
