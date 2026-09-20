@@ -26,36 +26,53 @@
 
   /* ---------- Navegación entre secciones ---------- */
 
+  /* Los enlaces del menú apuntan a dashboard.html#seccion. Si ya estamos
+     en el dashboard, cambiar el # no recarga la página: solo dispara
+     "hashchange" y aquí intercambiamos la sección. */
   function conectarNavegacion(menu: HTMLElement): void {
-    const botones = Array.from(
-      menu.querySelectorAll<HTMLButtonElement>('[data-vista]'),
+    const enlaces = Array.from(
+      menu.querySelectorAll<HTMLAnchorElement>('[data-vista]'),
     );
     const vistas = Array.from(document.querySelectorAll<HTMLElement>('.vista'));
     const titulo = requerir<HTMLElement>('#tituloVista');
 
-    function mostrarVista(nombre: string, textoTitulo: string): void {
+    function mostrarVista(nombre: string, moverArriba: boolean): void {
+      // Si el # no corresponde a ninguna sección, caemos en el resumen
+      const existe = vistas.some((vista) => vista.id === `vista-${nombre}`);
+      const destino = existe ? nombre : 'resumen';
+
       for (const vista of vistas) {
-        vista.classList.toggle('activa', vista.id === `vista-${nombre}`);
+        vista.classList.toggle('activa', vista.id === `vista-${destino}`);
       }
 
-      for (const boton of botones) {
-        boton.classList.toggle('activo', boton.dataset['vista'] === nombre);
+      let textoTitulo = 'Resumen';
+
+      for (const enlace of enlaces) {
+        const esteEsElActivo = enlace.dataset['vista'] === destino;
+        enlace.classList.toggle('activo', esteEsElActivo);
+
+        if (esteEsElActivo) {
+          textoTitulo = enlace.dataset['titulo'] ?? textoTitulo;
+        }
       }
 
       titulo.textContent = textoTitulo;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (moverArriba) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
 
-    for (const boton of botones) {
-      boton.addEventListener('click', () => {
-        const vista = boton.dataset['vista'];
-        const textoTitulo = boton.dataset['titulo'];
-
-        if (vista !== undefined && textoTitulo !== undefined) {
-          mostrarVista(vista, textoTitulo);
-        }
-      });
+    function seccionDelHash(): string {
+      return window.location.hash.replace('#', '');
     }
+
+    window.addEventListener('hashchange', () => {
+      mostrarVista(seccionDelHash(), true);
+    });
+
+    // Al cargar no movemos el scroll: la página ya está arriba
+    mostrarVista(seccionDelHash(), false);
   }
 
   /* ---------- Filtros de segmento (solo apariencia) ---------- */

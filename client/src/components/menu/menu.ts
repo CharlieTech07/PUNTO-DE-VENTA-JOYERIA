@@ -61,7 +61,18 @@ type TemaOlimpo = 'oscuro' | 'claro';
   <div class="menu-olimpo__titulo menu-olimpo__etiqueta">Secciones</div>
 
   <nav class="menu-olimpo__lista">
-    <button class="menu-olimpo__item" data-vista="resumen" data-titulo="Resumen">
+    <a class="menu-olimpo__item" data-vista="home" data-titulo="Home"
+       data-destino="../../pages/inicio/index.html">
+      <svg viewBox="0 0 24 24">
+        <path d="M3 10.5 12 3l9 7.5" />
+        <path d="M5.5 9.5V20a1 1 0 001 1h11a1 1 0 001-1V9.5" />
+        <path d="M9.5 21v-6h5v6" />
+      </svg>
+      <span class="menu-olimpo__texto">Home</span>
+    </a>
+
+    <a class="menu-olimpo__item" data-vista="resumen" data-titulo="Resumen"
+       data-destino="../../pages/dashboard/dashboard.html#resumen">
       <svg viewBox="0 0 24 24">
         <rect x="3" y="3" width="7" height="7" rx="1.5" />
         <rect x="14" y="3" width="7" height="7" rx="1.5" />
@@ -69,26 +80,29 @@ type TemaOlimpo = 'oscuro' | 'claro';
         <rect x="14" y="14" width="7" height="7" rx="1.5" />
       </svg>
       <span class="menu-olimpo__texto">Resumen</span>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="ventas" data-titulo="Ventas">
+    <a class="menu-olimpo__item" data-vista="ventas" data-titulo="Ventas"
+       data-destino="../../pages/dashboard/dashboard.html#ventas">
       <svg viewBox="0 0 24 24">
         <path d="M6 2 L3 7 v13 a1 1 0 001 1h16a1 1 0 001-1V7l-3-5z" />
         <path d="M3 7h18" />
         <path d="M16 11a4 4 0 01-8 0" />
       </svg>
       <span class="menu-olimpo__texto">Ventas</span>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="ingresos" data-titulo="Ingresos">
+    <a class="menu-olimpo__item" data-vista="ingresos" data-titulo="Ingresos"
+       data-destino="../../pages/dashboard/dashboard.html#ingresos">
       <svg viewBox="0 0 24 24">
         <path d="M3 17l6-6 4 4 7-7" />
         <path d="M14 8h6v6" />
       </svg>
       <span class="menu-olimpo__texto">Ingresos</span>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="inventario" data-titulo="Inventario">
+    <a class="menu-olimpo__item" data-vista="inventario" data-titulo="Inventario"
+       data-destino="../../pages/dashboard/dashboard.html#inventario">
       <svg viewBox="0 0 24 24">
         <path d="M6 3h12l3 6-9 12L3 9z" />
         <path d="M3 9h18" />
@@ -96,17 +110,19 @@ type TemaOlimpo = 'oscuro' | 'claro';
       </svg>
       <span class="menu-olimpo__texto">Inventario</span>
       <em class="menu-olimpo__insignia">8</em>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="apartados" data-titulo="Apartados">
+    <a class="menu-olimpo__item" data-vista="apartados" data-titulo="Apartados"
+       data-destino="../../pages/dashboard/dashboard.html#apartados">
       <svg viewBox="0 0 24 24">
         <path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z" />
       </svg>
       <span class="menu-olimpo__texto">Apartados</span>
       <em class="menu-olimpo__insignia">3</em>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="empleados" data-titulo="Empleados">
+    <a class="menu-olimpo__item" data-vista="empleados" data-titulo="Empleados"
+       data-destino="../../pages/dashboard/dashboard.html#empleados">
       <svg viewBox="0 0 24 24">
         <circle cx="9" cy="8" r="3.4" />
         <path d="M2.5 20a6.5 6.5 0 0113 0" />
@@ -114,9 +130,10 @@ type TemaOlimpo = 'oscuro' | 'claro';
         <path d="M17.5 14.2A6.5 6.5 0 0121.5 20" />
       </svg>
       <span class="menu-olimpo__texto">Empleados</span>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="metal" data-titulo="Precio del metal">
+    <a class="menu-olimpo__item" data-vista="metal" data-titulo="Precio del metal"
+       data-destino="../../pages/dashboard/dashboard.html#metal">
       <svg viewBox="0 0 24 24">
         <path d="M12 3v18" />
         <path d="M5 7h14" />
@@ -125,15 +142,16 @@ type TemaOlimpo = 'oscuro' | 'claro';
         <path d="M8 21h8" />
       </svg>
       <span class="menu-olimpo__texto">Precio del metal</span>
-    </button>
+    </a>
 
-    <button class="menu-olimpo__item" data-vista="auditoria" data-titulo="Bitácora de auditoría">
+    <a class="menu-olimpo__item" data-vista="auditoria" data-titulo="Bitácora de auditoría"
+       data-destino="../../pages/dashboard/dashboard.html#auditoria">
       <svg viewBox="0 0 24 24">
         <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
         <path d="M9 12l2 2 4-4.5" />
       </svg>
       <span class="menu-olimpo__texto">Auditoría</span>
-    </button>
+    </a>
   </nav>
 
   <div class="menu-olimpo__pie">
@@ -178,6 +196,22 @@ type TemaOlimpo = 'oscuro' | 'claro';
     link.rel = 'stylesheet';
     link.href = href;
     document.head.appendChild(link);
+  }
+
+  /** Convierte cada data-destino en un href absoluto. Así los enlaces
+   *  funcionan igual desde cualquier pantalla, sin importar su carpeta. */
+  function resolverEnlaces(menu: HTMLElement): void {
+    const enlaces = Array.from(
+      menu.querySelectorAll<HTMLAnchorElement>('[data-destino]'),
+    );
+
+    for (const enlace of enlaces) {
+      const destino = enlace.dataset['destino'];
+
+      if (destino !== undefined) {
+        enlace.href = rutaDelComponente(destino);
+      }
+    }
   }
 
   function marcarSeccionActiva(menu: HTMLElement): void {
@@ -232,6 +266,7 @@ type TemaOlimpo = 'oscuro' | 'claro';
     document.body.insertBefore(menu, document.body.firstChild);
     document.body.classList.add('menu-olimpo-activo');
 
+    resolverEnlaces(menu);
     marcarSeccionActiva(menu);
     conectarCambioDeTema(menu);
 

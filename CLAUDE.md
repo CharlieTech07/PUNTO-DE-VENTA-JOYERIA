@@ -137,7 +137,18 @@ No hay que tocar el CSS ni la estructura de la página que lo usa. Cuatro decisi
 - **Todas sus clases llevan el prefijo `menu-olimpo`** y sus colores van como `var(--token, respaldo)`. Así no choca con el CSS de nadie y se ve bien aunque la pantalla no tenga los tokens del sistema de diseño.
 - **El marcado vive dentro de `menu.ts`, no en un `.html` aparte.** Esto NO es capricho: se intentó con un `menu.html` traído por `fetch` y **Live Server lo rompía**. Live Server le inyecta su script de recarga a todo lo que sirve como `.html`, y al ser un fragmento sin `</body>` esa inyección le corta el final: llegaban 3 de los 8 botones. Al tenerlo en el `.ts` no hay petición que se pueda corromper, el menú aparece al instante y la página hasta funciona con doble clic. **Si alguien lo vuelve a separar a un `.html`, va a reaparecer ese bug.**
 
-`data-activo` marca la sección seleccionada y es opcional. Para conectar los botones con tu lógica, escucha `menu:listo`:
+**Los elementos del menú son enlaces `<a>`, no botones**, porque navegan entre pantallas:
+
+| Sección | A dónde va |
+|---|---|
+| Home | `pages/inicio/index.html` — la vitrina |
+| Las otras 8 | `pages/dashboard/dashboard.html#<seccion>` |
+
+El `href` se calcula en `menu.ts` a partir de `data-destino`, resuelto contra la carpeta del componente. Por eso los enlaces sirven igual desde cualquier pantalla.
+
+**El dashboard cambia de sección con el `#` de la URL.** Si ya estás en el dashboard, el enlace solo cambia el hash: no recarga, dispara `hashchange` y `dashboard.ts` intercambia la sección. Si vienes de Home, la página abre directamente en la sección correcta. Un hash desconocido cae en el resumen.
+
+`data-activo` marca la sección seleccionada cuando la pantalla no maneja hash (como Home). El dashboard no lo usa: se marca solo según el `#`. Para conectar los botones con tu lógica, escucha `menu:listo`:
 
 ```ts
 document.addEventListener('menu:listo', (evento) => {
