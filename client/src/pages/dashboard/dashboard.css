@@ -5,66 +5,8 @@
 
 /* ---------- 1. Tokens de diseño ---------- */
 
-:root {
-  /* Superficies (modo oscuro) */
-  --fondo: #241c14;
-  --fondo-barra: #1c1610;
-  --superficie: #3a2e22;
-  --superficie-2: #453727;
-  --superficie-3: #4f4030;
-
-  /* Acentos dorados */
-  --oro-claro: #ebd5a6;
-  --oro: #e0c289;
-  --oro-medio: #c9a96a;
-  --oro-tenue: rgba(224, 194, 137, 0.14);
-  --oro-borde: rgba(224, 194, 137, 0.18);
-
-  /* Texto */
-  --texto: #f6eee2;
-  --texto-2: #d6c7b2;
-  --texto-3: #a08d76;
-
-  /* Semánticos */
-  --verde: #8bbf74;
-  --ambar: #e0a44e;
-  --rojo: #d97a6c;
-
-  /* Tipografía */
-  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
-  --sans: "Jost", "Segoe UI", system-ui, -apple-system, sans-serif;
-
-  /* Métrica */
-  --barra-ancho: 264px;
-  --radio: 14px;
-  --radio-sm: 10px;
-  --sombra: 0 18px 40px rgba(0, 0, 0, 0.28);
-}
-
-/* Modo claro: mismo sistema, superficies invertidas */
-html[data-tema="claro"] {
-  --fondo: #f4efe6;
-  --fondo-barra: #ebe3d5;
-  --superficie: #ffffff;
-  --superficie-2: #faf6ee;
-  --superficie-3: #f0e9dc;
-
-  --oro-claro: #8a6a2f;
-  --oro: #9c7a38;
-  --oro-medio: #ab8a4c;
-  --oro-tenue: rgba(156, 122, 56, 0.1);
-  --oro-borde: rgba(156, 122, 56, 0.22);
-
-  --texto: #2e2418;
-  --texto-2: #5b4c3a;
-  --texto-3: #8a7a66;
-
-  --verde: #4f8a3c;
-  --ambar: #b57a1e;
-  --rojo: #b34b3c;
-
-  --sombra: 0 14px 30px rgba(90, 70, 40, 0.1);
-}
+/* La paleta vive en styles/tema.css, compartida con todas las
+   pantallas. Enlazala ANTES que este archivo. */
 
 /* ---------- 2. Base ---------- */
 

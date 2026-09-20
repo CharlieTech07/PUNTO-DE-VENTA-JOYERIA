@@ -161,6 +161,24 @@ Después de tocar el `.ts`: `cd client/src/components/menu && npx tsc -p .`
 
 ---
 
+## La paleta compartida (`client/src/styles/tema.css`)
+
+**Es la única fuente de los colores del sistema.** Toda pantalla debe enlazarla **antes** de su propio CSS:
+
+```html
+<link rel="stylesheet" href="../../styles/tema.css" />
+```
+
+Define los tokens (`--fondo`, `--superficie`, `--oro`, `--texto`…) y sus equivalentes de modo claro bajo `html[data-tema="claro"]`. El botón del menú solo cambia ese atributo en la etiqueta `<html>`, y todas las pantallas que usan los tokens cambian al mismo tiempo.
+
+**Regla:** si necesitas un color, tómalo de aquí. **No escribas un hex suelto en tu CSS**, porque ese pedazo se va a quedar oscuro cuando alguien active el modo claro.
+
+La vitrina de Alan sigue usando sus nombres de siempre (`--bg-color-dark`, `--card-bg-dark`…), pero ahora apuntan a los tokens compartidos, así que su pantalla se ve igual que el dashboard y responde al modo claro sin haber reescrito su CSS.
+
+Ojo: `client/src/styles/global.css` es una plantilla azul genérica que nadie usa y **no** es la paleta del proyecto. No la confundas con `tema.css`.
+
+---
+
 ## Módulos del sistema
 
 Acceso (login), Productos, Caja (ventas), Inventario, Apartados, Reportes.

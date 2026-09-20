@@ -1,14 +1,21 @@
+/* Los colores ya no se escriben aquí: se toman de styles/tema.css, que es
+   la paleta compartida de todo el sistema. Se conservan los nombres de
+   siempre para no tener que cambiar el resto del archivo.
+
+   Gracias a esto la pantalla se ve igual que el dashboard y el botón de
+   modo claro también funciona aquí. Si pones un color fijo, ese pedazo
+   se va a quedar oscuro al cambiar de modo. */
 :root {
     --font-primary: 'Playfair Display', serif;
     --font-secondary: 'Arial', sans-serif;
-    --bg-color-dark: #2a221c; 
-    --text-color-dark: #e8e0d5; 
-    --subtitle-color-dark: #8c7c6c; 
-    --card-bg-dark: #3b322a; 
-    --search-bg-dark: #463d34; 
-    --border-color-dark: #5a4f44; 
-    --btn-bg-dark: #e3d3a8; 
-    --btn-text-dark: #4a3e2a; 
+    --bg-color-dark: var(--fondo);
+    --text-color-dark: var(--texto);
+    --subtitle-color-dark: var(--texto-3);
+    --card-bg-dark: var(--superficie);
+    --search-bg-dark: var(--superficie-2);
+    --border-color-dark: var(--oro-borde);
+    --btn-bg-dark: var(--oro);
+    --btn-text-dark: var(--sobre-oro);
 }
 
 body {
