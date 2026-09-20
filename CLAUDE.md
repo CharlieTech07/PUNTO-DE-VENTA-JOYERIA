@@ -119,9 +119,8 @@ Componente compartido: la barra con las 8 secciones, la tarjeta de usuario y el 
 
 | Archivo | Rol |
 |---|---|
-| `menu.ts` | **Código fuente.** Es el que se edita |
+| `menu.ts` | **Código fuente.** Trae el marcado y la lógica |
 | `menu.js` | **Generado por `tsc`.** No editar a mano |
-| `menu.html` | El marcado, como fragmento |
 | `menu.css` | Sus estilos |
 | `vista-previa.html` | Para verlo funcionando y copiar el ejemplo |
 
@@ -131,11 +130,12 @@ Para montarlo en una pantalla basta **una línea**, antes de cerrar el `<body>`:
 <script src="../../components/menu/menu.js" data-activo="ventas"></script>
 ```
 
-No hay que tocar el CSS ni la estructura de la página que lo usa. Tres decisiones lo hacen posible:
+No hay que tocar el CSS ni la estructura de la página que lo usa. Cuatro decisiones lo hacen posible:
 
 - **Va en `position: fixed`** y él mismo le pone `padding-left` al `<body>`. Así no depende de si la página usa flex, grid o lo que sea. La vitrina de Alan lo monta así, con una sola línea agregada a su archivo.
 - **Resuelve sus rutas contra sí mismo** con `document.currentScript.src`, no contra la página. Por eso funciona sin importar en qué carpeta esté quien lo llama, y el logo siempre carga.
 - **Todas sus clases llevan el prefijo `menu-olimpo`** y sus colores van como `var(--token, respaldo)`. Así no choca con el CSS de nadie y se ve bien aunque la pantalla no tenga los tokens del sistema de diseño.
+- **El marcado vive dentro de `menu.ts`, no en un `.html` aparte.** Esto NO es capricho: se intentó con un `menu.html` traído por `fetch` y **Live Server lo rompía**. Live Server le inyecta su script de recarga a todo lo que sirve como `.html`, y al ser un fragmento sin `</body>` esa inyección le corta el final: llegaban 3 de los 8 botones. Al tenerlo en el `.ts` no hay petición que se pueda corromper, el menú aparece al instante y la página hasta funciona con doble clic. **Si alguien lo vuelve a separar a un `.html`, va a reaparecer ese bug.**
 
 `data-activo` marca la sección seleccionada y es opcional. Para conectar los botones con tu lógica, escucha `menu:listo`:
 
