@@ -16,7 +16,12 @@
    brincaría al montarse el menú: ese brinco es lo que se ve como
    "la página cargando algo". Este archivo solo lo enlaza quien usa el
    menú, así que ninguna otra pantalla se ve afectada. */
-body {
+/* Va como "html body" y no solo "body" a propósito: varias pantallas
+   declaran "body { padding: 0 }" en su propio CSS, y si ese archivo carga
+   después le ganaría a esta regla y el contenido se metería debajo del
+   menú. Con html body la especificidad es mayor y ya no depende del orden
+   en que se enlacen las hojas de estilo. */
+html body {
   padding-left: var(--barra-ancho, 264px);
 }
 
@@ -221,7 +226,7 @@ body {
 /* En pantallas angostas se encoge y deja solo los iconos */
 
 @media (max-width: 1024px) {
-  body {
+  html body {
     padding-left: 76px;
   }
 

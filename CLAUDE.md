@@ -133,6 +133,8 @@ Para montarlo en una pantalla, dos líneas **en el `<head>`**:
 
 **Van en el `<head>` a propósito, no al final del `<body>`.** Si se ponen al final, el usuario alcanza a ver dos parpadeos al cambiar de pantalla: el contenido nace pegado a la izquierda y brinca cuando el menú entra, y si venía en modo claro se ve un destello oscuro. Estando en el `<head>`, el CSS reserva el ancho del menú desde el primer pintado y el tema se aplica antes de que el navegador dibuje nada.
 
+**El espacio del menú se reserva con `html body { padding-left }`, no con `body`.** No es un capricho de estilo: varias pantallas declaran `body { padding: 0 }` en su propio CSS, y si ese archivo se enlaza después le gana a la regla del menú y **el contenido se mete debajo de la barra**, quedando cortado por la izquierda. Con `html body` la especificidad es mayor y deja de importar el orden de las hojas de estilo. Si alguien la "simplifica" a `body`, el bug regresa.
+
 No hay que tocar el CSS ni la estructura de la página que lo usa. Cuatro decisiones lo hacen posible:
 
 - **Va en `position: fixed`** y él mismo le pone `padding-left` al `<body>`. Así no depende de si la página usa flex, grid o lo que sea. La vitrina de Alan lo monta así, con una sola línea agregada a su archivo.
