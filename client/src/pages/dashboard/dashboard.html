@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-tema="oscuro">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,6 +12,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../../styles/tema.css" />
+
+    <!-- Menú lateral compartido. Va en el <head> para que no parpadee. -->
+    <link rel="stylesheet" href="../../components/menu/menu.css" />
+    <script src="../../components/menu/menu.js"></script>
     <link rel="stylesheet" href="dashboard.css" />
   </head>
 
@@ -1314,8 +1318,6 @@
       </main>
     </div>
 
-    <!-- Menú lateral compartido: se monta solo -->
-    <script src="../../components/menu/menu.js"></script>
     <script src="dashboard.js"></script>
   </body>
 </html>

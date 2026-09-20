@@ -44,6 +44,36 @@ type TemaOlimpo = 'oscuro' | 'claro';
   const urlBase = etiqueta.src;
   const seccionActiva = etiqueta.dataset['activo'] ?? '';
 
+  // Guardar el tema aquí es lo que hace que no se pierda al cambiar de
+  // pantalla: cada página es una carga nueva y el atributo del <html> se
+  // reinicia. localStorage puede fallar (modo privado), por eso el try.
+  const CLAVE_TEMA = 'olimpo:tema';
+
+  function leerTemaGuardado(): TemaOlimpo | null {
+    try {
+      const valor = localStorage.getItem(CLAVE_TEMA);
+      return valor === 'claro' || valor === 'oscuro' ? valor : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function aplicarTema(tema: TemaOlimpo): void {
+    document.documentElement.dataset['tema'] = tema;
+
+    try {
+      localStorage.setItem(CLAVE_TEMA, tema);
+    } catch {
+      // Sin almacenamiento el tema solo dura esta pantalla; no es grave
+    }
+  }
+
+  function temaActual(): TemaOlimpo {
+    return document.documentElement.dataset['tema'] === 'claro'
+      ? 'claro'
+      : 'oscuro';
+  }
+
   const ICONO_SOL =
     '<circle cx="12" cy="12" r="4.2" />' +
     '<path d="M12 2v2M12 20v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2 12h2M20 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5" />';
@@ -233,19 +263,25 @@ type TemaOlimpo = 'oscuro' | 'claro';
       return;
     }
 
-    boton.addEventListener('click', () => {
-      const eraOscuro = document.documentElement.dataset['tema'] !== 'claro';
-      const nuevoTema: TemaOlimpo = eraOscuro ? 'claro' : 'oscuro';
+    /** El botón ofrece el tema contrario al que está puesto. */
+    function pintarBoton(): void {
+      const enOscuro = temaActual() === 'oscuro';
 
-      document.documentElement.dataset['tema'] = nuevoTema;
-      texto.textContent = eraOscuro ? 'Modo oscuro' : 'Modo claro';
-      icono.innerHTML = eraOscuro ? ICONO_LUNA : ICONO_SOL;
+      texto!.textContent = enOscuro ? 'Modo claro' : 'Modo oscuro';
+      icono!.innerHTML = enOscuro ? ICONO_SOL : ICONO_LUNA;
+    }
+
+    // Al llegar de otra pantalla el tema pudo venir guardado, así que el
+    // botón se pinta según lo que hay, no según un valor fijo
+    pintarBoton();
+
+    boton.addEventListener('click', () => {
+      aplicarTema(temaActual() === 'oscuro' ? 'claro' : 'oscuro');
+      pintarBoton();
     });
   }
 
   function montar(): void {
-    enlazarEstilos();
-
     const contenedor = document.createElement('div');
     contenedor.innerHTML = MARCADO;
 
@@ -264,7 +300,6 @@ type TemaOlimpo = 'oscuro' | 'claro';
     }
 
     document.body.insertBefore(menu, document.body.firstChild);
-    document.body.classList.add('menu-olimpo-activo');
 
     resolverEnlaces(menu);
     marcarSeccionActiva(menu);
@@ -272,6 +307,23 @@ type TemaOlimpo = 'oscuro' | 'claro';
 
     document.dispatchEvent(new CustomEvent('menu:listo', { detail: { menu } }));
   }
+
+  /* Estas dos cosas se hacen YA, sin esperar al DOM, porque si se hacen
+     tarde el usuario alcanza a ver el parpadeo:
+
+     - El tema: si viene guardado de otra pantalla, hay que ponerlo antes
+       de que el navegador pinte, o se ve un destello del tema anterior.
+     - El CSS: reserva el ancho del menú desde el primer pintado, para que
+       el contenido no brinque cuando el menú entre.
+
+     Por eso esta etiqueta <script> va en el <head> de cada pantalla. */
+  const guardado = leerTemaGuardado();
+
+  if (guardado !== null) {
+    document.documentElement.dataset['tema'] = guardado;
+  }
+
+  enlazarEstilos();
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', montar);

@@ -124,11 +124,14 @@ Componente compartido: la barra con las 8 secciones, la tarjeta de usuario y el 
 | `menu.css` | Sus estilos |
 | `vista-previa.html` | Para verlo funcionando y copiar el ejemplo |
 
-Para montarlo en una pantalla basta **una línea**, antes de cerrar el `<body>`:
+Para montarlo en una pantalla, dos líneas **en el `<head>`**:
 
 ```html
+<link rel="stylesheet" href="../../components/menu/menu.css" />
 <script src="../../components/menu/menu.js" data-activo="ventas"></script>
 ```
+
+**Van en el `<head>` a propósito, no al final del `<body>`.** Si se ponen al final, el usuario alcanza a ver dos parpadeos al cambiar de pantalla: el contenido nace pegado a la izquierda y brinca cuando el menú entra, y si venía en modo claro se ve un destello oscuro. Estando en el `<head>`, el CSS reserva el ancho del menú desde el primer pintado y el tema se aplica antes de que el navegador dibuje nada.
 
 No hay que tocar el CSS ni la estructura de la página que lo usa. Cuatro decisiones lo hacen posible:
 
@@ -170,6 +173,8 @@ Después de tocar el `.ts`: `cd client/src/components/menu && npx tsc -p .`
 ```
 
 Define los tokens (`--fondo`, `--superficie`, `--oro`, `--texto`…) y sus equivalentes de modo claro bajo `html[data-tema="claro"]`. El botón del menú solo cambia ese atributo en la etiqueta `<html>`, y todas las pantallas que usan los tokens cambian al mismo tiempo.
+
+**El tema elegido se guarda en `localStorage` con la clave `olimpo:tema`**, y `menu.ts` lo vuelve a aplicar al cargar cada pantalla. Sin eso se perdía al navegar, porque cada página es una carga nueva y el atributo del `<html>` se reinicia. Si el navegador no deja usar `localStorage` (modo privado), el tema simplemente dura lo que dure esa pantalla.
 
 **Regla:** si necesitas un color, tómalo de aquí. **No escribas un hex suelto en tu CSS**, porque ese pedazo se va a quedar oscuro cuando alguien active el modo claro.
 

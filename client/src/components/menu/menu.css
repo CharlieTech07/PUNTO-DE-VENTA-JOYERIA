@@ -11,8 +11,12 @@
  * tokens del sistema de diseño se usan los suyos; si no, entran los de
  * respaldo y el menú se ve bien sin configurar nada. */
 
-/* La página que monta el menú recibe esta clase y le deja el espacio */
-body.menu-olimpo-activo {
+/* El espacio del menú se reserva desde el CSS, no desde JavaScript.
+   Si se agregara con JS, el contenido nacería pegado a la izquierda y
+   brincaría al montarse el menú: ese brinco es lo que se ve como
+   "la página cargando algo". Este archivo solo lo enlaza quien usa el
+   menú, así que ninguna otra pantalla se ve afectada. */
+body {
   padding-left: var(--barra-ancho, 264px);
 }
 
@@ -217,7 +221,7 @@ body.menu-olimpo-activo {
 /* En pantallas angostas se encoge y deja solo los iconos */
 
 @media (max-width: 1024px) {
-  body.menu-olimpo-activo {
+  body {
     padding-left: 76px;
   }
 
