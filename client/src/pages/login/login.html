@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olimpo Haute Joaillerie · Iniciar sesión</title>
+<link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <img src="/docs/img/logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
+      <h1>OLIMPO</h1>
+      <div class="divider">
+        <span></span>
+        <span class="tagline">HAUTE JOAILLERIE</span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="card-shell">
+      <div class="card">
+        <h2>Bienvenido</h2>
+        <p class="sub">Acceda a su vitrina privada</p>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+          <div class="field">
+            <label>Correo electrónico</label>
+            <input type="email" formControlName="email" placeholder="Ej: olimpo@gmail.com">
+            <p class="error" *ngIf="submitted && email?.invalid">
+              <span *ngIf="email?.errors?.['required']">El correo es obligatorio.</span>
+              
+            </p>
+          </div>
+
+          <div class="field">
+            <label>Contraseña</label>
+            <input type="password" formControlName="password" placeholder="••••••••">
+            <p class="error" *ngIf="submitted && password?.invalid">
+              <span *ngIf="password?.errors?.['required']">La contraseña es obligatoria.</span>
+            </p>
+          </div>
+          <button type="button" class="primary" onclick="window.location.href='../inicio/inicio.html'">
+          NGRESAR A LA VITRINA</button>
+          </a>
+          <button type="button" class="create">CREAR NUEVA CUENTA</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
