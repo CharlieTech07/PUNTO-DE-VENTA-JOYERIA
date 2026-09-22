@@ -53,6 +53,8 @@
         color: #d6c7b2;
       }
     </style>
+    <link rel="stylesheet" href="menu.css" />
+    <script src="menu.js" data-activo="resumen"></script>
   </head>
 
   <body>
@@ -64,12 +66,22 @@
         línea que usarías tú.
       </p>
 
-      <p>Para montarlo en tu pantalla, pega esto antes de cerrar el body:</p>
+      <p>
+        Para montarlo en tu pantalla, pega estas dos líneas
+        <strong>dentro del &lt;head&gt;</strong>:
+      </p>
 
-      <pre>&lt;script src="../../components/menu/menu.js" data-activo="ventas"&gt;&lt;/script&gt;</pre>
+      <pre>&lt;link rel="stylesheet" href="../../components/menu/menu.css" /&gt;
+&lt;script src="../../components/menu/menu.js" data-activo="ventas"&gt;&lt;/script&gt;</pre>
 
       <p>
-        Eso es todo. No tienes que tocar tu CSS ni tu HTML: el menú va en
+        Van en el <code>&lt;head&gt;</code>, no al final del body. Si las pones
+        al final se ven dos parpadeos al cambiar de pantalla: el contenido
+        brinca cuando el menú entra, y el modo claro destella en oscuro.
+      </p>
+
+      <p>
+        Fuera de esas dos líneas no tienes que tocar nada: el menú va en
         <code>position: fixed</code> y él solo le deja el espacio a tu página.
         Ajusta la ruta según dónde esté tu pantalla.
       </p>
@@ -82,6 +94,5 @@
       </p>
     </div>
 
-    <script src="menu.js" data-activo="resumen"></script>
   </body>
 </html>

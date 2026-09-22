@@ -106,7 +106,7 @@ cd client/src/pages/dashboard && npx tsc -p .
 
 Detalles que no son obvios y conviene respetar:
 
-- **El menú lateral no vive aquí.** Es el componente de `components/menu/`, que se monta solo con una etiqueta `<script>` al final del HTML. `dashboard.ts` solo se encarga de lo propio del dashboard: cambiar de sección, los filtros y la fecha.
+- **El menú lateral no vive aquí.** Es el componente de `components/menu/`, que se monta solo con las dos etiquetas del `<head>`. `dashboard.ts` solo se encarga de lo propio del dashboard: cambiar de sección, los filtros y la fecha.
 - Como el menú se monta después, sus botones no existen cuando corre `dashboard.ts`. Por eso la navegación se conecta hasta el evento `menu:listo`.
 - **No es un componente Angular todavía.** Por eso el `.ts` va envuelto en una función y NO usa `import`/`export`: como módulo ES el navegador lo bloquearía, y además `document.currentScript` deja de funcionar.
 - Por lo mismo, `client/tsconfig.app.json` **excluye** los `.ts` de la maqueta. Sin esa exclusión Angular intenta compilarlos y rompe el build, porque `isolatedModules` exige que todo `.ts` sea un módulo.
@@ -244,13 +244,38 @@ Tipos de prueba contemplados: **unitarias, de integración y de usabilidad**.
 
 ## Estado actual del proyecto
 
-- `main` ya tiene rutas de Express con datos de prueba (`server/src/routes/*.ts`) y páginas/componentes/servicios/modelos de Angular con HTML/CSS aún vacíos o mínimos (`client/src/{pages,components,services,models}`)
-- Sin capas `controllers`/`services`/`models` en el backend todavía — la lógica está directa en las rutas, es un scaffold inicial
-- **Falta el bootstrap de Angular** (`main.ts`, `index.html`, componente raíz) — se perdió al reestructurar `client/src/app/` hacia `client/src/{components,pages,...}`. Mientras no se recree, `ng serve` y `ng build` no arrancan, y `angular.json` sigue apuntando a `src/main.ts` y `src/styles.scss`, que tampoco existen
-- La maqueta del dashboard ya está hecha (Cristian) y se abre sola en el navegador, sin depender del build de Angular
-- `docs/img/` tiene las capturas de avance y `docs/minutas-semanales/` las minutas en `.docx`. No existe carpeta `docs/protocolo/`
-- Diagrama de casos de uso elaborado, y diagrama de flujo general del sistema
-- Código de negocio real (cálculo de precio por peso, apartados, auditoría, RBAC) aún no implementado — todo lo que se ve son datos de prueba
+### Lo que YA funciona (rama `Cristian`, sin subir a GitHub todavía)
+
+- **Dos pantallas navegables entre sí**: Home (la vitrina de Alan, en `pages/inicio/`) y el panel de administración (`pages/dashboard/`, 8 secciones)
+- **El menú es un componente compartido** (`components/menu/`), una sola copia, montado con dos líneas en el `<head>` de cada pantalla. Ver su sección arriba
+- **Modo claro/oscuro funcionando en las dos pantallas**, y se conserva al navegar (`localStorage`)
+- **Paleta unificada** en `styles/tema.css`
+- Todo se ve con **Live Server**; nadie abre archivos con doble clic
+
+### Lo que falta
+
+- **Nada consume la API todavía.** Las dos pantallas traen datos ficticios escritos a mano. Los servicios (`services/*.service.ts`) están escritos pero nadie los llama
+- **Falta el bootstrap de Angular** (`main.ts`, `index.html`, componente raíz). Se perdió al reestructurar y `angular.json` sigue apuntando a archivos que no existen, así que `ng serve` y `ng build` no arrancan. **Carlos dijo que lo arma él la semana del 22 de septiembre de 2026**, y que ahí se junta todo. Hasta entonces la maqueta vive como HTML/CSS/TS plano
+- **Falta `server/.env.example`.** `db.ts` espera `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME`, pero no hay plantilla y quien clone no puede conectar la base
+- **Sin capas `controllers`/`services`/`models`** en el backend: la lógica sigue directa en las rutas
+- **Carlos eliminó las rutas** `auth`, `caja`, `clientes` y `ventas` al reescribir la API. Solo quedan `productos` e `inventario`, así que **el login se quedó sin backend**
+- **Error en `server/package.json`**: dice `"types": "module"` (seguramente quiso `"type"`) y más abajo `"type": "commonjs"`, que contradice los imports con `.js` del código
+- **El `script.ts` de Alan no está conectado**: su `index.html` no tiene etiqueta `<script>`, los productos están escritos a mano en el HTML, y el `.ts` apunta a imágenes de Unsplash mientras el HTML usa las locales de `imagenes/`
+- **Archivos muertos** en `pages/inicio/`: `inicio.html` e `inicio.css` son el "Hola mundo" viejo
+- **Dos convenciones de nombres** sin unificar: Alan usa `index/style/script`, el dashboard usa `dashboard.html/.css/.ts`
+- Código de negocio real (precio por peso, apartados, auditoría, RBAC) **sin implementar**
+- Sin pruebas, aunque el documento promete unitarias, de integración y de usabilidad
+
+### Propuesta de base de datos (pendiente de revisar con el compañero)
+
+En `server/db/` hay dos archivos **sin commitear**: `base.sql` y `datos.sql`. Es una propuesta de Cristian sobre el esquema que hizo otro compañero, probada contra Postgres real. Corrige:
+
+1. La contraseña del root venía **en texto plano** en una columna llamada `contrasena_hash`
+2. El precio estaba **fijo por pieza**, contra la regla del precio dinámico por peso
+3. Faltaban `clientes`, `apartados`, `abonos` y la **bitácora de auditoría**
+4. El inventario era por cantidad (`stock INT`), lo que **impide** que cada pieza tenga su peso y su precio
+
+Está esperando respuesta del compañero. **No subirla al repo sin que él la revise.**
 
 ---
 
