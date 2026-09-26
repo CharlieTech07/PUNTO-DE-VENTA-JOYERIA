@@ -1,0 +1,60 @@
+<div style="padding: 24px; font-family: sans-serif; max-width: 900px; margin: auto;">
+  <h2>Gestión de Sucursales — Joyería Olimpo</h2>
+
+  <!-- Formulario -->
+  <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 25px;">
+    <h3>Registrar Nueva Sucursal</h3>
+    <form (ngSubmit)="guardarSucursal()" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Nombre:</label>
+        <input type="text" [(ngModel)]="nuevaSucursal.nombre" name="nombre" placeholder="ej. Sucursal Galerías" required style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Dirección:</label>
+        <input type="text" [(ngModel)]="nuevaSucursal.direccion" name="direccion" placeholder="ej. Av. Vallarta #500" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Teléfono:</label>
+        <input type="text" [(ngModel)]="nuevaSucursal.telefono" name="telefono" placeholder="ej. 3312345678" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div style="grid-column: 1 / -1; margin-top: 10px;">
+        <button type="submit" style="background-color: #2563eb; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+          + Guardar Sucursal
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabla -->
+  @if (cargando) {
+    <p>⏳ Consultando sucursales en pos_olimpo...</p>
+  } @else if (errorCarga) {
+    <p style="color: red;">❌ {{ errorCarga }}</p>
+  } @else if (listaSucursales.length === 0) {
+    <p>No hay sucursales registradas en la base de datos.</p>
+  } @else {
+    <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+      <thead style="background-color: #1e293b; color: white;">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (s of listaSucursales; track s.id) {
+          <tr>
+            <td>{{ s.id }}</td>
+            <td><strong>{{ s.nombre }}</strong></td>
+            <td>{{ s.direccion || 'Sin dirección' }}</td>
+            <td>{{ s.telefono || 'Sin teléfono' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
