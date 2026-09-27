@@ -1,0 +1,282 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  height: 100vh;
+  overflow: hidden; /* Garantiza que NUNCA aparezca la barra de desplazamiento */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  font-family: 'Cormorant Garamond', serif;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(120, 90, 40, 0.35), transparent 60%),
+    linear-gradient(160deg, #1a1410 0%, #2b2119 45%, #171310 100%);
+  color: #e9dfc9;
+}
+
+/* Aumentamos el ancho máximo de la estructura principal */
+.wrap {
+  width: 100%;
+  max-width: 480px; /* Antes era 380px -> Ahora la tarjeta es mucho más amplia */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- LOGO Y MARCA --- */
+.brand {
+  text-align: center;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crest {
+  display: block;
+  width: 175px; /* Logo más grande */
+  height: auto;
+  margin: 0 auto 10px;
+  object-fit: contain;
+}
+
+.brand h1 {
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 36px; /* Texto OLIMPO más grande */
+  letter-spacing: 12px;
+  margin: 0;
+  color: #d8b978;
+}
+
+.brand .divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+
+.brand .divider span:first-child,
+.brand .divider span:last-child {
+  height: 1px;
+  width: 40px;
+  background: #8a7448;
+}
+
+.brand .tagline {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  letter-spacing: 5px;
+  color: #a8916a;
+}
+
+/* --- TARJETA --- */
+.card-shell {
+  position: relative;
+  width: 100%;
+}
+
+.card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border-radius: 20px;
+  padding: 36px 34px 30px; /* Padding interior más amplio */
+  background: transparent;
+  isolation: isolate;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 300deg,
+    rgba(216, 185, 120, 0.5) 335deg,
+    #f3dfa3 350deg,
+    rgba(216, 185, 120, 0.5) 360deg
+  );
+  animation: girar 5s linear infinite;
+  z-index: -2;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 1.5px;
+  border-radius: 19px;
+  background: linear-gradient(180deg, #332819 0%, #291f14 100%);
+  z-index: -1;
+}
+
+@keyframes girar {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card::before {
+    animation: none;
+  }
+}
+
+.card h2 {
+  text-align: center;
+  font-weight: 500;
+  font-size: 30px; /* Título "Bienvenido" más grande */
+  margin: 0 0 4px;
+  color: #d8b978;
+}
+
+.card .sub {
+  text-align: center;
+  font-size: 16px;
+  color: #b7a37c;
+  margin: 0 0 24px;
+}
+
+/* --- FORMULARIO E INPUTS --- */
+label {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #b7a37c;
+  margin-bottom: 8px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.error {
+  color: var(--rojo, #d88b78);
+  font-size: 12px;
+  margin: 5px 0 0;
+}
+
+input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(200, 170, 110, 0.3);
+  border-radius: 8px;
+  padding: 13px 15px; /* Inputs ligeramente más altos y cómodos */
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  color: #f2e8d3;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input::placeholder {
+  color: #7d6c4d;
+}
+
+input:focus {
+  border-color: #d8b978;
+  box-shadow: 0 0 0 3px rgba(216, 185, 120, 0.12);
+}
+
+/* --- BOTONES --- */
+button.primary,
+button.create {
+  position: relative;
+  overflow: hidden;
+}
+
+button.primary::after,
+button.create::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+
+button.primary:hover::after,
+button.create:hover::after {
+  left: 125%;
+}
+
+button.primary {
+  width: 100%;
+  margin-top: 10px;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #e6cd94, #c9a865);
+  color: #2b2119;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+button.primary:hover {
+  filter: brightness(1.08);
+}
+
+button.create {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  padding: 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: #b7a37c;
+  background: none;
+  border: 1px solid rgba(200, 170, 110, 0.25);
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+button.create:hover {
+  color: #f2e8d3;
+  border-color: #d8b978;
+}
+/* ---------------------------------------------------------------
+   Mensajes de error
+   Nacen ocultos: sin esto los dos mensajes se leían desde que
+   cargaba la pantalla, antes de que el usuario escribiera nada.
+   acceso.ts le pone `con-error` al .field para mostrarlos.
+   --------------------------------------------------------------- */
+.field .error {
+  display: none;
+}
+
+.field.con-error .error {
+  display: block;
+}
+
+.field.con-error input {
+  border-color: var(--rojo, #d88b78);
+}

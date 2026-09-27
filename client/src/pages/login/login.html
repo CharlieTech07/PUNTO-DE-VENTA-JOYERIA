@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Olimpo Haute Joaillerie · Iniciar sesión</title>
+<!-- Paleta compartida: va antes de login.css para que pueda tomar sus tokens -->
+<link rel="stylesheet" href="../../styles/tema.css">
+<link rel="stylesheet" href="login.css">
+<!-- Aquí NO se monta el menú lateral: todavía no hay sesión. -->
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <!-- Ruta relativa, no "/docs/...": así no depende de dónde se abra Live Server -->
+      <img src="../../../../docs/img/logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
+      <h1>OLIMPO</h1>
+      <div class="divider">
+        <span></span>
+        <span class="tagline">HAUTE JOAILLERIE</span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="card-shell">
+      <div class="card">
+        <h2>Bienvenido</h2>
+        <p class="sub">Acceda a su vitrina privada</p>
+
+        <!-- novalidate a propósito: los errores los pinta acceso.ts en español,
+             en vez de las burbujas del navegador que rompen el diseño. -->
+        <form class="login-form" novalidate>
+          <div class="field">
+            <label for="email">Correo electrónico</label>
+            <input id="email" type="email" name="email" placeholder="Ej: olimpo@gmail.com"
+                   autocomplete="username" required>
+            <p class="error">El correo es obligatorio.</p>
+          </div>
+
+          <div class="field">
+            <label for="password">Contraseña</label>
+            <input id="password" type="password" name="password" placeholder="••••••••"
+                   autocomplete="current-password" required>
+            <p class="error">La contraseña es obligatoria.</p>
+          </div>
+          <button type="submit" class="primary">INGRESAR A LA VITRINA</button>
+          <button type="button" class="create">CREAR NUEVA CUENTA</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="acceso.js"></script>
+</body>
+</html>
