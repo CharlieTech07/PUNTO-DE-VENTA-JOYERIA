@@ -204,6 +204,8 @@ html body {
   text-transform: uppercase;
   border-radius: var(--radio-sm, 10px);
   cursor: pointer;
+  /* Cerrar sesión es un <a>, no un <button>: sin esto sale subrayado */
+  text-decoration: none;
   transition: background 0.18s ease;
 }
 

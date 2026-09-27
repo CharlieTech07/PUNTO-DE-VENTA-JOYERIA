@@ -195,12 +195,15 @@ type TemaOlimpo = 'oscuro' | 'claro';
       <span data-texto="tema">Modo claro</span>
     </button>
 
-    <button class="menu-olimpo__accion menu-olimpo__accion--tenue" data-accion="volver">
+    <!-- Cerrar sesión es navegación, por eso va como <a> igual que las
+         secciones. Antes era un <button> sin handler: no hacía nada. -->
+    <a class="menu-olimpo__accion menu-olimpo__accion--tenue"
+       data-destino="../../pages/login/login.html">
       <svg viewBox="0 0 24 24">
         <path d="M14 6l-6 6 6 6" />
       </svg>
-      <span>Volver al POS</span>
-    </button>
+      <span>Cerrar sesión</span>
+    </a>
   </div>
 </aside>`;
 
