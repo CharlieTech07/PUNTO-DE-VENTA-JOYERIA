@@ -1,0 +1,90 @@
+<!-- client/src/pages/productos/productos.html -->
+<div style="padding: 24px; font-family: sans-serif; max-width: 1000px; margin: auto;">
+  <h2>Catálogo de Productos — Joyería Olimpo</h2>
+
+  <!-- Formulario de Alta -->
+  <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 25px;">
+    <h3>Registrar Nueva Pieza</h3>
+    <form (ngSubmit)="guardarProducto()" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+      
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Nombre:</label>
+        <input type="text" [(ngModel)]="nuevoItem.nombre" name="nombre" placeholder="ej. Dije Cruz" required style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Descripción:</label>
+        <input type="text" [(ngModel)]="nuevoItem.descripcion" name="descripcion" placeholder="ej. Acabado brillante" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Metal:</label>
+        <select [(ngModel)]="nuevoItem.tipo_metal" name="tipo_metal" style="width: 100%; padding: 8px; box-sizing: border-box;">
+          <option value="Oro">Oro</option>
+          <option value="Plata">Plata</option>
+          <option value="Platino">Platino</option>
+        </select>
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Kilataje:</label>
+        <input type="text" [(ngModel)]="nuevoItem.kilataje" name="kilataje" placeholder="ej. 14k, 925" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Peso (g):</label>
+        <input type="number" step="0.001" [(ngModel)]="nuevoItem.peso_gramos" name="peso_gramos" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Precio Compra:</label>
+        <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_compra" name="precio_compra" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Precio Venta:</label>
+        <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_venta" name="precio_venta" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
+      <div style="grid-column: 1 / -1; margin-top: 10px;">
+        <button type="submit" style="background-color: #059669; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+          + Guardar Joya en Base de Datos
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Tabla que coincide con pgAdmin -->
+  @if (cargando) {
+    <p>⏳ Consultando base de datos...</p>
+  } @else if (errorCarga) {
+    <p style="color: red;">❌ {{ errorCarga }}</p>
+  } @else {
+    <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
+      <thead style="background-color: #1e293b; color: white;">
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Metal</th>
+          <th>Kilataje</th>
+          <th>Peso (g)</th>
+          <th>P. Venta</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of listaProductos; track item.id) {
+          <tr>
+            <td>{{ item.id }}</td>
+            <td><strong>{{ item.nombre }}</strong></td>
+            <td>{{ item.descripcion || 'Sin descripción' }}</td>
+            <td>{{ item.tipo_metal }}</td>
+            <td>{{ item.kilataje || 'N/A' }}</td>
+            <td>{{ item.peso_gramos }} g</td>
+            <td style="color: #059669; font-weight: bold;">${{ item.precio_venta }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

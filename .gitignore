@@ -1,1 +1,10 @@
-
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.angular/
+.env
+**/.env
+*.log
+*.env
+*.md
