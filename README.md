@@ -130,14 +130,3 @@ Universidad de Colima · Facultad de Ingeniería Electromecánica
 Ingeniería de Software · Grupo 3-E · Manzanillo, Colima
 
 </div>
-
-
-
-
-
-
-
-
-
-
-
