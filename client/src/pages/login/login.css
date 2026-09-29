@@ -166,7 +166,7 @@ label {
 }
 
 .error {
-  color: #d88b78;
+  color: var(--rojo, #d88b78);
   font-size: 12px;
   margin: 5px 0 0;
 }
@@ -262,4 +262,21 @@ button.create {
 button.create:hover {
   color: #f2e8d3;
   border-color: #d8b978;
+}
+/* ---------------------------------------------------------------
+   Mensajes de error
+   Nacen ocultos: sin esto los dos mensajes se leían desde que
+   cargaba la pantalla, antes de que el usuario escribiera nada.
+   acceso.ts le pone `con-error` al .field para mostrarlos.
+   --------------------------------------------------------------- */
+.field .error {
+  display: none;
+}
+
+.field.con-error .error {
+  display: block;
+}
+
+.field.con-error input {
+  border-color: var(--rojo, #d88b78);
 }
