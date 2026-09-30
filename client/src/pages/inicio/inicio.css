@@ -10,14 +10,19 @@
 :host {
   --font-primary: 'Playfair Display', serif;
   --font-secondary: 'Arial', sans-serif;
-  --bg-color-dark: #2a221c;
-  --text-color-dark: #e8e0d5;
-  --subtitle-color-dark: #8c7c6c;
-  --card-bg-dark: #3b322a;
-  --search-bg-dark: #463d34;
-  --border-color-dark: #5a4f44;
-  --btn-bg-dark: #e3d3a8;
-  --btn-text-dark: #4a3e2a;
+
+  /* Los nombres son los de siempre para no reescribir el resto del archivo,
+     pero el color sale de los tokens de styles/tema.css. Antes eran hex fijos
+     y algo apagados, así que esta pantalla desentonaba con el dashboard y se
+     quedaba oscura al activar el modo claro. Con los tokens cambia sola. */
+  --bg-color-dark: var(--fondo);
+  --text-color-dark: var(--texto);
+  --subtitle-color-dark: var(--texto-3);
+  --card-bg-dark: var(--superficie);
+  --search-bg-dark: var(--superficie-2);
+  --border-color-dark: var(--oro-borde);
+  --btn-bg-dark: var(--oro);
+  --btn-text-dark: var(--sobre-oro);
 
   display: flex;
   justify-content: center;
@@ -144,8 +149,9 @@
   height: 250px; 
   object-fit: cover; 
   border-radius: 8px; 
-  margin-bottom: 15px; 
-  background-color: #5a4f44; 
+  margin-bottom: 15px;
+  /* Fondo mientras la foto carga, o si no carga */
+  background-color: var(--superficie-3);
 }
 
 .product-category { 
@@ -192,8 +198,8 @@
   color: var(--btn-text-dark); 
 }
 
-.btn-add:hover { 
-  background-color: #ebdcb3; 
+.btn-add:hover {
+  background-color: var(--oro-claro);
 }
 
 .btn-add:active {
