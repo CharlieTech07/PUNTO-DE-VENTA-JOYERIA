@@ -188,13 +188,17 @@ html body {
   color: var(--texto, #f6eee2);
 }
 
+/* Mismo gap y padding que .menu-olimpo__item para que los iconos del pie
+   caigan en la misma columna que los de la navegación. Antes iban centrados,
+   y como "Tema: oscuro" y "Salir" miden distinto, cada icono quedaba en un
+   sitio y el pie se veía desalineado. */
 .menu-olimpo__accion {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  justify-content: flex-start;
+  gap: 12px;
   width: 100%;
-  padding: 7px;
+  padding: 7px 14px;
   border: 0;
   background: transparent;
   color: var(--oro, #e0c289);
@@ -210,8 +214,9 @@ html body {
 }
 
 .menu-olimpo__accion svg {
-  width: 15px;
-  height: 15px;
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
   stroke: currentColor;
   fill: none;
   stroke-width: 1.5;
@@ -250,5 +255,11 @@ html body {
   .menu-olimpo__item {
     justify-content: center;
     padding: 12px 0;
+  }
+
+  /* Sin texto visible, los iconos del pie se centran como los de arriba */
+  .menu-olimpo__accion {
+    justify-content: center;
+    padding: 10px 0;
   }
 }
