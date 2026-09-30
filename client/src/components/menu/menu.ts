@@ -1,10 +1,11 @@
-import { Component, OnInit, Input } from '@angular/core';
+// client/src/components/menu/menu.ts
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 export type TemaOlimpo = 'oscuro' | 'claro';
 
-interface MenuItem {
+export interface MenuItem {
   vista: string;
   titulo: string;
   ruta: string;
@@ -15,7 +16,7 @@ interface MenuItem {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive], // Importaciones estándar de Angular
   templateUrl: './menu.html',
   styleUrls: ['./menu.css']
 })
@@ -38,7 +39,7 @@ export class MenuComponent implements OnInit {
       vista: 'resumen',
       titulo: 'Resumen',
       ruta: '/dashboard',
-      svgPath: [] // Utiliza <rect> en el HTML
+      svgPath: []
     },
     {
       vista: 'ventas',
@@ -133,11 +134,8 @@ export class MenuComponent implements OnInit {
   private aplicarTema(tema: TemaOlimpo): void {
     this.temaActual = tema;
     document.documentElement.dataset['tema'] = tema;
-
     try {
       localStorage.setItem(this.CLAVE_TEMA, tema);
-    } catch {
-      // Ignorar si el almacenamiento local está restringido
-    }
+    } catch {}
   }
 }

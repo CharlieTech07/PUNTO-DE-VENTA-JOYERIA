@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -38,8 +41,7 @@ export class LoginComponent {
 
     this.loading = true;
 
-    const { email, password } = this.loginForm.value;
-
+    // Aquí irá la llamada al backend más adelante
     this.router.navigate(['/inicio']);
   }
 }

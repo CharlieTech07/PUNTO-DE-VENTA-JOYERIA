@@ -18,7 +18,7 @@
     <script src="../../components/menu/menu.ts"></script>
     <link rel="stylesheet" href="dashboard.css" />
   </head>
-
+<app-menu></app-menu>
   <body>
     <div class="app">
       <!-- ===================== CONTENIDO ===================== -->
@@ -41,59 +41,59 @@
           </defs>
         </svg>
 
-        <!-- ==================== VISTA: RESUMEN ==================== -->
-        <section class="vista activa" id="vista-resumen">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Ventas de hoy</div>
-              <div class="kpi__valor">$12,450</div>
-              <div class="kpi__nota kpi__nota--sube">+12% vs. ayer</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Ingresos del mes</div>
-              <div class="kpi__valor">$248,000</div>
-              <div class="kpi__nota kpi__nota--sube">+8.4% vs. mes anterior</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Piezas en existencia</div>
-              <div class="kpi__valor">38</div>
-              <div class="kpi__nota">8 con stock bajo</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Apartados activos</div>
-              <div class="kpi__valor">14</div>
-              <div class="kpi__nota kpi__nota--baja">3 por vencer esta semana</div>
-            </article>
-          </div>
+       <!-- ==================== VISTA: RESUMEN ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'resumen'" id="vista-resumen">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Ventas de hoy</div>
+          <div class="kpi__valor">$12,450</div>
+          <div class="kpi__nota kpi__nota--sube">+12% vs. ayer</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Ingresos del mes</div>
+          <div class="kpi__valor">$248,000</div>
+          <div class="kpi__nota kpi__nota--sube">+8.4% vs. mes anterior</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Piezas en existencia</div>
+          <div class="kpi__valor">38</div>
+          <div class="kpi__nota">8 con stock bajo</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Apartados activos</div>
+          <div class="kpi__valor">14</div>
+          <div class="kpi__nota kpi__nota--baja">3 por vencer esta semana</div>
+        </article>
+      </div>
 
           <!-- Cotización del metal: el precio de venta depende de esto -->
           <div class="metal">
-            <div class="metal__intro">
-              <div class="etiqueta">Cotización del día</div>
-              <div class="metal__titulo">Precio del metal</div>
-              <div class="kpi__nota">Actualizado hoy, 08:00 · Doña Valentina Ruiz</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Oro 24k</div>
-              <div class="metal__precio">$2,145.00</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Oro 18k</div>
-              <div class="metal__precio">$1,608.75</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Oro 14k</div>
-              <div class="metal__precio">$1,251.25</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Plata .925</div>
-              <div class="metal__precio">$26.40</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-          </div>
+        <div class="metal__intro">
+          <div class="etiqueta">Cotización del día</div>
+          <div class="metal__titulo">Precio del metal</div>
+          <div class="kpi__nota">Actualizado hoy, 08:00 · Doña Valentina Ruiz</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Oro 24k</div>
+          <div class="metal__precio">$2,145.00</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Oro 18k</div>
+          <div class="metal__precio">$1,608.75</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Oro 14k</div>
+          <div class="metal__precio">$1,251.25</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Plata .925</div>
+          <div class="metal__precio">$26.40</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+      </div>
 
           <div class="rejilla rejilla--2-1">
             <!-- Ventas de la semana -->

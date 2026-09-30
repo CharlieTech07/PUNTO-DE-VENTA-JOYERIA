@@ -16,7 +16,7 @@
   'use strict';
 
   /** A dónde entra el usuario al pasar el acceso: la vitrina de Alan. */
-  const DESTINO = '../inicio/index.html';
+  const DESTINO = '../inicio/inicio.html';
 
   /** Mismo mínimo que pidió el compañero en su validación de Angular. */
   const MINIMO_CONTRASENA = 8;
