@@ -1,17 +1,16 @@
-/* OLIMPO — Paleta compartida del sistema
- *
- * Esta es la ÚNICA fuente de los colores. Toda pantalla debe enlazarla
- * antes de su propio CSS:
- *
- *   <link rel="stylesheet" href="../../styles/tema.css" />
- *
- * Gracias a esto todas las pantallas se ven del mismo color y el modo
- * claro funciona en todas a la vez: el menú solo cambia data-tema en la
- * etiqueta <html> y aquí se redefinen los valores.
- *
- * Si necesitas un color, úsalo desde aquí. No escribas un hex suelto en
- * tu CSS: si lo haces, tu pantalla no va a cambiar con el modo claro. */
+/* client/src/styles.css */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #171310;
+  box-sizing: border-box;
+}
 
+*, *::before, *::after {
+  box-sizing: inherit;
+}
 :root {
   /* Superficies */
   --fondo: #241c14;

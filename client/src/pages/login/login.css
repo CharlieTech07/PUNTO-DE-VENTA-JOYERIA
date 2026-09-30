@@ -280,3 +280,16 @@ button.create:hover {
 .field.con-error input {
   border-color: var(--rojo, #d88b78);
 }
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Cormorant Garamond', serif;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(120, 90, 40, 0.35), transparent 60%),
+    linear-gradient(160deg, #1a1410 0%, #2b2119 45%, #171310 100%);
+  color: #e9dfc9;
+}
