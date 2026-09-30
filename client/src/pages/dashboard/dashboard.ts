@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MenuComponent } from '../../components/menu/menu';
 
 @Component({
@@ -12,6 +12,7 @@ import { MenuComponent } from '../../components/menu/menu';
 })
 export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
   public vistaActiva: string = 'resumen';
   public tituloVista: string = 'Resumen';
@@ -34,7 +35,20 @@ export class DashboardComponent implements OnInit {
 
     // Escucha cambios en el hash/fragmento desde Angular Router
     this.route.fragment.subscribe(frag => {
-      this.cambiarVista(frag || 'resumen', false);
+      // Si se entra a /dashboard sin fragmento, lo escribimos en la URL. Sin
+      // esto el panel muestra el resumen pero el menú no ilumina nada, porque
+      // marca la opción activa comparando el fragmento. replaceUrl evita
+      // ensuciar el historial, y como luego sí hay fragmento, no se repite.
+      if (!frag) {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          fragment: 'resumen',
+          replaceUrl: true
+        });
+        return;
+      }
+
+      this.cambiarVista(frag, false);
     });
   }
 

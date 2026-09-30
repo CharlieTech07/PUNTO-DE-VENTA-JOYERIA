@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, IsActiveMatchOptions } from '@angular/router';
 
 export type TemaOlimpo = 'oscuro' | 'claro';
 
@@ -23,6 +23,17 @@ export interface MenuItem {
 export class MenuComponent implements OnInit {
   private readonly CLAVE_TEMA = 'olimpo:tema';
   public temaActual: TemaOlimpo = 'oscuro';
+
+  /** Las 8 secciones del panel apuntan todas a /dashboard y solo cambian el
+   *  fragmento (#ventas, #apartados…). Con la opción `exact` de siempre, Angular
+   *  las marcaba activas a las 8 a la vez, porque la ruta coincidía en todas.
+   *  Comparando también el fragmento se ilumina únicamente la que toca. */
+  public readonly opcionesActivo: IsActiveMatchOptions = {
+    paths: 'exact',
+    fragment: 'exact',
+    queryParams: 'ignored',
+    matrixParams: 'ignored'
+  };
 
   public readonly itemsMenu: MenuItem[] = [
     {
