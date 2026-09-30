@@ -1,15 +1,18 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MenuComponent } from '../../components/menu/menu'; // <-- Importamos tu menú
+import { ActivatedRoute } from '@angular/router';
+import { MenuComponent } from '../../components/menu/menu';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MenuComponent], // <-- Se añade MenuComponent
+  imports: [CommonModule, MenuComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+
   public vistaActiva: string = 'resumen';
   public tituloVista: string = 'Resumen';
   public fechaHoy: string = '';
@@ -28,7 +31,11 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.inicializarFecha();
-    this.actualizarDesdeHash(false);
+
+    // Escucha cambios en el hash/fragmento desde Angular Router
+    this.route.fragment.subscribe(frag => {
+      this.cambiarVista(frag || 'resumen', false);
+    });
   }
 
   @HostListener('window:hashchange')
@@ -39,7 +46,6 @@ export class DashboardComponent implements OnInit {
   public cambiarVista(vista: string, moverArriba: boolean = true): void {
     this.vistaActiva = this.titulosPorVista[vista] ? vista : 'resumen';
     this.tituloVista = this.titulosPorVista[this.vistaActiva] ?? 'Resumen';
-    window.location.hash = this.vistaActiva;
 
     if (moverArriba) {
       window.scrollTo({ top: 0, behavior: 'smooth' });

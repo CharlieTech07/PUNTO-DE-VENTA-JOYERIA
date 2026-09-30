@@ -58,9 +58,15 @@ table {
 
 /* ---------- 3. Estructura ---------- */
 
+/* ---------- 3. Estructura ---------- */
+
 .app {
   display: flex;
   min-height: 100vh;
+  /* Deja libre el espacio del menú fijo para que no se traslape */
+  margin-left: var(--barra-ancho, 264px);
+  width: calc(100% - var(--barra-ancho, 264px));
+  box-sizing: border-box;
 }
 
 /* ---------- 4. Barra lateral ---------- */
@@ -706,6 +712,11 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
 }
 
 @media (max-width: 1024px) {
+  .app {
+    margin-left: 76px;
+    width: calc(100% - 76px);
+  }
+
   .contenido {
     padding: 26px 22px 48px;
   }

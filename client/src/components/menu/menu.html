@@ -1,5 +1,4 @@
 <aside class="menu-olimpo">
-  <!-- Marca / Logo -->
   <div class="menu-olimpo__marca">
     <img src="logonuevo.png" alt="Olimpo" class="menu-olimpo__emblema">
     <div class="menu-olimpo__nombre">OLIMPO</div>
@@ -8,12 +7,12 @@
 
   <div class="menu-olimpo__etiqueta menu-olimpo__titulo">Navegación</div>
 
-  <!-- Lista de Enlaces -->
   <nav class="menu-olimpo__lista">
     @for (item of itemsMenu; track item.vista) {
       <a 
         class="menu-olimpo__item" 
-        [routerLink]="item.ruta" 
+        [routerLink]="item.ruta"
+        [fragment]="item.fragmento"
         routerLinkActive="activo"
         [routerLinkActiveOptions]="{ exact: item.ruta === '/inicio' }">
         
@@ -38,7 +37,6 @@
     }
   </nav>
 
-  <!-- Pie del menú -->
   <div class="menu-olimpo__pie">
     <div class="menu-olimpo__usuario">
       <div class="menu-olimpo__etiqueta">Sesión activa</div>
