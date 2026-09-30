@@ -63,9 +63,11 @@ table {
 .app {
   display: flex;
   min-height: 100vh;
-  /* Deja libre el espacio del menú fijo para que no se traslape */
-  margin-left: var(--barra-ancho, 264px);
-  width: calc(100% - var(--barra-ancho, 264px));
+  /* El espacio del menú fijo NO se reserva aquí. Lo hace styles/tema.css con
+     "html body:has(app-menu)", una sola vez para todas las pantallas que lo
+     montan. Si se vuelve a poner el margen aquí, el hueco se aplica dos veces
+     y el contenido se va al centro. */
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -712,10 +714,7 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
 }
 
 @media (max-width: 1024px) {
-  .app {
-    margin-left: 76px;
-    width: calc(100% - 76px);
-  }
+  /* El hueco del menú encogido también lo pone tema.css, no aquí */
 
   .contenido {
     padding: 26px 22px 48px;
