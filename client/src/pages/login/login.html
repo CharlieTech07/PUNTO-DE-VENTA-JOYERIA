@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Olimpo Haute Joaillerie · Iniciar sesión</title>
-<!-- Paleta compartida: va antes de login.css para que pueda tomar sus tokens -->
-<link rel="stylesheet" href="../../styles/tema.css">
-<link rel="stylesheet" href="login.css">
-<!-- Aquí NO se monta el menú lateral: todavía no hay sesión. -->
-</head>
-<body>
+<!-- Plantilla de LoginComponent, no un documento HTML.
+     Sin <head>: un <link rel="stylesheet"> aquí dentro lo inlinea Angular como
+     estilo del componente y duplicaba tema.css. login.css ya entra por los
+     styleUrls del componente, y tema.css va global desde angular.json.
+     Aquí NO se monta el menú lateral: todavía no hay sesión. -->
   <div class="wrap">
   <div class="brand">
   <img src="logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
@@ -73,6 +66,3 @@
   </div>
 </div>
 
-  <script src="acceso.js"></script>
-</body>
-</html>

@@ -1,21 +1,24 @@
-:root {
-  --font-primary: 'Playfair Display', serif;
-  --font-secondary: 'Arial', sans-serif;
-  --bg-color-dark: #2a221c; 
-  --text-color-dark: #e8e0d5; 
-  --subtitle-color-dark: #8c7c6c; 
-  --card-bg-dark: #3b322a; 
-  --search-bg-dark: #463d34; 
-  --border-color-dark: #5a4f44; 
-  --btn-bg-dark: #e3d3a8; 
-  --btn-text-dark: #4a3e2a; 
-}
-
 * {
   box-sizing: border-box;
 }
 
+/* Los tokens van en :host y no en :root: Angular encierra los estilos de
+   componente con [_ngcontent-…], y un :root así escrito no llega nunca al
+   <html>, con lo que todas las variables quedaban sin valor y la pantalla
+   caía a Times New Roman y a los colores de reserva. Desde :host sí se
+   heredan a todo lo que hay dentro de <app-inicio>. */
 :host {
+  --font-primary: 'Playfair Display', serif;
+  --font-secondary: 'Arial', sans-serif;
+  --bg-color-dark: #2a221c;
+  --text-color-dark: #e8e0d5;
+  --subtitle-color-dark: #8c7c6c;
+  --card-bg-dark: #3b322a;
+  --search-bg-dark: #463d34;
+  --border-color-dark: #5a4f44;
+  --btn-bg-dark: #e3d3a8;
+  --btn-text-dark: #4a3e2a;
+
   display: flex;
   justify-content: center;
   width: 100%;

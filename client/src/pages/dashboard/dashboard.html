@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Olimpo · Panel de administración</title>
-    <link rel="icon" type="image/png" href="../../../public/logo.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../../styles/tema.css" />
-
-    <!-- Menú lateral compartido. Va en el <head> para que no parpadee. -->
-    <link rel="stylesheet" href="../../components/menu/menu.css" />
-    <script src="../../components/menu/menu.ts"></script>
-    <link rel="stylesheet" href="dashboard.css" />
-  </head>
+<!-- Plantilla de DashboardComponent, no un documento HTML.
+     Sin <head>: Angular inlinea como estilos del componente cualquier
+     <link rel="stylesheet"> que encuentre aquí, y eso cargaba tema.css y
+     menu.css una segunda vez, duplicadas y encerradas en este componente.
+     tema.css ya va global desde angular.json, y menu.css lo trae MenuComponent. -->
 <app-menu></app-menu>
 
 <div class="app">
@@ -1315,6 +1300,3 @@
     </section>
   </main>
 </div>
-
-    <script src="dashboard.js"></script>
-</html>

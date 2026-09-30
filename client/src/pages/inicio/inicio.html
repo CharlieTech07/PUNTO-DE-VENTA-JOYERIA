@@ -1,26 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olimpo · Home</title>
-    <!-- Paleta compartida: va antes para que style.css tome sus colores -->
-    <link rel="stylesheet" href="../../styles/tema.css">
-
-    <!-- Menú lateral compartido. Va en el <head> para que no parpadee. -->
-    <link rel="stylesheet" href="../../components/menu/menu.css">
-    <script src="../../components/menu/menu.ts" data-activo="home"></script>
-
-    <!-- Aquí es donde se conecta tu diseño -->
-    <link rel="stylesheet" href="../inicio/inicio.css">
-    
-    
-    <!-- Iconos y Fuentes -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-</head>
-<body class="dark-mode">
-    <!-- Inserta el componente del menú -->
+<!-- Plantilla de InicioComponent, no un documento HTML.
+     Sin <head>: los <link rel="stylesheet"> aquí dentro los inlinea Angular
+     como estilos del componente, duplicando tema.css y menu.css. -->
 <app-menu></app-menu>
 
 <div class="container">
@@ -52,5 +32,3 @@
     }
   </div>
 </div>
-</body>
-</html>

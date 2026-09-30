@@ -85,3 +85,20 @@ body {
   color: var(--texto);
   transition: background-color 0.25s ease, color 0.25s ease;
 }
+
+/* Hueco para el menú lateral, que va en position: fixed.
+   Vive aquí y no en components/menu/menu.css porque aquel archivo son
+   estilos de componente: Angular los encierra con [_ngcontent-…] y nunca
+   alcanzarían al <body> real.
+   El :has(app-menu) es necesario: el login no monta el menú, y sin esa
+   condición su tarjeta quedaría descentrada por un hueco que nadie ocupa. */
+html body:has(app-menu) {
+  padding-left: var(--barra-ancho, 264px);
+}
+
+/* En pantallas angostas el menú se encoge y deja solo los iconos */
+@media (max-width: 1024px) {
+  html body:has(app-menu) {
+    padding-left: 76px;
+  }
+}

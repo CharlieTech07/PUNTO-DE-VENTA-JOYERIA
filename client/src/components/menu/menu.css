@@ -16,14 +16,10 @@
    brincaría al montarse el menú: ese brinco es lo que se ve como
    "la página cargando algo". Este archivo solo lo enlaza quien usa el
    menú, así que ninguna otra pantalla se ve afectada. */
-/* Va como "html body" y no solo "body" a propósito: varias pantallas
-   declaran "body { padding: 0 }" en su propio CSS, y si ese archivo carga
-   después le ganaría a esta regla y el contenido se metería debajo del
-   menú. Con html body la especificidad es mayor y ya no depende del orden
-   en que se enlacen las hojas de estilo. */
-html body {
-  padding-left: var(--barra-ancho, 264px);
-}
+/* El hueco que deja el menú al <body> NO se reserva aquí, sino en
+   styles/tema.css. Este archivo son estilos de componente: Angular los
+   encierra con [_ngcontent-…], y como el <body> real no lleva ese atributo,
+   la regla nunca llegaría a aplicarse. */
 
 .menu-olimpo {
   position: fixed;
@@ -233,10 +229,6 @@ html body {
 /* En pantallas angostas se encoge y deja solo los iconos */
 
 @media (max-width: 1024px) {
-  html body {
-    padding-left: 76px;
-  }
-
   .menu-olimpo {
     width: 76px;
     padding: 20px 12px;
