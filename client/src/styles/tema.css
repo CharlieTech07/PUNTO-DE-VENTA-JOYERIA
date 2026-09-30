@@ -4,7 +4,10 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #171310;
+  /* Va con el token, no con un hex fijo. El fondo del <html> es el que pinta
+     el lienzo de la página, así que con un color fijo se quedaba oscuro al
+     activar el modo claro y el título quedaba negro sobre negro. */
+  background-color: var(--fondo);
   box-sizing: border-box;
 }
 
