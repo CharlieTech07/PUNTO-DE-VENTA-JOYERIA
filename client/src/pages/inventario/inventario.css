@@ -1,212 +1,318 @@
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #1e293b;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--fondo, #241c14);
+  color: var(--texto, #f6eee2);
+  font-family: var(--sans, 'Jost', sans-serif);
 }
 
-.inventario-container {
-  padding: 24px;
-  max-width: 1100px;
+.inventario-layout {
+  max-width: 1180px;
   margin: 0 auto;
+  padding: 34px 40px 60px;
 }
 
-.inventario-title {
-  font-size: 1.75rem;
-  font-weight: 700;
+/* Cabecera */
+.inventario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 28px;
+}
+
+.etiqueta {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--oro-medio, #c9a45c);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.titulo-pantalla {
+  font-family: var(--serif, 'Cormorant Garamond', serif);
+  font-size: 38px;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.1;
+  color: var(--texto, #f6eee2);
+}
+
+/* Botón Volver al Dashboard */
+.btn-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.3));
+  color: var(--oro, #e0c289);
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-family: var(--sans, 'Jost', sans-serif);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-volver:hover {
+  background: var(--oro-tenue, rgba(224, 194, 137, 0.08));
+  border-color: var(--oro, #e0c289);
+}
+
+.btn-volver svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+/* Tarjeta base */
+.tarjeta {
+  background: var(--superficie, #2e241b);
+  border: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.22));
+  border-radius: 12px;
+  padding: 26px 28px;
+  margin-bottom: 26px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.tarjeta-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin-bottom: 20px;
-  color: #d4dbeb;
 }
 
-/* Card del Formulario */
-.form-card {
-  background-color: #c0d4e7;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  margin-bottom: 25px;
+.tarjeta-cabecera svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--oro, #e0c289);
+  fill: none;
+  stroke-width: 1.6;
 }
 
-.form-card h3 {
-  margin-top: 0;
-  margin-bottom: 16px;
-  font-size: 1.15rem;
-  color: #334155;
+.tarjeta-cabecera h2 {
+  font-family: var(--serif, 'Cormorant Garamond', serif);
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+  color: var(--texto, #f6eee2);
 }
 
-.form-grid {
+/* Formulario */
+.formulario-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
 }
 
-.form-group {
+.campo {
   display: flex;
   flex-direction: column;
 }
 
-.form-group.full-width {
+.campo-completo {
   grid-column: 1 / -1;
 }
 
-.form-label {
-  display: block;
-  font-weight: 600;
-  font-size: 0.875rem;
-  margin-bottom: 6px;
-  color: #334155;
-}
-
-.form-input {
+.input-olimpo {
   width: 100%;
-  padding: 8px 12px;
-  font-size: 0.95rem;
-  border: 1px solid #cbd5e1;
+  padding: 12px 14px;
+  background-color: var(--superficie-2, #382c21);
+  border: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.22));
   border-radius: 6px;
-  background-color: #ffffff;
+  color: var(--texto, #f6eee2);
+  font-family: inherit;
+  font-size: 13.5px;
   box-sizing: border-box;
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
-.form-input:focus {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+.input-olimpo:focus {
+  border-color: var(--oro, #e0c289);
 }
 
-.form-actions {
+.acciones-form {
   grid-column: 1 / -1;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-.btn-primary {
-  background-color: #059669;
-  color: #ffffff;
-  padding: 10px 24px;
+.btn-oro {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--oro, #e0c289);
+  color: #241c14;
   border: none;
+  padding: 11px 24px;
   border-radius: 6px;
-  cursor: pointer;
+  font-size: 11.5px;
   font-weight: 600;
-  font-size: 0.95rem;
-  transition: background-color 0.2s ease;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: filter 0.2s ease;
 }
 
-.btn-primary:hover {
-  background-color: #047857;
+.btn-oro:hover {
+  filter: brightness(1.08);
 }
 
-/* Banner de acciones por lote */
-.bulk-bar {
-  background-color: #fee2e2;
-  border: 1px solid #f87171;
-  padding: 12px 20px;
-  border-radius: 6px;
-  margin-bottom: 15px;
+.btn-oro svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+/* Barra de acciones en lote */
+.alerta-lote {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: rgba(217, 122, 108, 0.12);
+  border: 1px solid rgba(217, 122, 108, 0.4);
+  padding: 12px 20px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  color: #fca5a5;
+  font-size: 13px;
 }
 
-.bulk-count {
-  color: #991b1b;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.btn-danger {
-  background-color: #dc2626;
+.btn-eliminar-lote {
+  background: #dc2626;
   color: #ffffff;
   border: none;
-  padding: 8px 16px;
+  padding: 7px 16px;
   border-radius: 4px;
-  cursor: pointer;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   font-weight: 600;
-  font-size: 0.875rem;
-  transition: background-color 0.2s ease;
-}
-
-.btn-danger:hover {
-  background-color: #b91c1c;
-}
-
-/* Botón de eliminación en fila */
-.btn-delete-item {
-  background-color: #ef4444;
-  color: #ffffff;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
   cursor: pointer;
-  font-size: 0.75rem;
-  font-weight: 600;
-  transition: background-color 0.2s ease;
-}
-
-.btn-delete-item:hover {
-  background-color: #dc2626;
 }
 
 /* Tabla */
-.tabla-inventario {
+.tabla-envoltura {
+  overflow-x: auto;
+}
+
+.tabla-olimpo {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  min-width: 800px;
 }
 
-.tabla-inventario th,
-.tabla-inventario td {
-  border: 1px solid #e2e8f0;
-  padding: 10px 12px;
+.tabla-olimpo th {
+  text-align: left;
+  padding: 0 16px 12px;
+  border-bottom: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.3));
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--oro-medio, #c9a45c);
+  white-space: nowrap;
 }
 
-.tabla-header {
-  background-color: #1e293b;
-  color: #ffffff;
+.tabla-olimpo td {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(224, 194, 137, 0.08);
+  font-size: 13.5px;
+  color: var(--texto-2, #d6c7b2);
 }
 
-.col-checkbox {
+.tabla-olimpo tbody tr:hover {
+  background: var(--superficie-2, #382c21);
+}
+
+.fila-activa {
+  background: rgba(224, 194, 137, 0.08) !important;
+}
+
+.col-check {
   width: 40px;
   text-align: center;
+}
+
+.col-num {
+  text-align: right;
+  font-variant-numeric: oldstyle-nums;
 }
 
 .col-center {
   text-align: center;
 }
 
-.stock-valor {
-  font-weight: 700;
-  font-size: 1rem;
+.celda-joya {
+  font-family: var(--serif, 'Cormorant Garamond', serif);
+  font-size: 16px;
+  color: var(--texto, #f6eee2);
 }
 
-.stock-minimo {
-  color: #64748b;
+.celda-stock {
+  font-weight: 600;
+  color: var(--texto, #f6eee2);
 }
 
-.fila-seleccionada {
-  background-color: #fef3c7 !important;
+.celda-precio {
+  color: var(--oro-claro, #ebd5a6);
+  font-family: var(--serif, 'Cormorant Garamond', serif);
+  font-size: 15px;
 }
 
-/* Insignias de Stock */
-.badge {
+/* Insignias */
+.insignia {
   display: inline-block;
-  padding: 3px 8px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid;
+}
+
+.insignia-ok {
+  color: #8bbf74;
+  border-color: rgba(139, 191, 116, 0.4);
+  background: rgba(139, 191, 116, 0.1);
+}
+
+.insignia-aviso {
+  color: #e0a44e;
+  border-color: rgba(224, 164, 78, 0.4);
+  background: rgba(224, 164, 78, 0.1);
+}
+
+.btn-eliminar-item {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 5px 10px;
   border-radius: 4px;
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.badge-warning {
-  background-color: #fee2e2;
-  color: #dc2626;
+.btn-eliminar-item:hover {
+  background: #ef4444;
+  color: #ffffff;
 }
 
-.badge-success {
-  background-color: #dcfce7;
-  color: #16a34a;
-}
-
-.estado-mensaje {
-  font-size: 0.95rem;
-  color: #475569;
+.mensaje-vacio {
+  text-align: center;
+  padding: 30px;
+  color: var(--texto-3, #a89887);
+  font-size: 13.5px;
 }

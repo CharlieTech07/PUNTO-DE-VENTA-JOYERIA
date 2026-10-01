@@ -1,7 +1,7 @@
-// client/src/pages/inventario/inventario.ts
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
 import { ProductosService } from '../../services/productos.service';
 import { SucursalesService } from '../../services/sucursales.services';
@@ -11,29 +11,24 @@ import { SucursalesService } from '../../services/sucursales.services';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './inventario.html',
-  styleUrls: ['./inventario.css'] // <-- Enlace al nuevo archivo de estilos
+  styleUrls: ['./inventario.css']
 })
 export class InventarioComponent implements OnInit {
+  private router = inject(Router);
   private inventarioService = inject(InventarioService);
   private productosService = inject(ProductosService);
   private sucursalesService = inject(SucursalesService);
   private cd = inject(ChangeDetectorRef);
 
-  listaInventario: InventarioItem[] = [];
-  catalogoProductos: any[] = [];
-  catalogoSucursales: any[] = [];
-  cargando: boolean = true;
-  seleccionarTodos: boolean = false;
+  public listaInventario: InventarioItem[] = [];
+  public catalogoProductos: any[] = [];
+  public catalogoSucursales: any[] = [];
+  public cargando: boolean = true;
+  public seleccionarTodos: boolean = false;
 
-  nuevoRegistro: {
-    id_sucursal: number | '';
-    id_producto: number | '';
-    stock: number;
-    stock_minimo: number;
-    ubicacion_vitrina: string;
-  } = {
-    id_sucursal: '',
-    id_producto: '',
+  public nuevoRegistro = {
+    id_sucursal: null as number | null,
+    id_producto: null as number | null,
     stock: 1,
     stock_minimo: 1,
     ubicacion_vitrina: 'Vitrina Central - Charola 1'
@@ -43,9 +38,14 @@ export class InventarioComponent implements OnInit {
     this.cargarDatos();
   }
 
-  cargarDatos(): void {
+  public volverAlDashboard(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'inventario' });
+  }
+
+  public cargarDatos(): void {
     this.cargando = true;
     this.seleccionarTodos = false;
+
     this.inventarioService.getInventario().subscribe({
       next: (datos) => {
         this.listaInventario = datos.map(item => ({ ...item, seleccionado: false }));
@@ -59,79 +59,94 @@ export class InventarioComponent implements OnInit {
       }
     });
 
-    this.productosService.getProductos().subscribe(prods => {
-      this.catalogoProductos = prods;
-      if (prods.length > 0) this.nuevoRegistro.id_producto = prods[0].id;
+    this.productosService.getProductos().subscribe({
+      next: (prods) => {
+        this.catalogoProductos = prods;
+        if (prods.length > 0 && this.nuevoRegistro.id_producto === null) {
+          this.nuevoRegistro.id_producto = Number(prods[0].id);
+        }
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar catálogo de productos:', err)
     });
 
-    this.sucursalesService.getSucursales().subscribe(sucs => {
-      this.catalogoSucursales = sucs;
-      if (sucs.length > 0) this.nuevoRegistro.id_sucursal = sucs[0].id;
+    this.sucursalesService.getSucursales().subscribe({
+      next: (sucs) => {
+        this.catalogoSucursales = sucs;
+        if (sucs.length > 0 && this.nuevoRegistro.id_sucursal === null) {
+          this.nuevoRegistro.id_sucursal = Number(sucs[0].id);
+        }
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar catálogo de sucursales:', err)
     });
   }
 
-  guardarStock(): void {
+  public guardarStock(): void {
     if (!this.nuevoRegistro.id_sucursal || !this.nuevoRegistro.id_producto) {
-      alert('Debes seleccionar sucursal y producto');
+      alert('Debes seleccionar una sucursal y una joya válidas.');
       return;
     }
 
-    this.inventarioService.asignarStock(this.nuevoRegistro).subscribe({
+    const payload = {
+      id_sucursal: Number(this.nuevoRegistro.id_sucursal),
+      id_producto: Number(this.nuevoRegistro.id_producto),
+      stock: Number(this.nuevoRegistro.stock),
+      stock_minimo: Number(this.nuevoRegistro.stock_minimo),
+      ubicacion_vitrina: this.nuevoRegistro.ubicacion_vitrina
+    };
+
+    this.inventarioService.asignarStock(payload).subscribe({
       next: () => {
-        alert('Stock actualizado correctamente');
+        alert('Stock guardado correctamente en pos_olimpo');
         this.cargarDatos();
       },
       error: (err) => {
-        console.error('Error al guardar stock:', err);
-        alert('Error al actualizar inventario');
+        console.error('Error del servidor:', err);
+        const detalle = err.error?.error || 'No se pudo guardar el stock en la base de datos';
+        alert(detalle);
       }
     });
   }
 
-  // --- LÓGICA DE SELECCIÓN Y ELIMINACIÓN ---
-
-  alternarSeleccionTodos(): void {
+  public alternarSeleccionTodos(): void {
     this.listaInventario.forEach(item => item.seleccionado = this.seleccionarTodos);
   }
 
-  get itemsSeleccionados(): InventarioItem[] {
+  public get itemsSeleccionados(): InventarioItem[] {
     return this.listaInventario.filter(item => item.seleccionado);
   }
 
-  // Eliminar 1 ítem individual
-  eliminarIndividual(id: number, pieza: string): void {
+  public eliminarIndividual(id: number, pieza: string): void {
     if (!confirm(`¿Eliminar las existencias de "${pieza}" en esta tienda?`)) return;
 
     this.inventarioService.eliminarInventario(id).subscribe({
       next: () => {
         this.listaInventario = this.listaInventario.filter(item => item.id !== id);
         this.cd.detectChanges();
-        alert('Registro eliminado de pos_olimpo');
       },
       error: (err) => {
-        console.error('Error al eliminar registro:', err);
-        alert('No se pudo eliminar el registro de inventario');
+        console.error('Error al eliminar:', err);
+        alert('No se pudo eliminar el registro.');
       }
     });
   }
 
-  // Eliminar varios ítems seleccionados
-  eliminarSeleccionados(): void {
+  public eliminarSeleccionados(): void {
     const ids = this.itemsSeleccionados.map(item => item.id);
     if (ids.length === 0) return;
 
-    if (!confirm(`¿Estás seguro de eliminar ${ids.length} registros seleccionados de inventario?`)) return;
+    if (!confirm(`¿Eliminar ${ids.length} registros seleccionados?`)) return;
 
     this.inventarioService.eliminarVarios(ids).subscribe({
       next: () => {
         this.listaInventario = this.listaInventario.filter(item => !ids.includes(item.id));
         this.seleccionarTodos = false;
         this.cd.detectChanges();
-        alert(`¡${ids.length} registros eliminados correctamente!`);
       },
       error: (err) => {
         console.error('Error al eliminar lote:', err);
-        alert('Error al procesar la eliminación masiva');
+        alert('Error al procesar la eliminación múltiple.');
       }
     });
   }

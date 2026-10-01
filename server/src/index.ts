@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { db } from './db.js';
 import productosRoutes from './routes/productos.js';
 import sucursalesRoutes from './routes/sucursales.js';
+import inventarioRoutes from './routes/inventario.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.get('/', (_req, res) => {
 
 app.use('/api/productos', productosRoutes);
 app.use('/api/sucursales', sucursalesRoutes);
+app.use('/api/inventario', inventarioRoutes);
 
 db.query('SELECT NOW()')
   .then((resultado) => {

@@ -26,6 +26,14 @@ body {
   background: var(--fondo, #241c14);
   color: var(--texto, #f6eee2);
   font-family: var(--sans, 'Jost', sans-serif);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Soporte para modo claro cuando el tema cambia */
+:host-context([data-tema="claro"]),
+html[data-tema="claro"] :host {
+  background: var(--fondo, #f7f4ed);
+  color: var(--texto, #2a221b);
 }
 
 h1,
@@ -94,6 +102,17 @@ table {
   font-size: 40px;
   line-height: 1.1;
   margin-top: 4px;
+  color: var(--texto, #f6eee2);
+}
+
+:host-context([data-tema="claro"]) .cabecera__titulo,
+html[data-tema="claro"] .cabecera__titulo {
+  color: #1f1913;
+}
+
+:host-context([data-tema="claro"]) .cabecera__fecha,
+html[data-tema="claro"] .cabecera__fecha {
+  color: #7a6e60;
 }
 
 .cabecera__fecha {
