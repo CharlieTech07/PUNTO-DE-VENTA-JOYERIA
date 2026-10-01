@@ -25,7 +25,13 @@ export class InventarioComponent implements OnInit {
   cargando: boolean = true;
   seleccionarTodos: boolean = false;
 
-  nuevoRegistro = {
+  nuevoRegistro: {
+    id_sucursal: number | '';
+    id_producto: number | '';
+    stock: number;
+    stock_minimo: number;
+    ubicacion_vitrina: string;
+  } = {
     id_sucursal: '',
     id_producto: '',
     stock: 1,

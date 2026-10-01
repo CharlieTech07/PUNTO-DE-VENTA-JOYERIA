@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from './db.js';
 import productosRoutes from './routes/productos.js';
+import sucursalesRoutes from './routes/sucursales.js';
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/api/productos', productosRoutes);
+app.use('/api/sucursales', sucursalesRoutes);
 
 db.query('SELECT NOW()')
   .then((resultado) => {
@@ -30,3 +32,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
+
+
