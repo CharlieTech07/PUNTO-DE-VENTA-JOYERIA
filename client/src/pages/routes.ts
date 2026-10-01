@@ -5,6 +5,7 @@ import { InicioComponent } from './inicio/inicio';
 import { DashboardComponent } from './dashboard/dashboard';
 import { ProductosComponent } from './productos/productos';
 import { SucursalesComponent } from './sucursales/sucursales';
+import { InventarioComponent } from './inventario/inventario';
 
 export const routes: Routes = [
   // Ruta por defecto: al entrar a http://localhost:4200/ te redirige directo a login
@@ -24,6 +25,9 @@ export const routes: Routes = [
 
   // Cuando visites http://localhost:4200/sucursales se muestra este componente
   { path: 'sucursales', component: SucursalesComponent },
+
+  // Cuando visites http://localhost:4200/inventario se muestra este componente
+  { path: 'inventario', component: InventarioComponent },
 
   // Comodín: si escriben cualquier otra ruta inexistente, regresa a productos
   { path: '**', redirectTo: 'login' }

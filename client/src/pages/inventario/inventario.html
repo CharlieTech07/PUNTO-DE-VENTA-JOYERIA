@@ -1,0 +1,113 @@
+<div class="inventario-container">
+  <h2 class="inventario-title">Control de Inventario y Stock — Joyería Olimpo</h2>
+
+  <!-- Formulario de Alta / Modificación -->
+  <div class="form-card">
+    <h3>Asignar o Modificar Stock en Tienda</h3>
+    <form (ngSubmit)="guardarStock()" class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Sucursal:</label>
+        <select [(ngModel)]="nuevoRegistro.id_sucursal" name="id_sucursal" class="form-input">
+          @for (s of catalogoSucursales; track s.id) {
+            <option [value]="s.id">{{ s.nombre }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Joya / Pieza:</label>
+        <select [(ngModel)]="nuevoRegistro.id_producto" name="id_producto" class="form-input">
+          @for (p of catalogoProductos; track p.id) {
+            <option [value]="p.id">{{ p.nombre }} ({{ p.tipo_metal }})</option>
+          }
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Stock Físico:</label>
+        <input type="number" min="0" [(ngModel)]="nuevoRegistro.stock" name="stock" required class="form-input" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Stock Mínimo:</label>
+        <input type="number" min="0" [(ngModel)]="nuevoRegistro.stock_minimo" name="stock_minimo" class="form-input" />
+      </div>
+
+      <div class="form-group full-width">
+        <label class="form-label">Ubicación Vitrina:</label>
+        <input type="text" [(ngModel)]="nuevoRegistro.ubicacion_vitrina" name="ubicacion_vitrina" class="form-input" />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">
+          Guardar Existencias
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Barra de acciones por lote -->
+  @if (itemsSeleccionados.length > 0) {
+    <div class="bulk-bar">
+      <span class="bulk-count">
+        Has seleccionado {{ itemsSeleccionados.length }} registro(s)
+      </span>
+      <button type="button" (click)="eliminarSeleccionados()" class="btn-danger">
+        Eliminar seleccionados
+      </button>
+    </div>
+  }
+
+  <!-- Tabla de Inventario -->
+  @if (cargando) {
+    <p class="estado-mensaje">⏳ Consultando existencias en pos_olimpo...</p>
+  } @else if (listaInventario.length === 0) {
+    <p class="estado-mensaje">No hay registros de inventario asignados a ninguna sucursal.</p>
+  } @else {
+    <table class="tabla-inventario">
+      <thead class="tabla-header">
+        <tr>
+          <th class="col-checkbox">
+            <input type="checkbox" [(ngModel)]="seleccionarTodos" (change)="alternarSeleccionTodos()" />
+          </th>
+          <th>Sucursal</th>
+          <th>Pieza</th>
+          <th>Metal</th>
+          <th>Ubicación</th>
+          <th class="col-center">Stock</th>
+          <th>Estado</th>
+          <th class="col-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of listaInventario; track item.id) {
+          <tr [class.fila-seleccionada]="item.seleccionado">
+            <td class="col-checkbox">
+              <input type="checkbox" [(ngModel)]="item.seleccionado" />
+            </td>
+            <td><strong>{{ item.nombre_sucursal }}</strong></td>
+            <td>{{ item.nombre_producto }}</td>
+            <td>{{ item.tipo_metal }} {{ item.kilataje || '' }}</td>
+            <td>{{ item.ubicacion_vitrina }}</td>
+            <td class="col-center stock-valor">{{ item.stock }}</td>
+            <td>
+              @if (item.stock <= item.stock_minimo) {
+                <span class="badge badge-warning">Bajo</span>
+              } @else {
+                <span class="badge badge-success">OK</span>
+              }
+            </td>
+            <td class="col-center">
+              <button 
+                type="button"
+                (click)="eliminarIndividual(item.id, item.nombre_producto)"
+                class="btn-delete-item">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>
