@@ -1,16 +1,19 @@
-/* client/src/styles.css */
+/* client/src/styles/tema.css */
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background-color: #171310;
+  background-color: var(--fondo, #241c14); /* <-- CAMBIADO: ya no usa #171310 fijo */
+  color: var(--texto, #f6eee2);
   box-sizing: border-box;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 *, *::before, *::after {
   box-sizing: inherit;
 }
+
 :root {
   /* Superficies */
   --fondo: #241c14;
@@ -25,7 +28,6 @@ html, body {
   --oro-medio: #c9a96a;
   --oro-tenue: rgba(224, 194, 137, 0.14);
   --oro-borde: rgba(224, 194, 137, 0.18);
-  /* Texto que va encima del dorado */
   --sobre-oro: #2e2418;
 
   /* Texto */
@@ -49,7 +51,7 @@ html, body {
   --sombra: 0 18px 40px rgba(0, 0, 0, 0.28);
 }
 
-/* Modo claro: mismo sistema, superficies invertidas */
+/* Modo claro: superficies invertidas */
 html[data-tema="claro"] {
   --fondo: #f4efe6;
   --fondo-barra: #ebe3d5;
@@ -72,9 +74,8 @@ html[data-tema="claro"] {
   --ambar: #b57a1e;
   --rojo: #b34b3c;
 
-  --sombra: 0 14px 30px rgba(90, 70, 40, 0.1);
+  --sombra: 0 14px 30px rgba(0, 0, 0, 0.06);
 }
-
 /* El fondo y el color de letra base los pone el tema, para que ninguna
    pantalla se quede con el color viejo al cambiar de modo. */
 body {

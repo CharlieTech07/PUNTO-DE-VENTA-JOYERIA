@@ -44,25 +44,27 @@
     <!-- ==================== VISTA: RESUMEN ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'resumen'" id="vista-resumen">
       <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">Ventas de hoy</div>
-          <div class="kpi__valor">$12,450</div>
-          <div class="kpi__nota kpi__nota--sube">+12% vs. ayer</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">Ingresos del mes</div>
-          <div class="kpi__valor">$248,000</div>
-          <div class="kpi__nota kpi__nota--sube">+8.4% vs. mes anterior</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">Piezas en existencia</div>
-          <div class="kpi__valor">38</div>
-          <div class="kpi__nota">8 con stock bajo</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">Apartados activos</div>
-          <div class="kpi__valor">14</div>
-          <div class="kpi__nota kpi__nota--baja">3 por vencer esta semana</div>
+        <!-- Sucursales reales de pos_olimpo -->
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24"><path d="M3 21h18" /><path d="M5 21V8l7-5 7 5v13" /><path d="M10 21v-6h4v6" /></svg>
+            <h2 class="tarjeta__titulo">Sucursales registradas</h2>
+          </div>
+          <div class="lista">
+            @for (sucursal of listaSucursales; track sucursal.id) {
+              <div class="lista__fila">
+                <div>
+                  <div class="lista__principal">{{ sucursal.nombre }}</div>
+                  <div class="lista__secundario">{{ sucursal.direccion || 'Sin dirección' }} · Tel: {{ sucursal.telefono || 'N/A' }}</div>
+                </div>
+                <div class="lista__derecha">
+                  <span class="insignia insignia--ok">Activa</span>
+                </div>
+              </div>
+            } @empty {
+              <p class="vacio">No hay sucursales registradas en la base de datos.</p>
+            }
+          </div>
         </article>
       </div>
 
@@ -661,142 +663,98 @@
       </article>
     </section>
 
-    <!-- ==================== VISTA: INVENTARIO ==================== -->
-    <section class="vista" [class.activa]="vistaActiva === 'inventario'" id="vista-inventario">
-      <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">Piezas en existencia</div>
-          <div class="kpi__valor">38</div>
-          <div class="kpi__nota">En 3 sucursales</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">Valor del inventario</div>
-          <div class="kpi__valor">$452,000</div>
-          <div class="kpi__nota">A precio de venta vigente</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">Stock bajo</div>
-          <div class="kpi__valor">8</div>
-          <div class="kpi__nota kpi__nota--baja">Requieren reposición</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">Peso total en oro</div>
-          <div class="kpi__valor">1,284 g</div>
-          <div class="kpi__nota">Equivale a $2.7M en metal</div>
-        </article>
+    <!-- ==================== VISTA: INVENTARIO REAL ==================== -->
+<section class="vista" [class.activa]="vistaActiva === 'inventario'" id="vista-inventario">
+  <div class="rejilla rejilla--4">
+    <article class="kpi">
+      <div class="etiqueta">Piezas en existencia</div>
+      <div class="kpi__valor">{{ totalPiezasStock }}</div>
+      <div class="kpi__nota">En {{ listaSucursales.length }} sucursales</div>
+    </article>
+    <article class="kpi">
+      <div class="etiqueta">Valor del inventario</div>
+      <div class="kpi__valor">{{ valorTotalInventario | currency:'USD':'symbol':'1.0-0' }}</div>
+      <div class="kpi__nota">A precio de venta vigente</div>
+    </article>
+    <article class="kpi">
+      <div class="etiqueta">Stock bajo</div>
+      <div class="kpi__valor">{{ cantidadStockBajo }}</div>
+      <div class="kpi__nota kpi__nota--baja">Requieren reposición</div>
+    </article>
+    <article class="kpi">
+      <div class="etiqueta">Sucursales activas</div>
+      <div class="kpi__valor">{{ listaSucursales.length }}</div>
+      <div class="kpi__nota">Puntos de venta en red</div>
+    </article>
+  </div>
+
+  <article class="tarjeta">
+    <!-- En la sección de Inventario de dashboard.html -->
+      <div class="tarjeta__cabecera">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 3h12l3 6-9 12L3 9z" />
+          <path d="M3 9h18" />
+          <path d="M12 3l-3 6 3 12 3-12-3-6z" />
+        </svg>
+        <h2 class="tarjeta__titulo">Piezas registradas en tienda</h2>
+
+        <!-- BOTÓN REDIRIGIDO -->
+        <button
+          type="button"
+          class="tarjeta__accion boton boton--fantasma"
+          routerLink="/inventario">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+          Actualizar inventario
+        </button>
       </div>
+    <p class="sub">
+      Existencias físicas ligadas a sucursal y vitrina en base de datos pos_olimpo.
+    </p>
 
-      <article class="tarjeta">
-        <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 3h12l3 6-9 12L3 9z" />
-            <path d="M3 9h18" />
-            <path d="M12 3l-3 6 3 12 3-12-3-6z" />
-          </svg>
-          <h2 class="tarjeta__titulo">Piezas registradas</h2>
-          <button class="tarjeta__accion boton boton--fantasma">
-            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-            Registrar pieza
-          </button>
-        </div>
-        <p class="sub">
-          Cada pieza es única y se identifica por SKU. El precio se recalcula con la cotización del metal del día.
-        </p>
-
-        <div class="tabla-envoltura">
-          <table class="tabla tabla--amplia">
-            <thead>
-              <tr>
-                <th>SKU</th>
-                <th>Pieza</th>
-                <th>Metal</th>
-                <th>Quilataje</th>
-                <th style="text-align: right">Peso</th>
-                <th>Piedras</th>
-                <th>Sucursal</th>
-                <th style="text-align: right">Precio</th>
-                <th style="text-align: right">Stock</th>
-                <th>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="celda-id">AUR-DI-001</td>
-                <td class="celda-pieza">Anillo Diamante «Eterna»</td>
-                <td>Oro blanco</td>
-                <td>18k</td>
-                <td class="celda-num">4.2 g</td>
-                <td>Diamante 1.2 ct</td>
-                <td>Santa Fe</td>
-                <td class="celda-monto">$4,200</td>
-                <td class="celda-num">12</td>
-                <td><span class="insignia insignia--ok">Disponible</span></td>
-              </tr>
-              <tr>
-                <td class="celda-id">AUR-GO-042</td>
-                <td class="celda-pieza">Gargantilla Oro Vintage</td>
-                <td>Oro amarillo</td>
-                <td>24k</td>
-                <td class="celda-num">18.6 g</td>
-                <td>—</td>
-                <td>Polanco</td>
-                <td class="celda-monto">$8,850</td>
-                <td class="celda-num">3</td>
-                <td><span class="insignia insignia--aviso">Stock bajo</span></td>
-              </tr>
-              <tr>
-                <td class="celda-id">AUR-SA-015</td>
-                <td class="celda-pieza">Brazalete Zafiro Azul</td>
-                <td>Plata .925</td>
-                <td>—</td>
-                <td class="celda-num">22.4 g</td>
-                <td>Zafiro 0.8 ct</td>
-                <td>Querétaro</td>
-                <td class="celda-monto">$3,400</td>
-                <td class="celda-num">21</td>
-                <td><span class="insignia insignia--ok">Disponible</span></td>
-              </tr>
-              <tr>
-                <td class="celda-id">AUR-RE-008</td>
-                <td class="celda-pieza">Reloj Clásico 1954</td>
-                <td>Oro amarillo</td>
-                <td>14k</td>
-                <td class="celda-num">64.0 g</td>
-                <td>—</td>
-                <td>Santa Fe</td>
-                <td class="celda-monto">$18,500</td>
-                <td class="celda-num">2</td>
-                <td><span class="insignia insignia--aviso">Stock bajo</span></td>
-              </tr>
-              <tr>
-                <td class="celda-id">AUR-PE-023</td>
-                <td class="celda-pieza">Pendientes Aurore</td>
-                <td>Oro amarillo</td>
-                <td>18k</td>
-                <td class="celda-num">3.8 g</td>
-                <td>Diamante 0.5 ct c/u</td>
-                <td>Polanco</td>
-                <td class="celda-monto">$21,400</td>
-                <td class="celda-num">6</td>
-                <td><span class="insignia insignia--ok">Disponible</span></td>
-              </tr>
-              <tr>
-                <td class="celda-id">AUR-CO-011</td>
-                <td class="celda-pieza">Colgante Larme Dorée</td>
-                <td>Oro amarillo</td>
-                <td>18k</td>
-                <td class="celda-num">5.1 g</td>
-                <td>Topacio 0.8 ct</td>
-                <td>Santa Fe</td>
-                <td class="celda-monto">$32,900</td>
-                <td class="celda-num">1</td>
-                <td><span class="insignia insignia--riesgo">Apartada</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </section>
+    <div class="tabla-envoltura">
+      <table class="tabla tabla--amplia">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pieza</th>
+            <th>Metal</th>
+            <th>Kilataje</th>
+            <th>Sucursal</th>
+            <th>Ubicación Vitrina</th>
+            <th style="text-align: right">Precio Venta</th>
+            <th style="text-align: right">Stock</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of listaInventario; track item.id) {
+            <tr>
+              <td class="celda-id">#{{ item.id_producto }}</td>
+              <td class="celda-pieza">{{ item.nombre_producto }}</td>
+              <td>{{ item.tipo_metal }}</td>
+              <td>{{ item.kilataje || '—' }}</td>
+              <td><strong>{{ item.nombre_sucursal }}</strong></td>
+              <td>{{ item.ubicacion_vitrina }}</td>
+              <td class="celda-monto">{{ item.precio_venta | currency:'USD':'symbol':'1.0-0' }}</td>
+              <td class="celda-num">{{ item.stock }}</td>
+              <td>
+                @if (item.stock <= item.stock_minimo) {
+                  <span class="insignia insignia--aviso">Stock bajo</span>
+                } @else {
+                  <span class="insignia insignia--ok">Disponible</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="vacio">No hay joyas en el inventario de las sucursales.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
 
     <!-- ==================== VISTA: APARTADOS ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'apartados'" id="vista-apartados">
