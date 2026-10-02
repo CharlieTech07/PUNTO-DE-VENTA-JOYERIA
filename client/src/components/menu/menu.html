@@ -14,7 +14,7 @@
         [routerLink]="item.ruta"
         [fragment]="item.fragmento"
         routerLinkActive="activo"
-        [routerLinkActiveOptions]="opcionesActivo">
+        [routerLinkActiveOptions]="{ exact: item.ruta === '/inicio' }">
         
         <svg viewBox="0 0 24 24">
           @for (d of item.svgPath; track $index) {
