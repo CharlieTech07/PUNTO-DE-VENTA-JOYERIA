@@ -13,8 +13,12 @@ export class ProductosService {
   getProductos(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
-  postProducto(producto: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, producto);
+
+  crearProducto(datos: FormData): Observable<any> {
+    return this.http.post<any>(this.apiUrl, datos);
   }
 
+  eliminarProducto(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
 }

@@ -1,19 +1,19 @@
-/* client/src/styles.css */
+/* client/src/styles/tema.css */
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  /* Va con el token, no con un hex fijo. El fondo del <html> es el que pinta
-     el lienzo de la página, así que con un color fijo se quedaba oscuro al
-     activar el modo claro y el título quedaba negro sobre negro. */
-  background-color: var(--fondo);
+  background-color: var(--fondo, #241c14); /* <-- CAMBIADO: ya no usa #171310 fijo */
+  color: var(--texto, #f6eee2);
   box-sizing: border-box;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 *, *::before, *::after {
   box-sizing: inherit;
 }
+
 :root {
   /* Superficies */
   --fondo: #241c14;
@@ -28,7 +28,6 @@ html, body {
   --oro-medio: #c9a96a;
   --oro-tenue: rgba(224, 194, 137, 0.14);
   --oro-borde: rgba(224, 194, 137, 0.18);
-  /* Texto que va encima del dorado */
   --sobre-oro: #2e2418;
 
   /* Texto */
@@ -52,7 +51,7 @@ html, body {
   --sombra: 0 18px 40px rgba(0, 0, 0, 0.28);
 }
 
-/* Modo claro: mismo sistema, superficies invertidas */
+/* Modo claro: superficies invertidas */
 html[data-tema="claro"] {
   --fondo: #f4efe6;
   --fondo-barra: #ebe3d5;
@@ -75,30 +74,12 @@ html[data-tema="claro"] {
   --ambar: #b57a1e;
   --rojo: #b34b3c;
 
-  --sombra: 0 14px 30px rgba(90, 70, 40, 0.1);
+  --sombra: 0 14px 30px rgba(0, 0, 0, 0.06);
 }
-
 /* El fondo y el color de letra base los pone el tema, para que ninguna
    pantalla se quede con el color viejo al cambiar de modo. */
 body {
   background-color: var(--fondo);
   color: var(--texto);
   transition: background-color 0.25s ease, color 0.25s ease;
-}
-
-/* Hueco para el menú lateral, que va en position: fixed.
-   Vive aquí y no en components/menu/menu.css porque aquel archivo son
-   estilos de componente: Angular los encierra con [_ngcontent-…] y nunca
-   alcanzarían al <body> real.
-   El :has(app-menu) es necesario: el login no monta el menú, y sin esa
-   condición su tarjeta quedaría descentrada por un hueco que nadie ocupa. */
-html body:has(app-menu) {
-  padding-left: var(--barra-ancho, 264px);
-}
-
-/* En pantallas angostas el menú se encoge y deja solo los iconos */
-@media (max-width: 1024px) {
-  html body:has(app-menu) {
-    padding-left: 76px;
-  }
 }

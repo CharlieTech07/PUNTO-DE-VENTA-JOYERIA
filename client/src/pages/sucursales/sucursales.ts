@@ -7,7 +7,8 @@ import { SucursalesService } from './../../services/sucursales.services';
   selector: 'app-sucursales',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './sucursales.html'
+  templateUrl: './sucursales.html',
+  styleUrls: ['./sucursales.css']
 })
 export class SucursalesComponent implements OnInit {
   private sucursalesService = inject(SucursalesService);
@@ -49,18 +50,38 @@ export class SucursalesComponent implements OnInit {
       return;
     }
 
-    this.sucursalesService.postSucursal(this.nuevaSucursal).subscribe({
-        next: (nuevaSucursal) => {
-            this.listaSucursales.push(nuevaSucursal);
-            this.nuevaSucursal = { nombre: '', direccion: '', telefono: '' };
-            this.cd.detectChanges();
-            alert('¡Sucursal guardada correctamente en pos_olimpo!');
+    this.sucursalesService.crearSucursal(this.nuevaSucursal).subscribe({
+      next: (sucursalCreada) => {
+        this.listaSucursales.push(sucursalCreada);
+        this.nuevaSucursal = { nombre: '', direccion: '', telefono: '' };
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al crear sucursal:', err);
+        alert('Error al crear sucursal. Por favor, inténtelo de nuevo.');
+        this.cd.detectChanges();
+      }
+    });
+  }
+
+  eliminarSucursal(id: number, nombre: string): void {
+    if (confirm(`¿Está seguro de que desea eliminar la sucursal "${nombre}"?`)) {
+      this.sucursalesService.eliminarSucursal(id).subscribe({
+        next: (respuesta) => {
+          this.listaSucursales = this.listaSucursales.filter((s: any) => s?.id !== id);
+          alert(respuesta?.mensaje ?? 'Sucursal eliminada correctamente');
+          this.cd.detectChanges();
         },
         error: (err) => {
-            console.error('Error al guardar sucursal:', err);
-            alert('Ocurrió un error al guardar la sucursal');
-            this.cd.detectChanges();
+          console.error('Error al eliminar sucursal:', err);
+          if (err.status === 409) {
+            alert('No se puede eliminar la sucursal porque tiene piezas de inventario o ventas asociadas.');
+          } else {
+            alert('Error al eliminar sucursal. Por favor, inténtelo de nuevo.');
+          }
+          this.cd.detectChanges();
         }
-    });
+      });
+    }
   }
 }
