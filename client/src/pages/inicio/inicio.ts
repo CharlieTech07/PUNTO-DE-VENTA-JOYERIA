@@ -28,7 +28,7 @@ export class InicioComponent implements OnInit {
       description: '1.2 ct - Oro blanco 18k',
       price: 48200,
       // Imagen funcional de anillo
-      imageUrl: 'https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&q=80&w=600'
+      imageUrl: 'anillo.webp'
     },
     {
       id: 2,
@@ -37,7 +37,7 @@ export class InicioComponent implements OnInit {
       description: 'Pera 0.8 ct - Oro amarillo',
       price: 32900,
       // Imagen funcional de colgante
-      imageUrl: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=600'
+      imageUrl: 'colla.webp'
     },
     {
       id: 3,
@@ -45,7 +45,7 @@ export class InicioComponent implements OnInit {
       name: 'Aurore Éternelle',
       description: 'Halo 0.5 ct c/u - Oro amarillo',
       price: 21400,
-      imageUrl: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=600'
+      imageUrl: 'pendientes.webp'
     },
     {
       id: 4,
@@ -53,7 +53,7 @@ export class InicioComponent implements OnInit {
       name: "Lumière d'Amour",
       description: '1.5 ct - Oro blanco 18k',
       price: 55000,
-      imageUrl: 'https://images.unsplash.com/photo-1605100804763-247f67b4549e?auto=format&fit=crop&q=80&w=600'
+      imageUrl: 'anillo2.webp'
     },
     {
       id: 5,
@@ -61,7 +61,7 @@ export class InicioComponent implements OnInit {
       name: 'Goutte de Ciel',
       description: 'Zafiro y diamantes - Oro blanco',
       price: 41200,
-      imageUrl: 'https://images.unsplash.com/photo-1599643477874-c5a5c11f24fc?auto=format&fit=crop&q=80&w=600'
+      imageUrl: 'collar2.webp'
     },
     {
       id: 6,
@@ -69,7 +69,31 @@ export class InicioComponent implements OnInit {
       name: 'Étoile Brillante',
       description: '0.3 ct c/u - Oro amarillo',
       price: 18500,
-      imageUrl: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&q=80&w=600'
+      imageUrl: 'pendientes-de-novia-estilo-vintage-en-plata-.jpg'
+    },
+    {
+      id: 7,
+      category: 'COLLAR',
+      name: 'Braise Royale',
+      description: 'Rubí cojín 5.2 ct - Oro blanco 18k',
+      price: 86400,
+      imageUrl: 'collar-rubi.jpg'
+    },
+    {
+      id: 8,
+      category: 'COLLAR',
+      name: 'Cascade Royale',
+      description: 'Diamante pera 3.8 ct - Oro blanco 18k',
+      price: 124900,
+      imageUrl: 'collar-diamantes.jpg'
+    },
+    {
+      id: 9,
+      category: 'COLLAR',
+      name: 'Clair de Lune',
+      description: 'Perlas Akoya tres hilos - Oro blanco 18k',
+      price: 57800,
+      imageUrl: 'collar-perlas.jpg'
     }
   ];
 

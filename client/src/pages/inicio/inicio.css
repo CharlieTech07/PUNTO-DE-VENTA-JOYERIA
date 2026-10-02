@@ -1,21 +1,27 @@
-:root {
-  --font-primary: 'Playfair Display', serif;
-  --font-secondary: 'Arial', sans-serif;
-  --bg-color-dark: #2a221c; 
-  --text-color-dark: #e8e0d5; 
-  --subtitle-color-dark: #8c7c6c; 
-  --card-bg-dark: #3b322a; 
-  --search-bg-dark: #463d34; 
-  --border-color-dark: #5a4f44; 
-  --btn-bg-dark: #e3d3a8; 
-  --btn-text-dark: #4a3e2a; 
-}
-
 * {
   box-sizing: border-box;
 }
 
+/* Los tokens van en :host, NO en :root.
+   Angular encierra los estilos de componente con [_ngcontent-…], así que un
+   :root escrito aquí nunca alcanza al <html> y todas las variables quedaban
+   sin valor: el buscador salía transparente, las tarjetas sin fondo ni borde
+   y el título en Times New Roman. Desde :host sí se heredan a todo
+   <app-inicio>.
+   Los colores salen de styles/tema.css para que la vitrina use la misma
+   paleta que el resto del sistema y responda al modo claro. */
 :host {
+  --font-primary: var(--serif);
+  --font-secondary: var(--sans);
+  --bg-color-dark: var(--fondo);
+  --text-color-dark: var(--texto);
+  --subtitle-color-dark: var(--texto-3);
+  --card-bg-dark: var(--superficie);
+  --search-bg-dark: var(--superficie-2);
+  --border-color-dark: var(--oro-borde);
+  --btn-bg-dark: var(--oro);
+  --btn-text-dark: var(--sobre-oro);
+
   display: flex;
   justify-content: center;
   width: 100%;
@@ -27,15 +33,17 @@
 
 .container {
   width: 90%;
-  max-width: 1000px;
-  padding: 40px 20px;
+  max-width: 1100px;
+  padding: 40px 20px 64px;
 }
 
-.header-top { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: flex-end; 
-  margin-bottom: 5px; 
+/* ---------- Cabecera ---------- */
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 5px;
 }
 
 .header-actions {
@@ -48,13 +56,14 @@
   background: transparent;
   border: 1px solid var(--border-color-dark);
   color: var(--btn-bg-dark);
-  padding: 6px 14px;
-  border-radius: 6px;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-family: inherit;
   font-size: 0.75rem;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .btn-dashboard:hover {
@@ -62,139 +71,175 @@
   color: var(--btn-text-dark);
 }
 
-.subtitle { 
-  font-size: 0.7rem; 
-  letter-spacing: 2px; 
-  text-transform: uppercase; 
-  color: var(--subtitle-color-dark); 
+.subtitle {
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--oro-medio, #c9a96a);
 }
 
-.item-count { 
-  font-size: 0.8rem; 
-  color: var(--subtitle-color-dark); 
+.item-count {
+  font-size: 0.82rem;
+  color: var(--subtitle-color-dark);
 }
 
-.title { 
-  font-family: var(--font-primary); 
-  font-weight: normal; 
-  font-size: 2.5rem; 
-  margin: 5px 0 30px 0; 
+/* El color va explícito, no heredado: inicio.html todavía es un documento
+   completo, así que Angular deja un <html> y un <body> anidados dentro del
+   componente. Ese <html> interno no lleva el atributo del tema y corta la
+   herencia, dejando el título con el color del modo oscuro aunque se active
+   el claro. Ver la nota del final del archivo. */
+.title {
+  font-family: var(--font-primary);
+  font-weight: 500;
+  font-size: 3rem;
+  line-height: 1.1;
+  margin: 6px 0 28px 0;
+  color: var(--text-color-dark);
 }
 
-.search-bar { 
-  display: flex; 
-  align-items: center; 
-  padding: 12px 20px; 
-  border-radius: 8px; 
-  margin-bottom: 30px; 
-  background-color: var(--search-bg-dark); 
-  border: 1px solid var(--border-color-dark); 
-  transition: border-color 0.2s ease;
+/* ---------- Buscador ----------
+   Antes pasaba desapercibido: su fondo era una variable sin definir, así que
+   quedaba transparente sobre el fondo de la página. Ahora tiene superficie
+   propia, borde dorado y el icono en oro. */
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 22px;
+  border-radius: 12px;
+  margin-bottom: 36px;
+  background-color: var(--search-bg-dark);
+  border: 1px solid var(--border-color-dark);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .search-bar:focus-within {
   border-color: var(--btn-bg-dark);
+  box-shadow: 0 0 0 3px var(--oro-tenue, rgba(224, 194, 137, 0.14));
 }
 
-.search-bar input { 
-  background: transparent; 
-  border: none; 
-  outline: none; 
-  width: 100%; 
-  font-size: 1rem; 
-  margin-left: 10px; 
-  color: var(--text-color-dark); 
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--text-color-dark);
 }
 
-.search-bar input::placeholder { 
-  color: var(--subtitle-color-dark); 
+.search-bar input::placeholder {
+  color: var(--subtitle-color-dark);
 }
 
-.search-icon { 
-  font-size: 1.2rem; 
-  color: var(--subtitle-color-dark); 
+.search-icon {
+  font-size: 1.3rem;
+  color: var(--btn-bg-dark);
 }
 
-.grid-container { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-  gap: 25px; 
+/* ---------- Rejilla de piezas ---------- */
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 26px;
 }
 
-.card { 
-  background-color: var(--card-bg-dark); 
-  border: 1px solid var(--border-color-dark); 
-  border-radius: 12px; 
-  padding: 15px; 
-  display: flex; 
-  flex-direction: column; 
-  transition: transform 0.2s ease, box-shadow 0.2s ease; 
+.card {
+  background-color: var(--card-bg-dark);
+  border: 1px solid var(--border-color-dark);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
 }
 
-.card:hover { 
-  transform: translateY(-5px); 
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+.card:hover {
+  transform: translateY(-6px);
+  border-color: var(--oro-medio, #c9a96a);
+  box-shadow: var(--sombra, 0 18px 40px rgba(0, 0, 0, 0.28));
 }
 
-.card-image { 
-  width: 100%; 
-  height: 250px; 
-  object-fit: cover; 
-  border-radius: 8px; 
-  margin-bottom: 15px; 
-  background-color: #5a4f44; 
+.card-image {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  /* Fondo mientras la foto carga, o si no carga */
+  background-color: var(--superficie-3, #4f4030);
+  transition: transform 0.35s ease;
 }
 
-.product-category { 
-  font-size: 0.7rem; 
-  letter-spacing: 1px; 
-  text-transform: uppercase; 
-  margin-bottom: 5px; 
-  color: var(--subtitle-color-dark); 
+.card:hover .card-image {
+  transform: scale(1.03);
 }
 
-.product-title { 
-  font-family: var(--font-primary); 
-  font-size: 1.2rem; 
-  margin: 0 0 5px 0; 
+.product-category {
+  font-size: 0.68rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: var(--oro-medio, #c9a96a);
 }
 
-.product-desc { 
-  font-size: 0.8rem; 
-  margin-bottom: 20px; 
-  color: var(--subtitle-color-dark); 
+.product-title {
+  font-family: var(--font-primary);
+  font-size: 1.45rem;
+  font-weight: 500;
+  margin: 0 0 6px 0;
+  color: var(--text-color-dark);
 }
 
-.card-footer { 
-  display: flex; 
-  justify-content: space-between; 
-  align-items: center; 
-  margin-top: auto; 
+.product-desc {
+  font-size: 0.82rem;
+  margin-bottom: 20px;
+  color: var(--subtitle-color-dark);
 }
 
-.price { 
-  font-weight: bold; 
-  font-size: 1.1rem; 
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color-dark);
 }
 
-.btn-add { 
-  padding: 8px 20px; 
-  border: none; 
-  border-radius: 6px; 
-  font-size: 0.8rem; 
-  font-weight: bold; 
-  cursor: pointer; 
-  transition: background-color 0.2s ease, transform 0.1s ease; 
-  background-color: var(--btn-bg-dark); 
-  color: var(--btn-text-dark); 
+.price {
+  font-family: var(--font-primary);
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--btn-bg-dark);
 }
 
-.btn-add:hover { 
-  background-color: #ebdcb3; 
+.btn-add {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  background-color: var(--btn-bg-dark);
+  color: var(--btn-text-dark);
+}
+
+.btn-add:hover {
+  background-color: var(--oro-claro, #ebd5a6);
 }
 
 .btn-add:active {
-  transform: scale(0.97); 
+  transform: scale(0.97);
 }
 
 .no-results {
@@ -202,5 +247,42 @@
   text-align: center;
   color: var(--subtitle-color-dark);
   font-style: italic;
-  padding: 30px;
+  padding: 40px;
 }
+
+/* ---------- Pantallas angostas ---------- */
+
+@media (max-width: 720px) {
+  .container {
+    width: 94%;
+    padding: 28px 12px 48px;
+  }
+
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------------------------------------------------------
+   PENDIENTE PARA EL EQUIPO
+   inicio.html sigue siendo un documento HTML completo (<!DOCTYPE>,
+   <html>, <head>, <body>) aunque ya es la plantilla de un componente
+   Angular. Eso trae dos efectos:
+
+   1. Angular renderiza ese <html> y <body> como elementos dentro de
+      <app-inicio>. El <html> interno no lleva data-tema, así que corta
+      la herencia del color y hay que declararlo a mano (ver .title).
+
+   2. Los <link rel="stylesheet"> de su <head> los inlinea Angular como
+      estilos de este componente, de modo que tema.css y menu.css se
+      descargan una segunda vez.
+
+   El arreglo es quitar la envoltura de documento y dejar solo el
+   contenido, pero entonces el hueco del menú hay que reservarlo desde
+   styles/tema.css, porque hoy funciona gracias a ese mismo <body>
+   anidado. Toca archivos compartidos, por eso no se hizo aquí.
+   --------------------------------------------------------------- */
