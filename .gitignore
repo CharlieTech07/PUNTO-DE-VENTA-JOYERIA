@@ -7,4 +7,6 @@ dist/
 **/.env
 *.log
 *.env
-*.md
+CLAUDE.md
+AGENTS.md
+

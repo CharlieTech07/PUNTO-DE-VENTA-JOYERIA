@@ -18,6 +18,7 @@ export class ProductosComponent implements OnInit {
   listaProductos: any[] = [];
   cargando: boolean = true;
   errorCarga: string = '';
+  archivoSeleccionado: File | null = null;
 
   nuevoItem = {
     nombre: '',
@@ -50,14 +51,38 @@ export class ProductosComponent implements OnInit {
     });
   }
 
+  // Método que captura la foto cuando el usuario la elige
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.archivoSeleccionado = file;
+    }
+  }
+
   guardarProducto(): void {
     if (!this.nuevoItem.nombre.trim()) {
-      alert('Debes ingresar un nombre');
+      alert('Debes ingresar un nombre para la pieza');
       return;
     }
-    this.productosService.postProducto(this.nuevoItem).subscribe({
-      next: (productoCreado) => {
-        this.listaProductos.push(productoCreado);
+
+    // Se empaquetan los datos en un FormData para poder mandar el binario
+    const formData = new FormData();
+    formData.append('nombre', this.nuevoItem.nombre);
+    formData.append('descripcion', this.nuevoItem.descripcion);
+    formData.append('tipo_metal', this.nuevoItem.tipo_metal);
+    formData.append('kilataje', this.nuevoItem.kilataje);
+    formData.append('peso_gramos', this.nuevoItem.peso_gramos.toString());
+    formData.append('precio_compra', this.nuevoItem.precio_compra.toString());
+    formData.append('precio_venta', this.nuevoItem.precio_venta.toString());
+    formData.append('id_categoria', this.nuevoItem.id_categoria.toString());
+
+    if (this.archivoSeleccionado) {
+      formData.append('imagen', this.archivoSeleccionado, this.archivoSeleccionado.name);
+    }
+
+    this.productosService.crearProducto(formData).subscribe({
+      next: (guardado) => {
+        this.listaProductos.push(guardado);
         this.nuevoItem = {
           nombre: '',
           descripcion: '',
@@ -68,11 +93,31 @@ export class ProductosComponent implements OnInit {
           precio_venta: 0,
           id_categoria: 1
         };
+        this.archivoSeleccionado = null;
         this.cd.detectChanges();
+        alert('¡Joya e imagen guardadas con éxito en pos_olimpo!');
       },
       error: (err) => {
-        console.error('Error al crear producto:', err);
-        alert('Error al crear producto. Revisa la consola para más detalles.');
+        console.error('Error al guardar con imagen:', err);
+        alert('Ocurrió un error al guardar en la base de datos.');
+      }
+    });
+  }
+
+  borrarProducto(id: number, nombre: string): void {
+    const confirmacion = confirm(`¿Estás seguro de eliminar "${nombre}" de la base de datos?`);
+    if (!confirmacion) return;
+
+    this.productosService.eliminarProducto(id).subscribe({
+      next: () => {
+        this.listaProductos = this.listaProductos.filter(item => item.id !== id);
+        this.cd.detectChanges();
+        alert('Pieza eliminada correctamente de pos_olimpo');
+      },
+      error: (err) => {
+        console.error('Error al eliminar:', err);
+        const mensajeError = err.error?.error || 'No se pudo eliminar el producto';
+        alert(mensajeError);
       }
     });
   }

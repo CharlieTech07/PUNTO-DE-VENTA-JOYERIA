@@ -1,106 +1,135 @@
-/* Panel de administración Olimpo — interacción de la maqueta.
+// client/src/pages/dashboard/dashboard.ts
+import { Component, OnInit, HostListener, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MenuComponent } from '../../components/menu/menu';
+import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
+import { SucursalesService, Sucursal } from  '../../services/sucursales.services';
 
-   El código fuente es dashboard.ts. El navegador carga dashboard.js, que se
-   genera con "npx tsc -p ." dentro de esta carpeta: no edites el .js a mano.
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, MenuComponent, RouterLink],
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.css']
+})
+export class DashboardComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private inventarioService = inject(InventarioService);
+  private sucursalesService = inject(SucursalesService);
+  private cd = inject(ChangeDetectorRef);
 
-   Va envuelto en una función para no dejar variables globales, y como script
-   clásico (no módulo ES) para que la página siga abriendo con doble clic. */
+  public vistaActiva: string = 'resumen';
+  public tituloVista: string = 'Resumen';
+  public fechaHoy: string = '';
+  public segmentoSeleccionado: string = 'dia';
 
-type Tema = 'oscuro' | 'claro';
+  // Colecciones de la base de datos pos_olimpo
+  public listaInventario: InventarioItem[] = [];
+  public listaSucursales: Sucursal[] = [];
+  public cargandoDatos: boolean = true;
 
-(function panelOlimpo(): void {
-  const ICONO_SOL =
-    '<circle cx="12" cy="12" r="4.2" />' +
-    '<path d="M12 2v2M12 20v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2 12h2M20 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5" />';
+  // Métricas calculadas en vivo
+  public totalPiezasStock: number = 0;
+  public valorTotalInventario: number = 0;
+  public cantidadStockBajo: number = 0;
 
-  const ICONO_LUNA = '<path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z" />';
+  private readonly titulosPorVista: Record<string, string> = {
+    resumen: 'Resumen',
+    ventas: 'Reporte de Ventas',
+    ingresos: 'Ingresos',
+    inventario: 'Inventario',
+    apartados: 'Apartados',
+    empleados: 'Empleados',
+    metal: 'Precio del Metal',
+    auditoria: 'Auditoría'
+  };
 
-  /** Busca un elemento obligatorio y avisa claro si falta en el HTML. */
-  function requerir<T extends Element>(selector: string): T {
-    const elemento = document.querySelector<T>(selector);
+  ngOnInit(): void {
+    this.inicializarFecha();
+    this.cargarDatosBackend();
 
-    if (elemento === null) {
-      throw new Error(`Falta el elemento "${selector}" en dashboard.html`);
-    }
-
-    return elemento;
-  }
-
-  /* ---------- Navegación entre secciones ---------- */
-
-  const botonesNav = Array.from(
-    document.querySelectorAll<HTMLButtonElement>('.nav__item'),
-  );
-  const vistas = Array.from(document.querySelectorAll<HTMLElement>('.vista'));
-  const titulo = requerir<HTMLElement>('#tituloVista');
-
-  function mostrarVista(nombre: string, textoTitulo: string): void {
-    for (const vista of vistas) {
-      vista.classList.toggle('activa', vista.id === `vista-${nombre}`);
-    }
-
-    for (const boton of botonesNav) {
-      boton.classList.toggle('activo', boton.dataset['vista'] === nombre);
-    }
-
-    titulo.textContent = textoTitulo;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  for (const boton of botonesNav) {
-    boton.addEventListener('click', () => {
-      const vista = boton.dataset['vista'];
-      const textoTitulo = boton.dataset['titulo'];
-
-      if (vista !== undefined && textoTitulo !== undefined) {
-        mostrarVista(vista, textoTitulo);
-      }
+    this.route.fragment.subscribe(frag => {
+      this.cambiarVista(frag || 'resumen', false);
     });
   }
 
-  /* ---------- Modo claro / oscuro ---------- */
+  public cargarDatosBackend(): void {
+    this.cargandoDatos = true;
 
-  const botonTema = requerir<HTMLButtonElement>('#botonTema');
-  const textoTema = requerir<HTMLElement>('#textoTema');
-  const iconoTema = requerir<SVGSVGElement>('#iconoTema');
-
-  botonTema.addEventListener('click', () => {
-    const eraOscuro = document.documentElement.dataset['tema'] === 'oscuro';
-    const nuevoTema: Tema = eraOscuro ? 'claro' : 'oscuro';
-
-    document.documentElement.dataset['tema'] = nuevoTema;
-    textoTema.textContent = eraOscuro ? 'Modo oscuro' : 'Modo claro';
-    iconoTema.innerHTML = eraOscuro ? ICONO_LUNA : ICONO_SOL;
-  });
-
-  /* ---------- Filtros de segmento (solo apariencia) ---------- */
-
-  const gruposSegmento = Array.from(
-    document.querySelectorAll<HTMLElement>('.segmentos'),
-  );
-
-  for (const grupo of gruposSegmento) {
-    grupo.addEventListener('click', (evento: MouseEvent) => {
-      const elegido = evento.target;
-
-      if (!(elegido instanceof HTMLButtonElement)) {
-        return;
+    // 1. Cargar Inventario
+    this.inventarioService.getInventario().subscribe({
+      next: (inventario) => {
+        this.listaInventario = inventario;
+        this.calcularMetricasInventario(inventario);
+        this.cargandoDatos = false;
+        this.cd.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cargar inventario en dashboard:', err);
+        this.cargandoDatos = false;
       }
+    });
 
-      const botones = Array.from(
-        grupo.querySelectorAll<HTMLButtonElement>('button'),
-      );
-
-      for (const boton of botones) {
-        boton.classList.toggle('activo', boton === elegido);
-      }
+    // 2. Cargar Sucursales
+    this.sucursalesService.getSucursales().subscribe({
+      next: (sucursales) => {
+        this.listaSucursales = sucursales;
+        this.cd.detectChanges();
+      },
+      error: (err) => console.error('Error al cargar sucursales en dashboard:', err)
     });
   }
 
-  /* ---------- Fecha del encabezado ---------- */
+  private calcularMetricasInventario(items: InventarioItem[]): void {
+    let piezas = 0;
+    let valor = 0;
+    let bajos = 0;
 
-  requerir<HTMLElement>('#fechaHoy').textContent = new Date().toLocaleDateString(
-    'es-MX',
-    { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
-  );
-})();
+    for (const item of items) {
+      const stock = Number(item.stock) || 0;
+      const precio = Number(item.precio_venta) || 0;
+      const minimo = Number(item.stock_minimo) || 0;
+
+      piezas += stock;
+      valor += stock * precio;
+      if (stock <= minimo) {
+        bajos++;
+      }
+    }
+
+    this.totalPiezasStock = piezas;
+    this.valorTotalInventario = valor;
+    this.cantidadStockBajo = bajos;
+  }
+
+  public cambiarVista(vista: string, moverArriba: boolean = true): void {
+    this.vistaActiva = this.titulosPorVista[vista] ? vista : 'resumen';
+    this.tituloVista = this.titulosPorVista[this.vistaActiva] ?? 'Resumen';
+    window.location.hash = this.vistaActiva;
+
+    if (moverArriba) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  public seleccionarSegmento(segmento: string): void {
+    this.segmentoSeleccionado = segmento;
+  }
+
+  @HostListener('window:hashchange')
+  onHashChange(): void {
+    const seccion = window.location.hash.replace('#', '') || 'resumen';
+    this.cambiarVista(seccion, true);
+  }
+
+  private inicializarFecha(): void {
+    this.fechaHoy = new Date().toLocaleDateString('es-MX', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+}

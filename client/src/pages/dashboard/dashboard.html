@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-tema="oscuro">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,1422 +11,1268 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="../../styles/tema.css" />
+
+    <!-- Menú lateral compartido. Va en el <head> para que no parpadee. -->
+    <link rel="stylesheet" href="../../components/menu/menu.css" />
+    <script src="../../components/menu/menu.ts"></script>
     <link rel="stylesheet" href="dashboard.css" />
   </head>
+<app-menu></app-menu>
 
-  <body>
-    <div class="app">
-      <!-- ===================== BARRA LATERAL ===================== -->
-      <aside class="barra">
-        <div class="marca">
-          <!-- Al migrar a Angular la ruta pasa a ser /logo.png -->
-          <img
-            class="marca__emblema"
-            src="../../../public/logo.png"
-            alt="Emblema de Joyería Olimpo"
-          />
-          <div class="marca__nombre">Olimpo</div>
-          <div class="marca__rol">Administración</div>
+<div class="app">
+  <!-- ===================== CONTENIDO ===================== -->
+  <main class="contenido">
+    <header class="cabecera">
+      <div>
+        <div class="etiqueta">Panel de control</div>
+        <h1 class="cabecera__titulo" id="tituloVista">{{ tituloVista }}</h1>
+      </div>
+      <div class="cabecera__fecha" id="fechaHoy">{{ fechaHoy }}</div>
+    </header>
+
+    <!-- ---------- Degradado compartido por las gráficas ---------- -->
+    <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+      <defs>
+        <linearGradient id="degradadoOro" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#ebd5a6" />
+          <stop offset="100%" stop-color="#b8945a" />
+        </linearGradient>
+      </defs>
+    </svg>
+
+    <!-- ==================== VISTA: RESUMEN ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'resumen'" id="vista-resumen">
+      <div class="rejilla rejilla--4">
+        <!-- Sucursales reales de pos_olimpo -->
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24"><path d="M3 21h18" /><path d="M5 21V8l7-5 7 5v13" /><path d="M10 21v-6h4v6" /></svg>
+            <h2 class="tarjeta__titulo">Sucursales registradas</h2>
+          </div>
+          <div class="lista">
+            @for (sucursal of listaSucursales; track sucursal.id) {
+              <div class="lista__fila">
+                <div>
+                  <div class="lista__principal">{{ sucursal.nombre }}</div>
+                  <div class="lista__secundario">{{ sucursal.direccion || 'Sin dirección' }} · Tel: {{ sucursal.telefono || 'N/A' }}</div>
+                </div>
+                <div class="lista__derecha">
+                  <span class="insignia insignia--ok">Activa</span>
+                </div>
+              </div>
+            } @empty {
+              <p class="vacio">No hay sucursales registradas en la base de datos.</p>
+            }
+          </div>
+        </article>
+      </div>
+
+      <!-- Cotización del metal: el precio de venta depende de esto -->
+      <div class="metal">
+        <div class="metal__intro">
+          <div class="etiqueta">Cotización del día</div>
+          <div class="metal__titulo">Precio del metal</div>
+          <div class="kpi__nota">Actualizado hoy, 08:00 · Doña Valentina Ruiz</div>
         </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Oro 24k</div>
+          <div class="metal__precio">$2,145.00</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Oro 18k</div>
+          <div class="metal__precio">$1,608.75</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Oro 14k</div>
+          <div class="metal__precio">$1,251.25</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+        <div class="metal__dato">
+          <div class="etiqueta">Plata .925</div>
+          <div class="metal__precio">$26.40</div>
+          <div class="metal__unidad">por gramo</div>
+        </div>
+      </div>
 
-        <div class="nav__titulo etiqueta">Secciones</div>
-
-        <nav class="nav">
-          <button class="nav__item activo" data-vista="resumen" data-titulo="Resumen">
-            <svg viewBox="0 0 24 24">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            </svg>
-            <span>Resumen</span>
-          </button>
-
-          <button class="nav__item" data-vista="ventas" data-titulo="Ventas">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 2 L3 7 v13 a1 1 0 001 1h16a1 1 0 001-1V7l-3-5z" />
-              <path d="M3 7h18" />
-              <path d="M16 11a4 4 0 01-8 0" />
-            </svg>
-            <span>Ventas</span>
-          </button>
-
-          <button class="nav__item" data-vista="ingresos" data-titulo="Ingresos">
+      <div class="rejilla rejilla--2-1">
+        <!-- Ventas de la semana -->
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
             <svg viewBox="0 0 24 24">
               <path d="M3 17l6-6 4 4 7-7" />
               <path d="M14 8h6v6" />
             </svg>
-            <span>Ingresos</span>
-          </button>
+            <h2 class="tarjeta__titulo">Ventas de la semana</h2>
+            <div class="tarjeta__accion segmentos">
+              <button [class.activo]="segmentoSeleccionado === 'dia'" (click)="seleccionarSegmento('dia')">Semana</button>
+              <button [class.activo]="segmentoSeleccionado === 'mes'" (click)="seleccionarSegmento('mes')">Mes</button>
+            </div>
+          </div>
 
-          <button class="nav__item" data-vista="inventario" data-titulo="Inventario">
+          <svg class="grafica" viewBox="0 0 560 220" role="img" aria-label="Ventas por día de la semana">
+            <g class="grafica__rejilla">
+              <line x1="46" y1="20" x2="548" y2="20" />
+              <line x1="46" y1="65" x2="548" y2="65" />
+              <line x1="46" y1="110" x2="548" y2="110" />
+              <line x1="46" y1="155" x2="548" y2="155" />
+              <line x1="46" y1="186" x2="548" y2="186" />
+            </g>
+            <g class="grafica__eje" text-anchor="end">
+              <text x="38" y="24">20k</text>
+              <text x="38" y="69">15k</text>
+              <text x="38" y="114">10k</text>
+              <text x="38" y="159">5k</text>
+              <text x="38" y="190">0</text>
+            </g>
+            <g class="grafica__barra">
+              <rect x="62" y="119" width="46" height="67" />
+              <rect x="132" y="92" width="46" height="94" />
+              <rect x="202" y="137" width="46" height="49" />
+              <rect x="272" y="74" width="46" height="112" />
+              <rect x="342" y="47" width="46" height="139" />
+              <rect x="412" y="29" width="46" height="157" />
+              <rect x="482" y="101" width="46" height="85" />
+            </g>
+            <g class="grafica__eje" text-anchor="middle">
+              <text x="85" y="205">Lun</text>
+              <text x="155" y="205">Mar</text>
+              <text x="225" y="205">Mié</text>
+              <text x="295" y="205">Jue</text>
+              <text x="365" y="205">Vie</text>
+              <text x="435" y="205">Sáb</text>
+              <text x="505" y="205">Dom</text>
+            </g>
+          </svg>
+        </article>
+
+        <!-- Alertas operativas -->
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 3l9.5 17h-19z" />
+              <path d="M12 10v4M12 17.2v.1" />
+            </svg>
+            <h2 class="tarjeta__titulo">Alertas</h2>
+          </div>
+
+          <div class="lista">
+            <div class="lista__fila alerta alerta--critica">
+              <svg class="alerta__icono" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v6M12 16.2v.1" />
+              </svg>
+              <div>
+                <div class="lista__principal">Apartado vencido</div>
+                <div class="lista__secundario">A-0219 · Sra. Herrera · venció ayer</div>
+              </div>
+            </div>
+
+            <div class="lista__fila alerta alerta--media">
+              <svg class="alerta__icono" viewBox="0 0 24 24">
+                <path d="M6 3h12l3 6-9 12L3 9z" />
+              </svg>
+              <div>
+                <div class="lista__principal">Stock bajo</div>
+                <div class="lista__secundario">8 piezas por debajo del mínimo</div>
+              </div>
+            </div>
+
+            <div class="lista__fila alerta alerta--media">
+              <svg class="alerta__icono" viewBox="0 0 24 24">
+                <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
+              </svg>
+              <div>
+                <div class="lista__principal">Autorización pendiente</div>
+                <div class="lista__secundario">Descuento 18% · Polanco · Diego Molina</div>
+              </div>
+            </div>
+
+            <div class="lista__fila alerta">
+              <svg class="alerta__icono" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7.5v5l3 2" />
+              </svg>
+              <div>
+                <div class="lista__principal">Cotización sin actualizar</div>
+                <div class="lista__secundario">La plata no se actualiza desde ayer</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="rejilla rejilla--2">
+        <!-- Actividad reciente -->
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7.5v5l3 2" />
+            </svg>
+            <h2 class="tarjeta__titulo">Actividad reciente</h2>
+          </div>
+          <div class="lista">
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Anillo de Oro</div>
+                <div class="lista__secundario">Santa Fe · Camila Torres · Hoy, 10:42</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$1,200</div>
+                <div class="lista__secundario">Venta</div>
+              </div>
+            </div>
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Collar Diamantes</div>
+                <div class="lista__secundario">Polanco · Diego Molina · Hoy, 09:15</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$4,850</div>
+                <div class="lista__secundario">Venta</div>
+              </div>
+            </div>
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Gargantilla Oro 24k</div>
+                <div class="lista__secundario">Santa Fe · Isabela Cruz · Hoy, 08:50</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$2,400</div>
+                <div class="lista__secundario">Abono a apartado</div>
+              </div>
+            </div>
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Reloj Vintage</div>
+                <div class="lista__secundario">Querétaro · Santiago Vega · Ayer, 18:30</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$3,200</div>
+                <div class="lista__secundario">Venta</div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Sucursales -->
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 21h18" />
+              <path d="M5 21V8l7-5 7 5v13" />
+              <path d="M10 21v-6h4v6" />
+            </svg>
+            <h2 class="tarjeta__titulo">Sucursales activas</h2>
+          </div>
+          <div class="lista">
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Olimpo Santa Fe</div>
+                <div class="lista__secundario">CDMX · 18 empleados</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$685,000</div>
+                <div class="lista__secundario">48% del total</div>
+              </div>
+            </div>
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Olimpo Polanco</div>
+                <div class="lista__secundario">CDMX · 12 empleados</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$492,000</div>
+                <div class="lista__secundario">34% del total</div>
+              </div>
+            </div>
+            <div class="lista__fila">
+              <div>
+                <div class="lista__principal">Olimpo Querétaro</div>
+                <div class="lista__secundario">QRO · 9 empleados</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$252,500</div>
+                <div class="lista__secundario">18% del total</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ==================== VISTA: VENTAS ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'ventas'" id="vista-ventas">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Hoy</div>
+          <div class="kpi__valor">$12,450</div>
+          <div class="kpi__nota kpi__nota--sube">+12% vs. ayer</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Semana</div>
+          <div class="kpi__valor">$68,400</div>
+          <div class="kpi__nota kpi__nota--sube">+5%</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Mes</div>
+          <div class="kpi__valor">$248,000</div>
+          <div class="kpi__nota kpi__nota--sube">+8.4%</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Ticket promedio</div>
+          <div class="kpi__valor">$3,180</div>
+          <div class="kpi__nota">248 transacciones</div>
+        </article>
+      </div>
+
+      <article class="tarjeta" style="margin-bottom: 20px">
+        <div class="tarjeta__cabecera">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 2 L3 7 v13 a1 1 0 001 1h16a1 1 0 001-1V7l-3-5z" />
+            <path d="M3 7h18" />
+          </svg>
+          <h2 class="tarjeta__titulo">Últimas ventas</h2>
+          <div class="tarjeta__accion segmentos">
+            <button class="activo">Todas</button>
+            <button>Santa Fe</button>
+            <button>Polanco</button>
+            <button>Querétaro</button>
+          </div>
+        </div>
+
+        <div class="tabla-envoltura">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Folio</th>
+                <th>Pieza</th>
+                <th>Sucursal</th>
+                <th>Atendió</th>
+                <th>Pago</th>
+                <th style="text-align: right">Monto</th>
+                <th>Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="celda-id">V-8842</td>
+                <td class="celda-pieza">Anillo de Oro</td>
+                <td>Santa Fe</td>
+                <td>Camila Torres</td>
+                <td><span class="insignia insignia--neutra">Efectivo</span></td>
+                <td class="celda-monto">$1,200</td>
+                <td>Hoy, 10:42</td>
+              </tr>
+              <tr>
+                <td class="celda-id">V-8841</td>
+                <td class="celda-pieza">Collar Diamantes</td>
+                <td>Polanco</td>
+                <td>Diego Molina</td>
+                <td><span class="insignia insignia--neutra">Tarjeta</span></td>
+                <td class="celda-monto">$4,850</td>
+                <td>Hoy, 09:15</td>
+              </tr>
+              <tr>
+                <td class="celda-id">V-8840</td>
+                <td class="celda-pieza">Reloj Vintage</td>
+                <td>Querétaro</td>
+                <td>Santiago Vega</td>
+                <td><span class="insignia insignia--neutra">Transferencia</span></td>
+                <td class="celda-monto">$3,200</td>
+                <td>Ayer, 18:30</td>
+              </tr>
+              <tr>
+                <td class="celda-id">V-8839</td>
+                <td class="celda-pieza">Pendientes Perla</td>
+                <td>Santa Fe</td>
+                <td>Camila Torres</td>
+                <td><span class="insignia insignia--neutra">Efectivo</span></td>
+                <td class="celda-monto">$950</td>
+                <td>Ayer, 16:20</td>
+              </tr>
+              <tr>
+                <td class="celda-id">V-8838</td>
+                <td class="celda-pieza">Esclava Oro 18k</td>
+                <td>Polanco</td>
+                <td>Isabela Cruz</td>
+                <td><span class="insignia insignia--neutra">Mixto</span></td>
+                <td class="celda-monto">$7,640</td>
+                <td>Ayer, 14:05</td>
+              </tr>
+              <tr>
+                <td class="celda-id">V-8837</td>
+                <td class="celda-pieza">Dije Zafiro</td>
+                <td>Querétaro</td>
+                <td>Santiago Vega</td>
+                <td><span class="insignia insignia--neutra">Tarjeta</span></td>
+                <td class="celda-monto">$2,310</td>
+                <td>Ayer, 12:40</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="tarjeta">
+        <div class="tarjeta__cabecera">
+          <svg viewBox="0 0 24 24">
+            <circle cx="9" cy="8" r="3.4" />
+            <path d="M2.5 20a6.5 6.5 0 0113 0" />
+            <path d="M16 5.5a3.4 3.4 0 010 5.6" />
+          </svg>
+          <h2 class="tarjeta__titulo">Desempeño por vendedor</h2>
+          <div class="tarjeta__accion segmentos">
+            <button>Semana</button>
+            <button class="activo">Mes</button>
+          </div>
+        </div>
+        <p class="sub">Piezas vendidas y monto acumulado en el mes en curso</p>
+
+        <div class="lista">
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Camila Torres</div>
+                <div class="lista__secundario">Santa Fe · Vendedora</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$254,300</div>
+                <div class="lista__secundario">58 piezas</div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno" style="width: 100%"></div>
+            </div>
+          </div>
+
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Isabela Cruz</div>
+                <div class="lista__secundario">Querétaro · Vendedora</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$201,700</div>
+                <div class="lista__secundario">44 piezas</div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno" style="width: 79%"></div>
+            </div>
+          </div>
+
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Diego Molina</div>
+                <div class="lista__secundario">Polanco · Cajero</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$168,900</div>
+                <div class="lista__secundario">37 piezas</div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno" style="width: 66%"></div>
+            </div>
+          </div>
+
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Santiago Vega</div>
+                <div class="lista__secundario">Santa Fe · Gerente</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$119,400</div>
+                <div class="lista__secundario">26 piezas</div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno" style="width: 47%"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ==================== VISTA: INGRESOS ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'ingresos'" id="vista-ingresos">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Total anual</div>
+          <div class="kpi__valor">$1,428,500</div>
+          <div class="kpi__nota">Meta cumplida al 92%</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Trimestre (Q4)</div>
+          <div class="kpi__valor">$342,000</div>
+          <div class="kpi__nota kpi__nota--sube">+4.2%</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Margen bruto</div>
+          <div class="kpi__valor">41.6%</div>
+          <div class="kpi__nota">Sobre costo de adquisición</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Cobrado en apartados</div>
+          <div class="kpi__valor">$96,300</div>
+          <div class="kpi__nota">14 planes activos</div>
+        </article>
+      </div>
+
+      <div class="rejilla rejilla--2">
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 21h18" />
+              <path d="M5 21V8l7-5 7 5v13" />
+            </svg>
+            <h2 class="tarjeta__titulo">Distribución por sucursal</h2>
+          </div>
+          <p class="sub">Últimos 30 días</p>
+
+          <div style="margin-bottom: 20px">
+            <div style="display: flex; justify-content: space-between">
+              <span>Santa Fe</span>
+              <span class="lista__monto">$685,000 <span class="lista__secundario" style="display: inline">(48%)</span></span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 48%"></div></div>
+          </div>
+
+          <div style="margin-bottom: 20px">
+            <div style="display: flex; justify-content: space-between">
+              <span>Polanco</span>
+              <span class="lista__monto">$492,000 <span class="lista__secundario" style="display: inline">(34%)</span></span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 34%"></div></div>
+          </div>
+
+          <div>
+            <div style="display: flex; justify-content: space-between">
+              <span>Querétaro</span>
+              <span class="lista__monto">$252,500 <span class="lista__secundario" style="display: inline">(18%)</span></span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
+          </div>
+        </article>
+
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
             <svg viewBox="0 0 24 24">
               <path d="M6 3h12l3 6-9 12L3 9z" />
               <path d="M3 9h18" />
-              <path d="M12 3l-3 6 3 12 3-12-3-6z" />
             </svg>
-            <span>Inventario</span>
-            <em class="nav__insignia">8</em>
-          </button>
+            <h2 class="tarjeta__titulo">Ingresos por categoría</h2>
+          </div>
+          <p class="sub">Participación en el monto vendido del mes</p>
 
-          <button class="nav__item" data-vista="apartados" data-titulo="Apartados">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z" />
-            </svg>
-            <span>Apartados</span>
-            <em class="nav__insignia">3</em>
-          </button>
+          <div style="margin-bottom: 18px">
+            <div style="display: flex; justify-content: space-between">
+              <span>Anillos</span>
+              <span class="lista__monto">$92,400</span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 37%"></div></div>
+          </div>
+          <div style="margin-bottom: 18px">
+            <div style="display: flex; justify-content: space-between">
+              <span>Collares y gargantillas</span>
+              <span class="lista__monto">$66,700</span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 27%"></div></div>
+          </div>
+          <div style="margin-bottom: 18px">
+            <div style="display: flex; justify-content: space-between">
+              <span>Pendientes</span>
+              <span class="lista__monto">$44,300</span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
+          </div>
+          <div>
+            <div style="display: flex; justify-content: space-between">
+              <span>Relojería y otros</span>
+              <span class="lista__monto">$44,600</span>
+            </div>
+            <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
+          </div>
+        </article>
+      </div>
 
-          <button class="nav__item" data-vista="empleados" data-titulo="Empleados">
+      <article class="tarjeta">
+        <div class="tarjeta__cabecera">
+          <svg viewBox="0 0 24 24">
+            <path d="M3 17l6-6 4 4 7-7" />
+            <path d="M14 8h6v6" />
+          </svg>
+          <h2 class="tarjeta__titulo">Evolución mensual</h2>
+        </div>
+
+        <svg class="grafica" viewBox="0 0 900 260" role="img" aria-label="Ingresos por mes del año">
+          <g class="grafica__rejilla">
+            <line x1="60" y1="30" x2="880" y2="30" />
+            <line x1="60" y1="85" x2="880" y2="85" />
+            <line x1="60" y1="140" x2="880" y2="140" />
+            <line x1="60" y1="195" x2="880" y2="195" />
+            <line x1="60" y1="220" x2="880" y2="220" />
+          </g>
+          <g class="grafica__eje" text-anchor="end">
+            <text x="50" y="34">200k</text>
+            <text x="50" y="89">150k</text>
+            <text x="50" y="144">100k</text>
+            <text x="50" y="199">50k</text>
+            <text x="50" y="224">0</text>
+          </g>
+          <polyline
+            class="grafica__linea"
+            stroke="#e0c289"
+            points="90,170 162,152 234,158 306,130 378,142 450,112 522,120 594,96 666,104 738,72 810,84 866,56"
+          />
+          <g fill="#ebd5a6" class="grafica__punto" stroke="#3a2e22">
+            <circle cx="90" cy="170" r="4" />
+            <circle cx="162" cy="152" r="4" />
+            <circle cx="234" cy="158" r="4" />
+            <circle cx="306" cy="130" r="4" />
+            <circle cx="378" cy="142" r="4" />
+            <circle cx="450" cy="112" r="4" />
+            <circle cx="522" cy="120" r="4" />
+            <circle cx="594" cy="96" r="4" />
+            <circle cx="666" cy="104" r="4" />
+            <circle cx="738" cy="72" r="4" />
+            <circle cx="810" cy="84" r="4" />
+            <circle cx="866" cy="56" r="4" />
+          </g>
+          <g class="grafica__eje" text-anchor="middle">
+            <text x="90" y="242">Ene</text>
+            <text x="162" y="242">Feb</text>
+            <text x="234" y="242">Mar</text>
+            <text x="306" y="242">Abr</text>
+            <text x="378" y="242">May</text>
+            <text x="450" y="242">Jun</text>
+            <text x="522" y="242">Jul</text>
+            <text x="594" y="242">Ago</text>
+            <text x="666" y="242">Sep</text>
+            <text x="738" y="242">Oct</text>
+            <text x="810" y="242">Nov</text>
+            <text x="866" y="242">Dic</text>
+          </g>
+        </svg>
+      </article>
+    </section>
+
+    <!-- ==================== VISTA: INVENTARIO REAL ==================== -->
+<section class="vista" [class.activa]="vistaActiva === 'inventario'" id="vista-inventario">
+  <div class="rejilla rejilla--4">
+    <article class="kpi">
+      <div class="etiqueta">Piezas en existencia</div>
+      <div class="kpi__valor">{{ totalPiezasStock }}</div>
+      <div class="kpi__nota">En {{ listaSucursales.length }} sucursales</div>
+    </article>
+    <article class="kpi">
+      <div class="etiqueta">Valor del inventario</div>
+      <div class="kpi__valor">{{ valorTotalInventario | currency:'USD':'symbol':'1.0-0' }}</div>
+      <div class="kpi__nota">A precio de venta vigente</div>
+    </article>
+    <article class="kpi">
+      <div class="etiqueta">Stock bajo</div>
+      <div class="kpi__valor">{{ cantidadStockBajo }}</div>
+      <div class="kpi__nota kpi__nota--baja">Requieren reposición</div>
+    </article>
+    <article class="kpi">
+      <div class="etiqueta">Sucursales activas</div>
+      <div class="kpi__valor">{{ listaSucursales.length }}</div>
+      <div class="kpi__nota">Puntos de venta en red</div>
+    </article>
+  </div>
+
+  <article class="tarjeta">
+    <!-- En la sección de Inventario de dashboard.html -->
+      <div class="tarjeta__cabecera">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 3h12l3 6-9 12L3 9z" />
+          <path d="M3 9h18" />
+          <path d="M12 3l-3 6 3 12 3-12-3-6z" />
+        </svg>
+        <h2 class="tarjeta__titulo">Piezas registradas en tienda</h2>
+
+        <!-- BOTÓN REDIRIGIDO -->
+        <button
+          type="button"
+          class="tarjeta__accion boton boton--fantasma"
+          routerLink="/inventario">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+          Actualizar inventario
+        </button>
+      </div>
+    <p class="sub">
+      Existencias físicas ligadas a sucursal y vitrina en base de datos pos_olimpo.
+    </p>
+
+    <div class="tabla-envoltura">
+      <table class="tabla tabla--amplia">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Pieza</th>
+            <th>Metal</th>
+            <th>Kilataje</th>
+            <th>Sucursal</th>
+            <th>Ubicación Vitrina</th>
+            <th style="text-align: right">Precio Venta</th>
+            <th style="text-align: right">Stock</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of listaInventario; track item.id) {
+            <tr>
+              <td class="celda-id">#{{ item.id_producto }}</td>
+              <td class="celda-pieza">{{ item.nombre_producto }}</td>
+              <td>{{ item.tipo_metal }}</td>
+              <td>{{ item.kilataje || '—' }}</td>
+              <td><strong>{{ item.nombre_sucursal }}</strong></td>
+              <td>{{ item.ubicacion_vitrina }}</td>
+              <td class="celda-monto">{{ item.precio_venta | currency:'USD':'symbol':'1.0-0' }}</td>
+              <td class="celda-num">{{ item.stock }}</td>
+              <td>
+                @if (item.stock <= item.stock_minimo) {
+                  <span class="insignia insignia--aviso">Stock bajo</span>
+                } @else {
+                  <span class="insignia insignia--ok">Disponible</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="vacio">No hay joyas en el inventario de las sucursales.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+
+    <!-- ==================== VISTA: APARTADOS ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'apartados'" id="vista-apartados">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Apartados activos</div>
+          <div class="kpi__valor">14</div>
+          <div class="kpi__nota">Piezas fuera de venta</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Anticipos cobrados</div>
+          <div class="kpi__valor">$96,300</div>
+          <div class="kpi__nota">De $214,800 comprometidos</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Por vencer</div>
+          <div class="kpi__valor">3</div>
+          <div class="kpi__nota kpi__nota--baja">En los próximos 7 días</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Vencidos</div>
+          <div class="kpi__valor">1</div>
+          <div class="kpi__nota kpi__nota--baja">Pendiente de liberar</div>
+        </article>
+      </div>
+
+      <article class="tarjeta">
+        <div class="tarjeta__cabecera">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z" />
+          </svg>
+          <h2 class="tarjeta__titulo">Planes de apartado</h2>
+          <button class="tarjeta__accion boton boton--fantasma">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            Nuevo apartado
+          </button>
+        </div>
+        <p class="sub">
+          La pieza queda bloqueada del inventario disponible hasta liquidar o vencer el plazo.
+        </p>
+
+        <div class="lista">
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Colgante Larme Dorée</div>
+                <div class="lista__secundario">A-0231 · Sra. Mariana López · Santa Fe · vence 30 sep</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$18,500 <span class="lista__secundario" style="display: inline">de $32,900</span></div>
+                <div class="lista__secundario"><span class="insignia insignia--ok">Al corriente</span></div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno" style="width: 56%"></div>
+            </div>
+          </div>
+
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Anillo Diamante «Eterna»</div>
+                <div class="lista__secundario">A-0228 · Sr. Ricardo Peña · Polanco · vence 22 sep</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$31,800 <span class="lista__secundario" style="display: inline">de $48,200</span></div>
+                <div class="lista__secundario"><span class="insignia insignia--ok">Al corriente</span></div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno" style="width: 66%"></div>
+            </div>
+          </div>
+
+          <div class="lista__fila" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Pendientes Aurore</div>
+                <div class="lista__secundario">A-0225 · Sra. Lucía Fernández · Santa Fe · vence 18 sep</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$6,400 <span class="lista__secundario" style="display: inline">de $21,400</span></div>
+                <div class="lista__secundario"><span class="insignia insignia--aviso">Por vencer</span></div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno progreso__relleno--aviso" style="width: 30%"></div>
+            </div>
+          </div>
+
+          <div class="lista__fila alerta alerta--critica" style="display: block">
+            <div style="display: flex; align-items: baseline">
+              <div>
+                <div class="lista__principal">Gargantilla Oro Vintage</div>
+                <div class="lista__secundario">A-0219 · Sra. Herrera · Polanco · venció 13 sep</div>
+              </div>
+              <div class="lista__derecha">
+                <div class="lista__monto">$2,200 <span class="lista__secundario" style="display: inline">de $8,850</span></div>
+                <div class="lista__secundario"><span class="insignia insignia--riesgo">Vencido</span></div>
+              </div>
+            </div>
+            <div class="progreso progreso--fina">
+              <div class="progreso__relleno progreso__relleno--riesgo" style="width: 25%"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ==================== VISTA: EMPLEADOS ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'empleados'" id="vista-empleados">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Total</div>
+          <div class="kpi__valor">43</div>
+          <div class="kpi__nota">Activos</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Cajeros</div>
+          <div class="kpi__valor">24</div>
+          <div class="kpi__nota">Venden y cobran</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Gerentes</div>
+          <div class="kpi__valor">8</div>
+          <div class="kpi__nota">Autorizan descuentos</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Administradores</div>
+          <div class="kpi__valor">2</div>
+          <div class="kpi__nota">Acceso total</div>
+        </article>
+      </div>
+
+      <div class="rejilla rejilla--2-1">
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
             <svg viewBox="0 0 24 24">
               <circle cx="9" cy="8" r="3.4" />
               <path d="M2.5 20a6.5 6.5 0 0113 0" />
-              <path d="M16 5.5a3.4 3.4 0 010 5.6" />
-              <path d="M17.5 14.2A6.5 6.5 0 0121.5 20" />
             </svg>
-            <span>Empleados</span>
-          </button>
+            <h2 class="tarjeta__titulo">Personal registrado</h2>
+          </div>
 
-          <button class="nav__item" data-vista="metal" data-titulo="Precio del metal">
+          <div class="tabla-envoltura">
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Rol</th>
+                  <th>Sucursal</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="celda-id">E-001</td>
+                  <td class="celda-pieza">Camila Torres</td>
+                  <td><span class="insignia insignia--neutra">Cajero</span></td>
+                  <td>Santa Fe</td>
+                  <td><span class="insignia insignia--ok">Activa</span></td>
+                </tr>
+                <tr>
+                  <td class="celda-id">E-002</td>
+                  <td class="celda-pieza">Diego Molina</td>
+                  <td><span class="insignia insignia--neutra">Cajero</span></td>
+                  <td>Polanco</td>
+                  <td><span class="insignia insignia--ok">Activo</span></td>
+                </tr>
+                <tr>
+                  <td class="celda-id">E-003</td>
+                  <td class="celda-pieza">Isabela Cruz</td>
+                  <td><span class="insignia insignia--neutra">Cajero</span></td>
+                  <td>Querétaro</td>
+                  <td><span class="insignia insignia--ok">Activa</span></td>
+                </tr>
+                <tr>
+                  <td class="celda-id">E-004</td>
+                  <td class="celda-pieza">Santiago Vega</td>
+                  <td><span class="insignia insignia--aviso">Gerente</span></td>
+                  <td>Santa Fe</td>
+                  <td><span class="insignia insignia--ok">Activo</span></td>
+                </tr>
+                <tr>
+                  <td class="celda-id">E-005</td>
+                  <td class="celda-pieza">Valentina Ruiz</td>
+                  <td><span class="insignia insignia--riesgo">Administrador</span></td>
+                  <td>Corporativo</td>
+                  <td><span class="insignia insignia--ok">Activa</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24">
+              <circle cx="12" cy="8" r="3.6" />
+              <path d="M4 20a8 8 0 0116 0" />
+              <path d="M18 3.5v5M15.5 6h5" />
+            </svg>
+            <h2 class="tarjeta__titulo">Dar de alta</h2>
+          </div>
+
+          <div class="campo">
+            <label class="etiqueta">Nombre completo</label>
+            <input type="text" placeholder="Ej. Elena Rodríguez" />
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Correo electrónico</label>
+            <input type="email" placeholder="ejemplo@olimpo.mx" />
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Rol</label>
+            <select>
+              <option>Cajero</option>
+              <option>Gerente</option>
+              <option>Administrador</option>
+            </select>
+            <p class="campo__ayuda">
+              El rol define los permisos en el backend, no solo lo que se ve en pantalla.
+            </p>
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Sucursal asignada</label>
+            <select>
+              <option>Olimpo Santa Fe</option>
+              <option>Olimpo Polanco</option>
+              <option>Olimpo Querétaro</option>
+            </select>
+          </div>
+
+          <button class="boton boton--primario boton--bloque">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            Crear usuario
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ==================== VISTA: PRECIO DEL METAL ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'metal'" id="vista-metal">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Oro 24k</div>
+          <div class="kpi__valor">$2,145.00</div>
+          <div class="kpi__nota kpi__nota--sube">+0.8% vs. ayer</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Oro 18k</div>
+          <div class="kpi__valor">$1,608.75</div>
+          <div class="kpi__nota kpi__nota--sube">+0.8% vs. ayer</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Oro 14k</div>
+          <div class="kpi__valor">$1,251.25</div>
+          <div class="kpi__nota kpi__nota--sube">+0.8% vs. ayer</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Plata .925</div>
+          <div class="kpi__valor">$26.40</div>
+          <div class="kpi__nota kpi__nota--baja">−1.2% vs. ayer</div>
+        </article>
+      </div>
+
+      <div class="rejilla rejilla--2-1">
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
+            <svg viewBox="0 0 24 24">
+              <path d="M3 17l6-6 4 4 7-7" />
+              <path d="M14 8h6v6" />
+            </svg>
+            <h2 class="tarjeta__titulo">Oro 24k · últimos 12 días</h2>
+          </div>
+          <p class="sub">Precio por gramo en pesos mexicanos</p>
+
+          <svg class="grafica" viewBox="0 0 700 230" role="img" aria-label="Evolución del precio del oro">
+            <g class="grafica__rejilla">
+              <line x1="66" y1="26" x2="684" y2="26" />
+              <line x1="66" y1="76" x2="684" y2="76" />
+              <line x1="66" y1="126" x2="684" y2="126" />
+              <line x1="66" y1="176" x2="684" y2="176" />
+            </g>
+            <g class="grafica__eje" text-anchor="end">
+              <text x="56" y="30">2,200</text>
+              <text x="56" y="80">2,120</text>
+              <text x="56" y="130">2,040</text>
+              <text x="56" y="180">1,960</text>
+            </g>
+            <polyline
+              class="grafica__linea"
+              stroke="#e0c289"
+              points="86,150 140,142 194,156 248,128 302,134 356,110 410,118 464,96 518,104 572,78 626,86 676,60"
+            />
+            <g fill="#ebd5a6" stroke="#3a2e22" class="grafica__punto">
+              <circle cx="86" cy="150" r="4" />
+              <circle cx="194" cy="156" r="4" />
+              <circle cx="302" cy="134" r="4" />
+              <circle cx="410" cy="118" r="4" />
+              <circle cx="518" cy="104" r="4" />
+              <circle cx="626" cy="86" r="4" />
+              <circle cx="676" cy="60" r="4" />
+            </g>
+            <g class="grafica__eje" text-anchor="middle">
+              <text x="86" y="200">3 sep</text>
+              <text x="194" y="200">5 sep</text>
+              <text x="302" y="200">7 sep</text>
+              <text x="410" y="200">9 sep</text>
+              <text x="518" y="200">11 sep</text>
+              <text x="626" y="200">13 sep</text>
+              <text x="676" y="200">Hoy</text>
+            </g>
+          </svg>
+        </article>
+
+        <article class="tarjeta">
+          <div class="tarjeta__cabecera">
             <svg viewBox="0 0 24 24">
               <path d="M12 3v18" />
               <path d="M5 7h14" />
               <path d="M5 7l-2.5 6a3.2 3.2 0 005 0z" />
               <path d="M19 7l-2.5 6a3.2 3.2 0 005 0z" />
-              <path d="M8 21h8" />
             </svg>
-            <span>Precio del metal</span>
-          </button>
+            <h2 class="tarjeta__titulo">Actualizar cotización</h2>
+          </div>
+          <p class="sub">
+            Al guardar, todas las piezas vendidas por peso recalculan su precio automáticamente.
+          </p>
 
-          <button class="nav__item" data-vista="auditoria" data-titulo="Bitácora de auditoría">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
-              <path d="M9 12l2 2 4-4.5" />
-            </svg>
-            <span>Auditoría</span>
-          </button>
-        </nav>
-
-        <div class="barra__pie">
-          <div class="usuario">
-            <div class="etiqueta">Administra la casa</div>
-            <div class="usuario__nombre">Doña Valentina Ruiz</div>
+          <div class="campo">
+            <label class="etiqueta">Oro 24k · precio por gramo</label>
+            <input type="text" value="2145.00" />
+          </div>
+          <div class="campo">
+            <label class="etiqueta">Plata .925 · precio por gramo</label>
+            <input type="text" value="26.40" />
+            <p class="campo__ayuda">Oro 18k y 14k se derivan del 24k según su ley.</p>
           </div>
 
-          <button class="barra__accion" id="botonTema">
-            <svg viewBox="0 0 24 24" id="iconoTema">
-              <circle cx="12" cy="12" r="4.2" />
-              <path d="M12 2v2M12 20v2M4.2 4.2l1.5 1.5M18.3 18.3l1.5 1.5M2 12h2M20 12h2M4.2 19.8l1.5-1.5M18.3 5.7l1.5-1.5" />
+          <button class="boton boton--primario boton--bloque">
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12l5 5L19 7" />
             </svg>
-            <span id="textoTema">Modo claro</span>
+            Guardar cotización
           </button>
 
-          <button class="barra__accion barra__accion--tenue">
-            <svg viewBox="0 0 24 24">
-              <path d="M14 6l-6 6 6 6" />
-            </svg>
-            <span>Volver al POS</span>
-          </button>
+          <p class="campo__ayuda" style="text-align: center; margin-top: 14px">
+            Solo el administrador puede modificar la cotización. El cambio queda registrado en la bitácora.
+          </p>
+        </article>
+      </div>
+
+      <article class="tarjeta">
+        <div class="tarjeta__cabecera">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7.5v5l3 2" />
+          </svg>
+          <h2 class="tarjeta__titulo">Ejemplo de cálculo</h2>
         </div>
-      </aside>
+        <p class="sub">
+          Así queda el precio de una pieza vendida por peso con la cotización de hoy
+        </p>
 
-      <!-- ===================== CONTENIDO ===================== -->
-      <main class="contenido">
-        <header class="cabecera">
-          <div>
-            <div class="etiqueta">Panel de control</div>
-            <h1 class="cabecera__titulo" id="tituloVista">Resumen</h1>
+        <div class="tabla-envoltura">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Concepto</th>
+                <th>Detalle</th>
+                <th style="text-align: right">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="celda-pieza">Metal</td>
+                <td>18.6 g × $2,145.00 (oro 24k)</td>
+                <td class="celda-monto">$39,897.00</td>
+              </tr>
+              <tr>
+                <td class="celda-pieza">Mano de obra</td>
+                <td>Trabajo de orfebrería</td>
+                <td class="celda-monto">$3,200.00</td>
+              </tr>
+              <tr>
+                <td class="celda-pieza">Piedras</td>
+                <td>Sin piedras engastadas</td>
+                <td class="celda-monto">$0.00</td>
+              </tr>
+              <tr>
+                <td class="celda-pieza">Margen</td>
+                <td>22% sobre el costo</td>
+                <td class="celda-monto">$9,481.34</td>
+              </tr>
+              <tr>
+                <td class="celda-pieza" style="color: var(--oro)">Precio de venta</td>
+                <td>AUR-GO-042 · Gargantilla Oro Vintage</td>
+                <td class="celda-monto" style="font-size: 18px">$52,578.34</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- ==================== VISTA: AUDITORÍA ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'auditoria'" id="vista-auditoria">
+      <div class="rejilla rejilla--4">
+        <article class="kpi">
+          <div class="etiqueta">Movimientos hoy</div>
+          <div class="kpi__valor">27</div>
+          <div class="kpi__nota">Registrados automáticamente</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Cancelaciones</div>
+          <div class="kpi__valor">2</div>
+          <div class="kpi__nota kpi__nota--baja">Ambas autorizadas</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Descuentos aplicados</div>
+          <div class="kpi__valor">6</div>
+          <div class="kpi__nota">Promedio 9.4%</div>
+        </article>
+        <article class="kpi">
+          <div class="etiqueta">Sin autorizar</div>
+          <div class="kpi__valor">1</div>
+          <div class="kpi__nota kpi__nota--baja">Requiere revisión</div>
+        </article>
+      </div>
+
+      <article class="tarjeta">
+        <div class="tarjeta__cabecera">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
+            <path d="M9 12l2 2 4-4.5" />
+          </svg>
+          <h2 class="tarjeta__titulo">Bitácora de acciones sensibles</h2>
+          <div class="tarjeta__accion segmentos">
+            <button class="activo">Todo</button>
+            <button>Cancelaciones</button>
+            <button>Precios</button>
+            <button>Descuentos</button>
           </div>
-          <div class="cabecera__fecha" id="fechaHoy">martes, 1 de septiembre de 2026</div>
-        </header>
+        </div>
+        <p class="sub">
+          Registro inalterable de toda operación que afecta dinero o inventario.
+        </p>
 
-        <!-- ---------- Degradado compartido por las gráficas ---------- -->
-        <svg width="0" height="0" aria-hidden="true" style="position: absolute">
-          <defs>
-            <linearGradient id="degradadoOro" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#ebd5a6" />
-              <stop offset="100%" stop-color="#b8945a" />
-            </linearGradient>
-          </defs>
-        </svg>
-
-        <!-- ==================== VISTA: RESUMEN ==================== -->
-        <section class="vista activa" id="vista-resumen">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Ventas de hoy</div>
-              <div class="kpi__valor">$12,450</div>
-              <div class="kpi__nota kpi__nota--sube">+12% vs. ayer</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Ingresos del mes</div>
-              <div class="kpi__valor">$248,000</div>
-              <div class="kpi__nota kpi__nota--sube">+8.4% vs. mes anterior</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Piezas en existencia</div>
-              <div class="kpi__valor">38</div>
-              <div class="kpi__nota">8 con stock bajo</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Apartados activos</div>
-              <div class="kpi__valor">14</div>
-              <div class="kpi__nota kpi__nota--baja">3 por vencer esta semana</div>
-            </article>
-          </div>
-
-          <!-- Cotización del metal: el precio de venta depende de esto -->
-          <div class="metal">
-            <div class="metal__intro">
-              <div class="etiqueta">Cotización del día</div>
-              <div class="metal__titulo">Precio del metal</div>
-              <div class="kpi__nota">Actualizado hoy, 08:00 · Doña Valentina Ruiz</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Oro 24k</div>
-              <div class="metal__precio">$2,145.00</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Oro 18k</div>
-              <div class="metal__precio">$1,608.75</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Oro 14k</div>
-              <div class="metal__precio">$1,251.25</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-            <div class="metal__dato">
-              <div class="etiqueta">Plata .925</div>
-              <div class="metal__precio">$26.40</div>
-              <div class="metal__unidad">por gramo</div>
-            </div>
-          </div>
-
-          <div class="rejilla rejilla--2-1">
-            <!-- Ventas de la semana -->
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 17l6-6 4 4 7-7" />
-                  <path d="M14 8h6v6" />
-                </svg>
-                <h2 class="tarjeta__titulo">Ventas de la semana</h2>
-                <div class="tarjeta__accion segmentos">
-                  <button class="activo">Semana</button>
-                  <button>Mes</button>
-                </div>
-              </div>
-
-              <svg class="grafica" viewBox="0 0 560 220" role="img" aria-label="Ventas por día de la semana">
-                <g class="grafica__rejilla">
-                  <line x1="46" y1="20" x2="548" y2="20" />
-                  <line x1="46" y1="65" x2="548" y2="65" />
-                  <line x1="46" y1="110" x2="548" y2="110" />
-                  <line x1="46" y1="155" x2="548" y2="155" />
-                  <line x1="46" y1="186" x2="548" y2="186" />
-                </g>
-                <g class="grafica__eje" text-anchor="end">
-                  <text x="38" y="24">20k</text>
-                  <text x="38" y="69">15k</text>
-                  <text x="38" y="114">10k</text>
-                  <text x="38" y="159">5k</text>
-                  <text x="38" y="190">0</text>
-                </g>
-                <g class="grafica__barra">
-                  <rect x="62" y="119" width="46" height="67" />
-                  <rect x="132" y="92" width="46" height="94" />
-                  <rect x="202" y="137" width="46" height="49" />
-                  <rect x="272" y="74" width="46" height="112" />
-                  <rect x="342" y="47" width="46" height="139" />
-                  <rect x="412" y="29" width="46" height="157" />
-                  <rect x="482" y="101" width="46" height="85" />
-                </g>
-                <g class="grafica__eje" text-anchor="middle">
-                  <text x="85" y="205">Lun</text>
-                  <text x="155" y="205">Mar</text>
-                  <text x="225" y="205">Mié</text>
-                  <text x="295" y="205">Jue</text>
-                  <text x="365" y="205">Vie</text>
-                  <text x="435" y="205">Sáb</text>
-                  <text x="505" y="205">Dom</text>
-                </g>
-              </svg>
-            </article>
-
-            <!-- Alertas operativas -->
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3l9.5 17h-19z" />
-                  <path d="M12 10v4M12 17.2v.1" />
-                </svg>
-                <h2 class="tarjeta__titulo">Alertas</h2>
-              </div>
-
-              <div class="lista">
-                <div class="lista__fila alerta alerta--critica">
-                  <svg class="alerta__icono" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7v6M12 16.2v.1" />
-                  </svg>
-                  <div>
-                    <div class="lista__principal">Apartado vencido</div>
-                    <div class="lista__secundario">A-0219 · Sra. Herrera · venció ayer</div>
-                  </div>
-                </div>
-
-                <div class="lista__fila alerta alerta--media">
-                  <svg class="alerta__icono" viewBox="0 0 24 24">
-                    <path d="M6 3h12l3 6-9 12L3 9z" />
-                  </svg>
-                  <div>
-                    <div class="lista__principal">Stock bajo</div>
-                    <div class="lista__secundario">8 piezas por debajo del mínimo</div>
-                  </div>
-                </div>
-
-                <div class="lista__fila alerta alerta--media">
-                  <svg class="alerta__icono" viewBox="0 0 24 24">
-                    <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
-                  </svg>
-                  <div>
-                    <div class="lista__principal">Autorización pendiente</div>
-                    <div class="lista__secundario">Descuento 18% · Polanco · Diego Molina</div>
-                  </div>
-                </div>
-
-                <div class="lista__fila alerta">
-                  <svg class="alerta__icono" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M12 7.5v5l3 2" />
-                  </svg>
-                  <div>
-                    <div class="lista__principal">Cotización sin actualizar</div>
-                    <div class="lista__secundario">La plata no se actualiza desde ayer</div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="rejilla rejilla--2">
-            <!-- Actividad reciente -->
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="9" />
-                  <path d="M12 7.5v5l3 2" />
-                </svg>
-                <h2 class="tarjeta__titulo">Actividad reciente</h2>
-              </div>
-              <div class="lista">
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Anillo de Oro</div>
-                    <div class="lista__secundario">Santa Fe · Camila Torres · Hoy, 10:42</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$1,200</div>
-                    <div class="lista__secundario">Venta</div>
-                  </div>
-                </div>
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Collar Diamantes</div>
-                    <div class="lista__secundario">Polanco · Diego Molina · Hoy, 09:15</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$4,850</div>
-                    <div class="lista__secundario">Venta</div>
-                  </div>
-                </div>
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Gargantilla Oro 24k</div>
-                    <div class="lista__secundario">Santa Fe · Isabela Cruz · Hoy, 08:50</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$2,400</div>
-                    <div class="lista__secundario">Abono a apartado</div>
-                  </div>
-                </div>
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Reloj Vintage</div>
-                    <div class="lista__secundario">Querétaro · Santiago Vega · Ayer, 18:30</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$3,200</div>
-                    <div class="lista__secundario">Venta</div>
-                  </div>
-                </div>
-              </div>
-            </article>
-
-            <!-- Sucursales -->
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 21h18" />
-                  <path d="M5 21V8l7-5 7 5v13" />
-                  <path d="M10 21v-6h4v6" />
-                </svg>
-                <h2 class="tarjeta__titulo">Sucursales activas</h2>
-              </div>
-              <div class="lista">
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Olimpo Santa Fe</div>
-                    <div class="lista__secundario">CDMX · 18 empleados</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$685,000</div>
-                    <div class="lista__secundario">48% del total</div>
-                  </div>
-                </div>
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Olimpo Polanco</div>
-                    <div class="lista__secundario">CDMX · 12 empleados</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$492,000</div>
-                    <div class="lista__secundario">34% del total</div>
-                  </div>
-                </div>
-                <div class="lista__fila">
-                  <div>
-                    <div class="lista__principal">Olimpo Querétaro</div>
-                    <div class="lista__secundario">QRO · 9 empleados</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$252,500</div>
-                    <div class="lista__secundario">18% del total</div>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <!-- ==================== VISTA: VENTAS ==================== -->
-        <section class="vista" id="vista-ventas">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Hoy</div>
-              <div class="kpi__valor">$12,450</div>
-              <div class="kpi__nota kpi__nota--sube">+12% vs. ayer</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Semana</div>
-              <div class="kpi__valor">$68,400</div>
-              <div class="kpi__nota kpi__nota--sube">+5%</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Mes</div>
-              <div class="kpi__valor">$248,000</div>
-              <div class="kpi__nota kpi__nota--sube">+8.4%</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Ticket promedio</div>
-              <div class="kpi__valor">$3,180</div>
-              <div class="kpi__nota">248 transacciones</div>
-            </article>
-          </div>
-
-          <article class="tarjeta" style="margin-bottom: 20px">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <path d="M6 2 L3 7 v13 a1 1 0 001 1h16a1 1 0 001-1V7l-3-5z" />
-                <path d="M3 7h18" />
-              </svg>
-              <h2 class="tarjeta__titulo">Últimas ventas</h2>
-              <div class="tarjeta__accion segmentos">
-                <button class="activo">Todas</button>
-                <button>Santa Fe</button>
-                <button>Polanco</button>
-                <button>Querétaro</button>
-              </div>
-            </div>
-
-            <div class="tabla-envoltura">
-              <table class="tabla">
-                <thead>
-                  <tr>
-                    <th>Folio</th>
-                    <th>Pieza</th>
-                    <th>Sucursal</th>
-                    <th>Atendió</th>
-                    <th>Pago</th>
-                    <th style="text-align: right">Monto</th>
-                    <th>Hora</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="celda-id">V-8842</td>
-                    <td class="celda-pieza">Anillo de Oro</td>
-                    <td>Santa Fe</td>
-                    <td>Camila Torres</td>
-                    <td><span class="insignia insignia--neutra">Efectivo</span></td>
-                    <td class="celda-monto">$1,200</td>
-                    <td>Hoy, 10:42</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">V-8841</td>
-                    <td class="celda-pieza">Collar Diamantes</td>
-                    <td>Polanco</td>
-                    <td>Diego Molina</td>
-                    <td><span class="insignia insignia--neutra">Tarjeta</span></td>
-                    <td class="celda-monto">$4,850</td>
-                    <td>Hoy, 09:15</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">V-8840</td>
-                    <td class="celda-pieza">Reloj Vintage</td>
-                    <td>Querétaro</td>
-                    <td>Santiago Vega</td>
-                    <td><span class="insignia insignia--neutra">Transferencia</span></td>
-                    <td class="celda-monto">$3,200</td>
-                    <td>Ayer, 18:30</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">V-8839</td>
-                    <td class="celda-pieza">Pendientes Perla</td>
-                    <td>Santa Fe</td>
-                    <td>Camila Torres</td>
-                    <td><span class="insignia insignia--neutra">Efectivo</span></td>
-                    <td class="celda-monto">$950</td>
-                    <td>Ayer, 16:20</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">V-8838</td>
-                    <td class="celda-pieza">Esclava Oro 18k</td>
-                    <td>Polanco</td>
-                    <td>Isabela Cruz</td>
-                    <td><span class="insignia insignia--neutra">Mixto</span></td>
-                    <td class="celda-monto">$7,640</td>
-                    <td>Ayer, 14:05</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">V-8837</td>
-                    <td class="celda-pieza">Dije Zafiro</td>
-                    <td>Querétaro</td>
-                    <td>Santiago Vega</td>
-                    <td><span class="insignia insignia--neutra">Tarjeta</span></td>
-                    <td class="celda-monto">$2,310</td>
-                    <td>Ayer, 12:40</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-
-          <article class="tarjeta">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <circle cx="9" cy="8" r="3.4" />
-                <path d="M2.5 20a6.5 6.5 0 0113 0" />
-                <path d="M16 5.5a3.4 3.4 0 010 5.6" />
-              </svg>
-              <h2 class="tarjeta__titulo">Desempeño por vendedor</h2>
-              <div class="tarjeta__accion segmentos">
-                <button>Semana</button>
-                <button class="activo">Mes</button>
-              </div>
-            </div>
-            <p class="sub">Piezas vendidas y monto acumulado en el mes en curso</p>
-
-            <div class="lista">
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Camila Torres</div>
-                    <div class="lista__secundario">Santa Fe · Vendedora</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$254,300</div>
-                    <div class="lista__secundario">58 piezas</div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno" style="width: 100%"></div>
-                </div>
-              </div>
-
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Isabela Cruz</div>
-                    <div class="lista__secundario">Querétaro · Vendedora</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$201,700</div>
-                    <div class="lista__secundario">44 piezas</div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno" style="width: 79%"></div>
-                </div>
-              </div>
-
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Diego Molina</div>
-                    <div class="lista__secundario">Polanco · Cajero</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$168,900</div>
-                    <div class="lista__secundario">37 piezas</div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno" style="width: 66%"></div>
-                </div>
-              </div>
-
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Santiago Vega</div>
-                    <div class="lista__secundario">Santa Fe · Gerente</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$119,400</div>
-                    <div class="lista__secundario">26 piezas</div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno" style="width: 47%"></div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <!-- ==================== VISTA: INGRESOS ==================== -->
-        <section class="vista" id="vista-ingresos">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Total anual</div>
-              <div class="kpi__valor">$1,428,500</div>
-              <div class="kpi__nota">Meta cumplida al 92%</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Trimestre (Q4)</div>
-              <div class="kpi__valor">$342,000</div>
-              <div class="kpi__nota kpi__nota--sube">+4.2%</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Margen bruto</div>
-              <div class="kpi__valor">41.6%</div>
-              <div class="kpi__nota">Sobre costo de adquisición</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Cobrado en apartados</div>
-              <div class="kpi__valor">$96,300</div>
-              <div class="kpi__nota">14 planes activos</div>
-            </article>
-          </div>
-
-          <div class="rejilla rejilla--2">
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 21h18" />
-                  <path d="M5 21V8l7-5 7 5v13" />
-                </svg>
-                <h2 class="tarjeta__titulo">Distribución por sucursal</h2>
-              </div>
-              <p class="sub">Últimos 30 días</p>
-
-              <div style="margin-bottom: 20px">
-                <div style="display: flex; justify-content: space-between">
-                  <span>Santa Fe</span>
-                  <span class="lista__monto">$685,000 <span class="lista__secundario" style="display: inline">(48%)</span></span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 48%"></div></div>
-              </div>
-
-              <div style="margin-bottom: 20px">
-                <div style="display: flex; justify-content: space-between">
-                  <span>Polanco</span>
-                  <span class="lista__monto">$492,000 <span class="lista__secundario" style="display: inline">(34%)</span></span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 34%"></div></div>
-              </div>
-
-              <div>
-                <div style="display: flex; justify-content: space-between">
-                  <span>Querétaro</span>
-                  <span class="lista__monto">$252,500 <span class="lista__secundario" style="display: inline">(18%)</span></span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
-              </div>
-            </article>
-
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M6 3h12l3 6-9 12L3 9z" />
-                  <path d="M3 9h18" />
-                </svg>
-                <h2 class="tarjeta__titulo">Ingresos por categoría</h2>
-              </div>
-              <p class="sub">Participación en el monto vendido del mes</p>
-
-              <div style="margin-bottom: 18px">
-                <div style="display: flex; justify-content: space-between">
-                  <span>Anillos</span>
-                  <span class="lista__monto">$92,400</span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 37%"></div></div>
-              </div>
-              <div style="margin-bottom: 18px">
-                <div style="display: flex; justify-content: space-between">
-                  <span>Collares y gargantillas</span>
-                  <span class="lista__monto">$66,700</span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 27%"></div></div>
-              </div>
-              <div style="margin-bottom: 18px">
-                <div style="display: flex; justify-content: space-between">
-                  <span>Pendientes</span>
-                  <span class="lista__monto">$44,300</span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
-              </div>
-              <div>
-                <div style="display: flex; justify-content: space-between">
-                  <span>Relojería y otros</span>
-                  <span class="lista__monto">$44,600</span>
-                </div>
-                <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
-              </div>
-            </article>
-          </div>
-
-          <article class="tarjeta">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <path d="M3 17l6-6 4 4 7-7" />
-                <path d="M14 8h6v6" />
-              </svg>
-              <h2 class="tarjeta__titulo">Evolución mensual</h2>
-            </div>
-
-            <svg class="grafica" viewBox="0 0 900 260" role="img" aria-label="Ingresos por mes del año">
-              <g class="grafica__rejilla">
-                <line x1="60" y1="30" x2="880" y2="30" />
-                <line x1="60" y1="85" x2="880" y2="85" />
-                <line x1="60" y1="140" x2="880" y2="140" />
-                <line x1="60" y1="195" x2="880" y2="195" />
-                <line x1="60" y1="220" x2="880" y2="220" />
-              </g>
-              <g class="grafica__eje" text-anchor="end">
-                <text x="50" y="34">200k</text>
-                <text x="50" y="89">150k</text>
-                <text x="50" y="144">100k</text>
-                <text x="50" y="199">50k</text>
-                <text x="50" y="224">0</text>
-              </g>
-              <polyline
-                class="grafica__linea"
-                stroke="#e0c289"
-                points="90,170 162,152 234,158 306,130 378,142 450,112 522,120 594,96 666,104 738,72 810,84 866,56"
-              />
-              <g fill="#ebd5a6" class="grafica__punto" stroke="#3a2e22">
-                <circle cx="90" cy="170" r="4" />
-                <circle cx="162" cy="152" r="4" />
-                <circle cx="234" cy="158" r="4" />
-                <circle cx="306" cy="130" r="4" />
-                <circle cx="378" cy="142" r="4" />
-                <circle cx="450" cy="112" r="4" />
-                <circle cx="522" cy="120" r="4" />
-                <circle cx="594" cy="96" r="4" />
-                <circle cx="666" cy="104" r="4" />
-                <circle cx="738" cy="72" r="4" />
-                <circle cx="810" cy="84" r="4" />
-                <circle cx="866" cy="56" r="4" />
-              </g>
-              <g class="grafica__eje" text-anchor="middle">
-                <text x="90" y="242">Ene</text>
-                <text x="162" y="242">Feb</text>
-                <text x="234" y="242">Mar</text>
-                <text x="306" y="242">Abr</text>
-                <text x="378" y="242">May</text>
-                <text x="450" y="242">Jun</text>
-                <text x="522" y="242">Jul</text>
-                <text x="594" y="242">Ago</text>
-                <text x="666" y="242">Sep</text>
-                <text x="738" y="242">Oct</text>
-                <text x="810" y="242">Nov</text>
-                <text x="866" y="242">Dic</text>
-              </g>
-            </svg>
-          </article>
-        </section>
-
-        <!-- ==================== VISTA: INVENTARIO ==================== -->
-        <section class="vista" id="vista-inventario">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Piezas en existencia</div>
-              <div class="kpi__valor">38</div>
-              <div class="kpi__nota">En 3 sucursales</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Valor del inventario</div>
-              <div class="kpi__valor">$452,000</div>
-              <div class="kpi__nota">A precio de venta vigente</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Stock bajo</div>
-              <div class="kpi__valor">8</div>
-              <div class="kpi__nota kpi__nota--baja">Requieren reposición</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Peso total en oro</div>
-              <div class="kpi__valor">1,284 g</div>
-              <div class="kpi__nota">Equivale a $2.7M en metal</div>
-            </article>
-          </div>
-
-          <article class="tarjeta">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <path d="M6 3h12l3 6-9 12L3 9z" />
-                <path d="M3 9h18" />
-                <path d="M12 3l-3 6 3 12 3-12-3-6z" />
-              </svg>
-              <h2 class="tarjeta__titulo">Piezas registradas</h2>
-              <button class="tarjeta__accion boton boton--fantasma">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-                Registrar pieza
-              </button>
-            </div>
-            <p class="sub">
-              Cada pieza es única y se identifica por SKU. El precio se recalcula con la cotización del
-              metal del día.
-            </p>
-
-            <div class="tabla-envoltura">
-              <table class="tabla tabla--amplia">
-                <thead>
-                  <tr>
-                    <th>SKU</th>
-                    <th>Pieza</th>
-                    <th>Metal</th>
-                    <th>Quilataje</th>
-                    <th style="text-align: right">Peso</th>
-                    <th>Piedras</th>
-                    <th>Sucursal</th>
-                    <th style="text-align: right">Precio</th>
-                    <th style="text-align: right">Stock</th>
-                    <th>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="celda-id">AUR-DI-001</td>
-                    <td class="celda-pieza">Anillo Diamante «Eterna»</td>
-                    <td>Oro blanco</td>
-                    <td>18k</td>
-                    <td class="celda-num">4.2 g</td>
-                    <td>Diamante 1.2 ct</td>
-                    <td>Santa Fe</td>
-                    <td class="celda-monto">$4,200</td>
-                    <td class="celda-num">12</td>
-                    <td><span class="insignia insignia--ok">Disponible</span></td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">AUR-GO-042</td>
-                    <td class="celda-pieza">Gargantilla Oro Vintage</td>
-                    <td>Oro amarillo</td>
-                    <td>24k</td>
-                    <td class="celda-num">18.6 g</td>
-                    <td>—</td>
-                    <td>Polanco</td>
-                    <td class="celda-monto">$8,850</td>
-                    <td class="celda-num">3</td>
-                    <td><span class="insignia insignia--aviso">Stock bajo</span></td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">AUR-SA-015</td>
-                    <td class="celda-pieza">Brazalete Zafiro Azul</td>
-                    <td>Plata .925</td>
-                    <td>—</td>
-                    <td class="celda-num">22.4 g</td>
-                    <td>Zafiro 0.8 ct</td>
-                    <td>Querétaro</td>
-                    <td class="celda-monto">$3,400</td>
-                    <td class="celda-num">21</td>
-                    <td><span class="insignia insignia--ok">Disponible</span></td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">AUR-RE-008</td>
-                    <td class="celda-pieza">Reloj Clásico 1954</td>
-                    <td>Oro amarillo</td>
-                    <td>14k</td>
-                    <td class="celda-num">64.0 g</td>
-                    <td>—</td>
-                    <td>Santa Fe</td>
-                    <td class="celda-monto">$18,500</td>
-                    <td class="celda-num">2</td>
-                    <td><span class="insignia insignia--aviso">Stock bajo</span></td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">AUR-PE-023</td>
-                    <td class="celda-pieza">Pendientes Aurore</td>
-                    <td>Oro amarillo</td>
-                    <td>18k</td>
-                    <td class="celda-num">3.8 g</td>
-                    <td>Diamante 0.5 ct c/u</td>
-                    <td>Polanco</td>
-                    <td class="celda-monto">$21,400</td>
-                    <td class="celda-num">6</td>
-                    <td><span class="insignia insignia--ok">Disponible</span></td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">AUR-CO-011</td>
-                    <td class="celda-pieza">Colgante Larme Dorée</td>
-                    <td>Oro amarillo</td>
-                    <td>18k</td>
-                    <td class="celda-num">5.1 g</td>
-                    <td>Topacio 0.8 ct</td>
-                    <td>Santa Fe</td>
-                    <td class="celda-monto">$32,900</td>
-                    <td class="celda-num">1</td>
-                    <td><span class="insignia insignia--riesgo">Apartada</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-
-        <!-- ==================== VISTA: APARTADOS ==================== -->
-        <section class="vista" id="vista-apartados">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Apartados activos</div>
-              <div class="kpi__valor">14</div>
-              <div class="kpi__nota">Piezas fuera de venta</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Anticipos cobrados</div>
-              <div class="kpi__valor">$96,300</div>
-              <div class="kpi__nota">De $214,800 comprometidos</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Por vencer</div>
-              <div class="kpi__valor">3</div>
-              <div class="kpi__nota kpi__nota--baja">En los próximos 7 días</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Vencidos</div>
-              <div class="kpi__valor">1</div>
-              <div class="kpi__nota kpi__nota--baja">Pendiente de liberar</div>
-            </article>
-          </div>
-
-          <article class="tarjeta">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z" />
-              </svg>
-              <h2 class="tarjeta__titulo">Planes de apartado</h2>
-              <button class="tarjeta__accion boton boton--fantasma">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-                Nuevo apartado
-              </button>
-            </div>
-            <p class="sub">
-              La pieza queda bloqueada del inventario disponible hasta liquidar o vencer el plazo.
-            </p>
-
-            <div class="lista">
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Colgante Larme Dorée</div>
-                    <div class="lista__secundario">A-0231 · Sra. Mariana López · Santa Fe · vence 30 sep</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$18,500 <span class="lista__secundario" style="display: inline">de $32,900</span></div>
-                    <div class="lista__secundario"><span class="insignia insignia--ok">Al corriente</span></div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno" style="width: 56%"></div>
-                </div>
-              </div>
-
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Anillo Diamante «Eterna»</div>
-                    <div class="lista__secundario">A-0228 · Sr. Ricardo Peña · Polanco · vence 22 sep</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$31,800 <span class="lista__secundario" style="display: inline">de $48,200</span></div>
-                    <div class="lista__secundario"><span class="insignia insignia--ok">Al corriente</span></div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno" style="width: 66%"></div>
-                </div>
-              </div>
-
-              <div class="lista__fila" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Pendientes Aurore</div>
-                    <div class="lista__secundario">A-0225 · Sra. Lucía Fernández · Santa Fe · vence 18 sep</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$6,400 <span class="lista__secundario" style="display: inline">de $21,400</span></div>
-                    <div class="lista__secundario"><span class="insignia insignia--aviso">Por vencer</span></div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno progreso__relleno--aviso" style="width: 30%"></div>
-                </div>
-              </div>
-
-              <div class="lista__fila alerta alerta--critica" style="display: block">
-                <div style="display: flex; align-items: baseline">
-                  <div>
-                    <div class="lista__principal">Gargantilla Oro Vintage</div>
-                    <div class="lista__secundario">A-0219 · Sra. Herrera · Polanco · venció 13 sep</div>
-                  </div>
-                  <div class="lista__derecha">
-                    <div class="lista__monto">$2,200 <span class="lista__secundario" style="display: inline">de $8,850</span></div>
-                    <div class="lista__secundario"><span class="insignia insignia--riesgo">Vencido</span></div>
-                  </div>
-                </div>
-                <div class="progreso progreso--fina">
-                  <div class="progreso__relleno progreso__relleno--riesgo" style="width: 25%"></div>
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <!-- ==================== VISTA: EMPLEADOS ==================== -->
-        <section class="vista" id="vista-empleados">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Total</div>
-              <div class="kpi__valor">43</div>
-              <div class="kpi__nota">Activos</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Cajeros</div>
-              <div class="kpi__valor">24</div>
-              <div class="kpi__nota">Venden y cobran</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Gerentes</div>
-              <div class="kpi__valor">8</div>
-              <div class="kpi__nota">Autorizan descuentos</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Administradores</div>
-              <div class="kpi__valor">2</div>
-              <div class="kpi__nota">Acceso total</div>
-            </article>
-          </div>
-
-          <div class="rejilla rejilla--2-1">
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="9" cy="8" r="3.4" />
-                  <path d="M2.5 20a6.5 6.5 0 0113 0" />
-                </svg>
-                <h2 class="tarjeta__titulo">Personal registrado</h2>
-              </div>
-
-              <div class="tabla-envoltura">
-                <table class="tabla">
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Nombre</th>
-                      <th>Rol</th>
-                      <th>Sucursal</th>
-                      <th>Estado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td class="celda-id">E-001</td>
-                      <td class="celda-pieza">Camila Torres</td>
-                      <td><span class="insignia insignia--neutra">Cajero</span></td>
-                      <td>Santa Fe</td>
-                      <td><span class="insignia insignia--ok">Activa</span></td>
-                    </tr>
-                    <tr>
-                      <td class="celda-id">E-002</td>
-                      <td class="celda-pieza">Diego Molina</td>
-                      <td><span class="insignia insignia--neutra">Cajero</span></td>
-                      <td>Polanco</td>
-                      <td><span class="insignia insignia--ok">Activo</span></td>
-                    </tr>
-                    <tr>
-                      <td class="celda-id">E-003</td>
-                      <td class="celda-pieza">Isabela Cruz</td>
-                      <td><span class="insignia insignia--neutra">Cajero</span></td>
-                      <td>Querétaro</td>
-                      <td><span class="insignia insignia--ok">Activa</span></td>
-                    </tr>
-                    <tr>
-                      <td class="celda-id">E-004</td>
-                      <td class="celda-pieza">Santiago Vega</td>
-                      <td><span class="insignia insignia--aviso">Gerente</span></td>
-                      <td>Santa Fe</td>
-                      <td><span class="insignia insignia--ok">Activo</span></td>
-                    </tr>
-                    <tr>
-                      <td class="celda-id">E-005</td>
-                      <td class="celda-pieza">Valentina Ruiz</td>
-                      <td><span class="insignia insignia--riesgo">Administrador</span></td>
-                      <td>Corporativo</td>
-                      <td><span class="insignia insignia--ok">Activa</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </article>
-
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="8" r="3.6" />
-                  <path d="M4 20a8 8 0 0116 0" />
-                  <path d="M18 3.5v5M15.5 6h5" />
-                </svg>
-                <h2 class="tarjeta__titulo">Dar de alta</h2>
-              </div>
-
-              <div class="campo">
-                <label class="etiqueta">Nombre completo</label>
-                <input type="text" placeholder="Ej. Elena Rodríguez" />
-              </div>
-              <div class="campo">
-                <label class="etiqueta">Correo electrónico</label>
-                <input type="email" placeholder="ejemplo@olimpo.mx" />
-              </div>
-              <div class="campo">
-                <label class="etiqueta">Rol</label>
-                <select>
-                  <option>Cajero</option>
-                  <option>Gerente</option>
-                  <option>Administrador</option>
-                </select>
-                <p class="campo__ayuda">
-                  El rol define los permisos en el backend, no solo lo que se ve en pantalla.
-                </p>
-              </div>
-              <div class="campo">
-                <label class="etiqueta">Sucursal asignada</label>
-                <select>
-                  <option>Olimpo Santa Fe</option>
-                  <option>Olimpo Polanco</option>
-                  <option>Olimpo Querétaro</option>
-                </select>
-              </div>
-
-              <button class="boton boton--primario boton--bloque">
-                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-                Crear usuario
-              </button>
-            </article>
-          </div>
-        </section>
-
-        <!-- ==================== VISTA: PRECIO DEL METAL ==================== -->
-        <section class="vista" id="vista-metal">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Oro 24k</div>
-              <div class="kpi__valor">$2,145.00</div>
-              <div class="kpi__nota kpi__nota--sube">+0.8% vs. ayer</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Oro 18k</div>
-              <div class="kpi__valor">$1,608.75</div>
-              <div class="kpi__nota kpi__nota--sube">+0.8% vs. ayer</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Oro 14k</div>
-              <div class="kpi__valor">$1,251.25</div>
-              <div class="kpi__nota kpi__nota--sube">+0.8% vs. ayer</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Plata .925</div>
-              <div class="kpi__valor">$26.40</div>
-              <div class="kpi__nota kpi__nota--baja">−1.2% vs. ayer</div>
-            </article>
-          </div>
-
-          <div class="rejilla rejilla--2-1">
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 17l6-6 4 4 7-7" />
-                  <path d="M14 8h6v6" />
-                </svg>
-                <h2 class="tarjeta__titulo">Oro 24k · últimos 12 días</h2>
-              </div>
-              <p class="sub">Precio por gramo en pesos mexicanos</p>
-
-              <svg class="grafica" viewBox="0 0 700 230" role="img" aria-label="Evolución del precio del oro">
-                <g class="grafica__rejilla">
-                  <line x1="66" y1="26" x2="684" y2="26" />
-                  <line x1="66" y1="76" x2="684" y2="76" />
-                  <line x1="66" y1="126" x2="684" y2="126" />
-                  <line x1="66" y1="176" x2="684" y2="176" />
-                </g>
-                <g class="grafica__eje" text-anchor="end">
-                  <text x="56" y="30">2,200</text>
-                  <text x="56" y="80">2,120</text>
-                  <text x="56" y="130">2,040</text>
-                  <text x="56" y="180">1,960</text>
-                </g>
-                <polyline
-                  class="grafica__linea"
-                  stroke="#e0c289"
-                  points="86,150 140,142 194,156 248,128 302,134 356,110 410,118 464,96 518,104 572,78 626,86 676,60"
-                />
-                <g fill="#ebd5a6" stroke="#3a2e22" class="grafica__punto">
-                  <circle cx="86" cy="150" r="4" />
-                  <circle cx="194" cy="156" r="4" />
-                  <circle cx="302" cy="134" r="4" />
-                  <circle cx="410" cy="118" r="4" />
-                  <circle cx="518" cy="104" r="4" />
-                  <circle cx="626" cy="86" r="4" />
-                  <circle cx="676" cy="60" r="4" />
-                </g>
-                <g class="grafica__eje" text-anchor="middle">
-                  <text x="86" y="200">3 sep</text>
-                  <text x="194" y="200">5 sep</text>
-                  <text x="302" y="200">7 sep</text>
-                  <text x="410" y="200">9 sep</text>
-                  <text x="518" y="200">11 sep</text>
-                  <text x="626" y="200">13 sep</text>
-                  <text x="676" y="200">Hoy</text>
-                </g>
-              </svg>
-            </article>
-
-            <article class="tarjeta">
-              <div class="tarjeta__cabecera">
-                <svg viewBox="0 0 24 24">
-                  <path d="M12 3v18" />
-                  <path d="M5 7h14" />
-                  <path d="M5 7l-2.5 6a3.2 3.2 0 005 0z" />
-                  <path d="M19 7l-2.5 6a3.2 3.2 0 005 0z" />
-                </svg>
-                <h2 class="tarjeta__titulo">Actualizar cotización</h2>
-              </div>
-              <p class="sub">
-                Al guardar, todas las piezas vendidas por peso recalculan su precio automáticamente.
-              </p>
-
-              <div class="campo">
-                <label class="etiqueta">Oro 24k · precio por gramo</label>
-                <input type="text" value="2145.00" />
-              </div>
-              <div class="campo">
-                <label class="etiqueta">Plata .925 · precio por gramo</label>
-                <input type="text" value="26.40" />
-                <p class="campo__ayuda">Oro 18k y 14k se derivan del 24k según su ley.</p>
-              </div>
-
-              <button class="boton boton--primario boton--bloque">
-                <svg viewBox="0 0 24 24">
-                  <path d="M5 12l5 5L19 7" />
-                </svg>
-                Guardar cotización
-              </button>
-
-              <p class="campo__ayuda" style="text-align: center; margin-top: 14px">
-                Solo el administrador puede modificar la cotización. El cambio queda registrado en la
-                bitácora.
-              </p>
-            </article>
-          </div>
-
-          <article class="tarjeta">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7.5v5l3 2" />
-              </svg>
-              <h2 class="tarjeta__titulo">Ejemplo de cálculo</h2>
-            </div>
-            <p class="sub">
-              Así queda el precio de una pieza vendida por peso con la cotización de hoy
-            </p>
-
-            <div class="tabla-envoltura">
-              <table class="tabla">
-                <thead>
-                  <tr>
-                    <th>Concepto</th>
-                    <th>Detalle</th>
-                    <th style="text-align: right">Importe</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="celda-pieza">Metal</td>
-                    <td>18.6 g × $2,145.00 (oro 24k)</td>
-                    <td class="celda-monto">$39,897.00</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-pieza">Mano de obra</td>
-                    <td>Trabajo de orfebrería</td>
-                    <td class="celda-monto">$3,200.00</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-pieza">Piedras</td>
-                    <td>Sin piedras engastadas</td>
-                    <td class="celda-monto">$0.00</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-pieza">Margen</td>
-                    <td>22% sobre el costo</td>
-                    <td class="celda-monto">$9,481.34</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-pieza" style="color: var(--oro)">Precio de venta</td>
-                    <td>AUR-GO-042 · Gargantilla Oro Vintage</td>
-                    <td class="celda-monto" style="font-size: 18px">$52,578.34</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-
-        <!-- ==================== VISTA: AUDITORÍA ==================== -->
-        <section class="vista" id="vista-auditoria">
-          <div class="rejilla rejilla--4">
-            <article class="kpi">
-              <div class="etiqueta">Movimientos hoy</div>
-              <div class="kpi__valor">27</div>
-              <div class="kpi__nota">Registrados automáticamente</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Cancelaciones</div>
-              <div class="kpi__valor">2</div>
-              <div class="kpi__nota kpi__nota--baja">Ambas autorizadas</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Descuentos aplicados</div>
-              <div class="kpi__valor">6</div>
-              <div class="kpi__nota">Promedio 9.4%</div>
-            </article>
-            <article class="kpi">
-              <div class="etiqueta">Sin autorizar</div>
-              <div class="kpi__valor">1</div>
-              <div class="kpi__nota kpi__nota--baja">Requiere revisión</div>
-            </article>
-          </div>
-
-          <article class="tarjeta">
-            <div class="tarjeta__cabecera">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
-                <path d="M9 12l2 2 4-4.5" />
-              </svg>
-              <h2 class="tarjeta__titulo">Bitácora de acciones sensibles</h2>
-              <div class="tarjeta__accion segmentos">
-                <button class="activo">Todo</button>
-                <button>Cancelaciones</button>
-                <button>Precios</button>
-                <button>Descuentos</button>
-              </div>
-            </div>
-            <p class="sub">
-              Registro inalterable de toda operación que afecta dinero o inventario.
-            </p>
-
-            <div class="tabla-envoltura">
-              <table class="tabla tabla--amplia">
-                <thead>
-                  <tr>
-                    <th>Fecha y hora</th>
-                    <th>Usuario</th>
-                    <th>Rol</th>
-                    <th>Acción</th>
-                    <th>Detalle</th>
-                    <th>Autorizó</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="celda-id">14 sep, 11:20</td>
-                    <td>Diego Molina</td>
-                    <td><span class="insignia insignia--neutra">Cajero</span></td>
-                    <td><span class="insignia insignia--riesgo">Descuento</span></td>
-                    <td>18% sobre V-8843 · Collar Perla</td>
-                    <td class="celda-id">Pendiente</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">14 sep, 08:00</td>
-                    <td>Valentina Ruiz</td>
-                    <td><span class="insignia insignia--riesgo">Administrador</span></td>
-                    <td><span class="insignia insignia--aviso">Cotización</span></td>
-                    <td>Oro 24k: $2,128.00 → $2,145.00</td>
-                    <td class="celda-id">—</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">13 sep, 19:42</td>
-                    <td>Camila Torres</td>
-                    <td><span class="insignia insignia--neutra">Cajero</span></td>
-                    <td><span class="insignia insignia--riesgo">Cancelación</span></td>
-                    <td>V-8836 · $2,750 · cliente desistió</td>
-                    <td>Santiago Vega</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">13 sep, 17:05</td>
-                    <td>Santiago Vega</td>
-                    <td><span class="insignia insignia--aviso">Gerente</span></td>
-                    <td><span class="insignia insignia--aviso">Edición de precio</span></td>
-                    <td>AUR-RE-008 · $17,900 → $18,500</td>
-                    <td class="celda-id">—</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">13 sep, 16:30</td>
-                    <td>Isabela Cruz</td>
-                    <td><span class="insignia insignia--neutra">Cajero</span></td>
-                    <td><span class="insignia insignia--neutra">Baja de inventario</span></td>
-                    <td>AUR-SA-015 · 1 pieza · daño en engaste</td>
-                    <td>Santiago Vega</td>
-                  </tr>
-                  <tr>
-                    <td class="celda-id">13 sep, 14:12</td>
-                    <td>Valentina Ruiz</td>
-                    <td><span class="insignia insignia--riesgo">Administrador</span></td>
-                    <td><span class="insignia insignia--neutra">Alta de usuario</span></td>
-                    <td>E-005 · rol cajero · Querétaro</td>
-                    <td class="celda-id">—</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-        </section>
-      </main>
-    </div>
+        <div class="tabla-envoltura">
+          <table class="tabla tabla--amplia">
+            <thead>
+              <tr>
+                <th>Fecha y hora</th>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Acción</th>
+                <th>Detalle</th>
+                <th>Autorizó</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="celda-id">14 sep, 11:20</td>
+                <td>Diego Molina</td>
+                <td><span class="insignia insignia--neutra">Cajero</span></td>
+                <td><span class="insignia insignia--riesgo">Descuento</span></td>
+                <td>18% sobre V-8843 · Collar Perla</td>
+                <td class="celda-id">Pendiente</td>
+              </tr>
+              <tr>
+                <td class="celda-id">14 sep, 08:00</td>
+                <td>Valentina Ruiz</td>
+                <td><span class="insignia insignia--riesgo">Administrador</span></td>
+                <td><span class="insignia insignia--aviso">Cotización</span></td>
+                <td>Oro 24k: $2,128.00 → $2,145.00</td>
+                <td class="celda-id">—</td>
+              </tr>
+              <tr>
+                <td class="celda-id">13 sep, 19:42</td>
+                <td>Camila Torres</td>
+                <td><span class="insignia insignia--neutra">Cajero</span></td>
+                <td><span class="insignia insignia--riesgo">Cancelación</span></td>
+                <td>V-8836 · $2,750 · cliente desistió</td>
+                <td>Santiago Vega</td>
+              </tr>
+              <tr>
+                <td class="celda-id">13 sep, 17:05</td>
+                <td>Santiago Vega</td>
+                <td><span class="insignia insignia--aviso">Gerente</span></td>
+                <td><span class="insignia insignia--aviso">Edición de precio</span></td>
+                <td>AUR-RE-008 · $17,900 → $18,500</td>
+                <td class="celda-id">—</td>
+              </tr>
+              <tr>
+                <td class="celda-id">13 sep, 16:30</td>
+                <td>Isabela Cruz</td>
+                <td><span class="insignia insignia--neutra">Cajero</span></td>
+                <td><span class="insignia insignia--neutra">Baja de inventario</span></td>
+                <td>AUR-SA-015 · 1 pieza · daño en engaste</td>
+                <td>Santiago Vega</td>
+              </tr>
+              <tr>
+                <td class="celda-id">13 sep, 14:12</td>
+                <td>Valentina Ruiz</td>
+                <td><span class="insignia insignia--riesgo">Administrador</span></td>
+                <td><span class="insignia insignia--neutra">Alta de usuario</span></td>
+                <td>E-005 · rol cajero · Querétaro</td>
+                <td class="celda-id">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
 
     <script src="dashboard.js"></script>
-  </body>
 </html>
