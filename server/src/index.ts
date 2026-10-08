@@ -1,17 +1,17 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { db } from './db.js';
 import productosRoutes from './routes/productos.js';
 import sucursalesRoutes from './routes/sucursales.js';
 import inventarioRoutes from './routes/inventario.js';
+import traduccionRoutes from './routes/traduccion.js';
 
 dotenv.config();
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '32kb' }));
 
 app.get('/', (_req, res) => {
   res.send('Servidor del Punto de Venta funcionando');
@@ -20,14 +20,7 @@ app.get('/', (_req, res) => {
 app.use('/api/productos', productosRoutes);
 app.use('/api/sucursales', sucursalesRoutes);
 app.use('/api/inventario', inventarioRoutes);
-
-db.query('SELECT NOW()')
-  .then((resultado) => {
-    console.log('PostgreSQL conectado:', resultado.rows[0]);
-  })
-  .catch((error) => {
-    console.error('Error al conectar con PostgreSQL:', error);
-  });
+app.use('/api/traduccion', traduccionRoutes);
 
 const PORT = process.env.PORT || 3000;
 

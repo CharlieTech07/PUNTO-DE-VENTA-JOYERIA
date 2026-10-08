@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Olimpo · Home</title>
+    <title>{{ 'Olimpo · Home' | translate }}</title>
     <!-- Paleta compartida: va antes para que style.css tome sus colores -->
     <link rel="stylesheet" href="../../styles/tema.css">
 
@@ -26,27 +26,27 @@
 <div class="container">
   <header>
     <div class="header-top">
-      <span class="subtitle">VITRINA DE MERCANCÍA</span>
-      <span class="item-count">{{ products.length }} piezas disponibles</span>
+      <span class="subtitle">{{ 'VITRINA DE MERCANCÍA' | translate }}</span>
+      <span class="item-count">{{ products.length }} {{ 'piezas disponibles' | translate }}</span>
     </div>
-    <h1 class="title">Home</h1>
+    <h1 class="title">{{ 'Home' | translate }}</h1>
   </header>
 
   <div class="search-bar">
     <span class="material-icons search-icon">search</span>
-    <input type="text" placeholder="Buscar pieza, piedra o metal...">
+    <input type="text" [placeholder]="'Buscar pieza, piedra o metal...' | translate">
   </div>
 
   <div class="grid-container" id="product-grid">
     @for (product of products; track product.id) {
       <div class="card">
         <img [src]="product.imageUrl" [alt]="product.name" class="card-image">
-        <div class="product-category">{{ product.category }}</div>
+        <div class="product-category">{{ productText(product, 'category') }}</div>
         <h3 class="product-title">{{ product.name }}</h3>
-        <div class="product-desc">{{ product.description }}</div>
+        <div class="product-desc">{{ productText(product, 'description') }}</div>
         <div class="card-footer">
           <span class="price">{{ product.price | currency:'USD':'symbol':'1.0-0' }}</span>
-          <button class="btn-add" (click)="agregarAlCarrito(product)">AGREGAR</button>
+          <button class="btn-add" (click)="agregarAlCarrito(product)">{{ 'AGREGAR' | translate }}</button>
         </div>
       </div>
     }

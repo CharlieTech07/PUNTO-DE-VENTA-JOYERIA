@@ -1,55 +1,55 @@
 <!-- client/src/pages/productos/productos.html -->
 <div style="padding: 24px; font-family: sans-serif; max-width: 1100px; margin: auto;">
-  <h2>Catálogo de Productos — Joyería Olimpo</h2>
+  <h2>{{ 'Catálogo de Productos — Joyería Olimpo' | translate }}</h2>
 
   <!-- Formulario con selector de archivo -->
   <div style="background: #3d0d0d; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 25px;">
-    <h3>Registrar Nueva Pieza con Foto</h3>
+    <h3>{{ 'Registrar Nueva Pieza con Foto' | translate }}</h3>
     <form (ngSubmit)="guardarProducto()" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
       
       <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Nombre:</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Nombre:' | translate }}</label>
         <input type="text" [(ngModel)]="nuevoItem.nombre" name="nombre" required style="width: 100%; padding: 8px; box-sizing: border-box;" />
       </div>
 
       <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Descripción:</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Descripción:' | translate }}</label>
         <input type="text" [(ngModel)]="nuevoItem.descripcion" name="descripcion" style="width: 100%; padding: 8px; box-sizing: border-box;" />
       </div>
 
       <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Metal:</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Metal:' | translate }}</label>
         <select [(ngModel)]="nuevoItem.tipo_metal" name="tipo_metal" style="width: 100%; padding: 8px; box-sizing: border-box;">
-          <option value="Oro">Oro</option>
-          <option value="Plata">Plata</option>
-          <option value="Platino">Platino</option>
+          <option value="Oro">{{ 'Oro' | translate }}</option>
+          <option value="Plata">{{ 'Plata' | translate }}</option>
+          <option value="Platino">{{ 'Platino' | translate }}</option>
         </select>
       </div>
 
       <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Kilataje:</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Kilataje:' | translate }}</label>
         <input type="text" [(ngModel)]="nuevoItem.kilataje" name="kilataje" style="width: 100%; padding: 8px; box-sizing: border-box;" />
       </div>
 
       <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Peso (g):</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Peso (g):' | translate }}</label>
         <input type="number" step="0.001" [(ngModel)]="nuevoItem.peso_gramos" name="peso_gramos" style="width: 100%; padding: 8px; box-sizing: border-box;" />
       </div>
 
       <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Precio Venta:</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Precio Venta:' | translate }}</label>
         <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_venta" name="precio_venta" style="width: 100%; padding: 8px; box-sizing: border-box;" />
       </div>
 
       <!-- Selector de Imagen -->
       <div style="grid-column: 1 / -1;">
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">Fotografía de la Joya:</label>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Fotografía de la Joya:' | translate }}</label>
         <input type="file" (change)="onFileSelected($event)" accept="image/*" style="padding: 5px;" />
       </div>
 
       <div style="grid-column: 1 / -1; margin-top: 10px;">
         <button type="submit" style="background-color: #059669; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-          + Guardar Joya con Imagen
+          {{ '+ Guardar Joya con Imagen' | translate }}
         </button>
       </div>
     </form>
@@ -57,21 +57,21 @@
 
   <!-- Tabla que muestra la imagen leída desde bytea -->
   @if (cargando) {
-    <p>⏳ Consultando base de datos...</p>
+    <p>{{ '⏳ Consultando base de datos...' | translate }}</p>
   } @else if (errorCarga) {
-    <p style="color: red;">❌ {{ errorCarga }}</p>
+    <p style="color: red;">❌ {{ errorCarga | translate }}</p>
   } @else {
     <!-- client/src/pages/productos/productos.html -->
 <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
   <thead style="background-color: #1e293b; color: white;">
     <tr>
-      <th>Foto</th>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Metal</th>
-      <th>Kilataje</th>
-      <th>P. Venta</th>
-      <th style="text-align: center;">Acciones</th> <!-- Nueva columna -->
+      <th>{{ 'Foto' | translate }}</th>
+      <th>{{ 'ID' | translate }}</th>
+      <th>{{ 'Nombre' | translate }}</th>
+      <th>{{ 'Metal' | translate }}</th>
+      <th>{{ 'Kilataje' | translate }}</th>
+      <th>{{ 'P. Venta' | translate }}</th>
+      <th style="text-align: center;">{{ 'Acciones' | translate }}</th> <!-- Nueva columna -->
     </tr>
   </thead>
   <tbody>
@@ -79,14 +79,14 @@
       <tr>
         <td style="text-align: center; width: 70px;">
           @if (item.imagen_base64) {
-            <img [src]="'data:image/jpeg;base64,' + item.imagen_base64" alt="Joya" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
+            <img [src]="'data:image/jpeg;base64,' + item.imagen_base64" [alt]="'Joya' | translate" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
           } @else {
-            <span style="font-size: 11px; color: #94a3b8;">Sin foto</span>
+            <span style="font-size: 11px; color: #94a3b8;">{{ 'Sin foto' | translate }}</span>
           }
         </td>
         <td>{{ item.id }}</td>
-        <td><strong>{{ item.nombre }}</strong></td>
-        <td>{{ item.tipo_metal }}</td>
+        <td><strong>{{ productName(item) }}</strong></td>
+        <td>{{ languageService.catalogPhrase(item.tipo_metal) }}</td>
         <td>{{ item.kilataje || 'N/A' }}</td>
         <td style="color: #059669; font-weight: bold;">${{ item.precio_venta }}</td>
         
@@ -96,7 +96,7 @@
             type="button"
             (click)="borrarProducto(item.id, item.nombre)"
             style="background-color: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500;">
-            Eliminar
+            {{ 'Eliminar' | translate }}
           </button>
         </td>
       </tr>

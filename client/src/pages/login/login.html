@@ -1,78 +1,62 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Olimpo Haute Joaillerie · Iniciar sesión</title>
-<!-- Paleta compartida: va antes de login.css para que pueda tomar sus tokens -->
-<link rel="stylesheet" href="../../styles/tema.css">
-<link rel="stylesheet" href="login.css">
-<!-- Aquí NO se monta el menú lateral: todavía no hay sesión. -->
-</head>
-<body>
-  <div class="wrap">
+<button class="theme-toggle" (click)="toggleTema()" type="button">
+  <span>{{ isModoClaro ? ('MODO OSCURO' | translate) : ('MODO CLARO' | translate) }}</span>
+</button>
+
+<div class="wrap">
   <div class="brand">
-  <img src="logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
-    <h1>OLIMPO</h1>
+    <img src="logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
+    <h1>{{ 'OLIMPO' | translate }}</h1>
     <div class="divider">
       <span></span>
-      <span class="tagline">HAUTE JOAILLERIE</span>
+      <span class="tagline">{{ 'HAUTE JOAILLERIE' | translate }}</span>
       <span></span>
     </div>
   </div>
 
   <div class="card-shell">
     <div class="card">
-      <h2>Bienvenido</h2>
-      <p class="sub">Acceda a su vitrina privada</p>
+      <h2>{{ 'Bienvenido' | translate }}</h2>
+      <p class="sub">{{ 'Acceda a su vitrina privada' | translate }}</p>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-        <!-- Campo Email -->
         <div class="field" [class.con-error]="submitted && email?.invalid">
-          <label for="email">Correo electrónico</label>
-          <input 
-            id="email" 
-            type="email" 
-            formControlName="email" 
-            placeholder="Ej: olimpo@gmail.com"
+          <label for="email">{{ 'Correo electrónico' | translate }}</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            [placeholder]="'Ej: olimpo@gmail.com' | translate"
             autocomplete="username">
-          
+
           <p class="error" *ngIf="submitted && email?.errors?.['required']">
-            El correo es obligatorio.
+            {{ 'El correo es obligatorio.' | translate }}
           </p>
           <p class="error" *ngIf="submitted && email?.errors?.['email']">
-            Ingresa un formato de correo válido.
+            {{ 'Ingresa un formato de correo válido.' | translate }}
           </p>
         </div>
 
-        <!-- Campo Contraseña -->
         <div class="field" [class.con-error]="submitted && password?.invalid">
-          <label for="password">Contraseña</label>
-          <input 
-            id="password" 
-            type="password" 
-            formControlName="password" 
+          <label for="password">{{ 'Contraseña' | translate }}</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
             placeholder="••••••••"
             autocomplete="current-password">
-          
+
           <p class="error" *ngIf="submitted && password?.errors?.['required']">
-            La contraseña es obligatoria.
+            {{ 'La contraseña es obligatoria.' | translate }}
           </p>
           <p class="error" *ngIf="submitted && password?.errors?.['minlength']">
-            Debe tener al menos 8 caracteres.
+            {{ 'Debe tener al menos 8 caracteres.' | translate }}
           </p>
         </div>
 
         <button type="submit" class="primary" [disabled]="loading">
-          {{ loading ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA' }}
+          {{ (loading ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA') | translate }}
         </button>
-
-        <button type="button" class="create">CREAR NUEVA CUENTA</button>
       </form>
     </div>
   </div>
 </div>
-
-  <script src="acceso.js"></script>
-</body>
-</html>

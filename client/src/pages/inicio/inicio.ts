@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MenuComponent } from '../../components/menu/menu';
+import { TranslatePipe } from '../../services/translate.pipe';
+import { LanguageService, Lang } from '../../services/lenguage.service';
+import { DeepLTranslationService } from '../../services/deepl-translation.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export interface Product {
   id: number;
@@ -15,11 +19,17 @@ export interface Product {
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterLink, MenuComponent], // <-- Agrégalo aquí
+  imports: [CommonModule, CurrencyPipe, MenuComponent, TranslatePipe],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
 export class InicioComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly language = inject(LanguageService);
+  private readonly deepL = inject(DeepLTranslationService);
+  private readonly translatedProducts: Record<number, { category?: string; description?: string }> = {};
+
   public products: Product[] = [
     {
       id: 1,
@@ -99,7 +109,41 @@ export class InicioComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.language.lang$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(lang => this.updateCatalogTranslations(lang));
+  }
+
+  public productText(product: Product, field: 'category' | 'description'): string {
+    return this.translatedProducts[product.id]?.[field] ?? product[field];
+  }
+
+  private updateCatalogTranslations(lang: Lang): void {
+    Object.keys(this.translatedProducts).forEach(id => delete this.translatedProducts[Number(id)]);
+    if (lang !== 'en') {
+      return;
+    }
+
+    const fields = this.products.flatMap(product => [
+      { productId: product.id, field: 'category' as const, text: product.category },
+      { productId: product.id, field: 'description' as const, text: product.description }
+    ]);
+
+    this.deepL.translateMany(fields.map(entry => entry.text))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(translations => {
+        if (this.language.lang !== 'en') {
+          return;
+        }
+
+        fields.forEach((entry, index) => {
+          this.translatedProducts[entry.productId] ??= {};
+          this.translatedProducts[entry.productId][entry.field] = translations[index];
+        });
+        this.changeDetector.markForCheck();
+      });
+  }
 
   public agregarAlCarrito(product: Product): void {
     console.log('Producto agregado:', product);

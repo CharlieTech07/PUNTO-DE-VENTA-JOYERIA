@@ -2,14 +2,14 @@
   <!-- Cabecera -->
   <header class="inventario-header">
     <div>
-      <span class="etiqueta">Gestión Operativa</span>
-      <h1 class="titulo-pantalla">Control de Inventario</h1>
+      <span class="etiqueta">{{ 'Gestión Operativa' | translate }}</span>
+      <h1 class="titulo-pantalla">{{ 'Control de Inventario' | translate }}</h1>
     </div>
     <button type="button" class="btn-volver" (click)="volverAlDashboard()">
       <svg viewBox="0 0 24 24">
         <path d="M19 12H5M12 19l-7-7 7-7" />
       </svg>
-      Volver al Dashboard
+      {{ 'Volver al Dashboard' | translate }}
     </button>
   </header>
 
@@ -20,12 +20,12 @@
         <path d="M12 3l-3 6 3 12 3-12-3-6z" />
         <path d="M6 3h12l3 6-9 12L3 9z" />
       </svg>
-      <h2>Asignar o Modificar Stock en Tienda</h2>
+      <h2>{{ 'Asignar o Modificar Stock en Tienda' | translate }}</h2>
     </div>
 
     <form (ngSubmit)="guardarStock()" class="formulario-grid">
       <div class="campo">
-        <label class="etiqueta">Sucursal asignada</label>
+        <label class="etiqueta">{{ 'Sucursal asignada' | translate }}</label>
         <select [(ngModel)]="nuevoRegistro.id_sucursal" name="id_sucursal" class="input-olimpo">
           @for (s of catalogoSucursales; track s.id) {
             <option [ngValue]="s.id">{{ s.nombre }}</option>
@@ -34,49 +34,49 @@
       </div>
 
       <div class="campo">
-        <label class="etiqueta">Pieza / Joya</label>
+        <label class="etiqueta">{{ 'Pieza / Joya' | translate }}</label>
         <select [(ngModel)]="nuevoRegistro.id_producto" name="id_producto" class="input-olimpo">
           @for (p of catalogoProductos; track p.id) {
-            <option [ngValue]="p.id">{{ p.nombre }} ({{ p.tipo_metal }})</option>
+            <option [ngValue]="p.id">{{ productName(p.nombre) }} ({{ language.catalogPhrase(p.tipo_metal) }})</option>
           }
         </select>
       </div>
 
       <div class="campo">
-        <label class="etiqueta">Stock Físico</label>
-        <input 
-          type="number" 
-          min="0" 
-          [(ngModel)]="nuevoRegistro.stock" 
-          name="stock" 
-          required 
+        <label class="etiqueta">{{ 'Stock Físico' | translate }}</label>
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="nuevoRegistro.stock"
+          name="stock"
+          required
           class="input-olimpo" />
       </div>
 
       <div class="campo">
-        <label class="etiqueta">Stock Mínimo (Alerta)</label>
-        <input 
-          type="number" 
-          min="0" 
-          [(ngModel)]="nuevoRegistro.stock_minimo" 
-          name="stock_minimo" 
+        <label class="etiqueta">{{ 'Stock Mínimo (Alerta)' | translate }}</label>
+        <input
+          type="number"
+          min="0"
+          [(ngModel)]="nuevoRegistro.stock_minimo"
+          name="stock_minimo"
           class="input-olimpo" />
       </div>
 
       <div class="campo campo-completo">
-        <label class="etiqueta">Ubicación en Vitrina / Caja de Seguridad</label>
-        <input 
-          type="text" 
-          [(ngModel)]="nuevoRegistro.ubicacion_vitrina" 
-          name="ubicacion_vitrina" 
-          placeholder="Ej. Vitrina Central - Charola Oro 14k" 
+        <label class="etiqueta">{{ 'Ubicación en Vitrina / Caja de Seguridad' | translate }}</label>
+        <input
+          type="text"
+          [(ngModel)]="nuevoRegistro.ubicacion_vitrina"
+          name="ubicacion_vitrina"
+          [placeholder]="'Ej. Vitrina Central - Charola Oro 14k' | translate"
           class="input-olimpo" />
       </div>
 
       <div class="acciones-form">
         <button type="submit" class="btn-oro">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-          Guardar Existencias
+          {{ 'Guardar Existencias' | translate }}
         </button>
       </div>
     </form>
@@ -85,9 +85,9 @@
   <!-- Barra de acciones masivas -->
   @if (itemsSeleccionados.length > 0) {
     <div class="alerta-lote">
-      <span>Has seleccionado <strong>{{ itemsSeleccionados.length }}</strong> registro(s)</span>
+      <span>{{ 'Has seleccionado' | translate }} <strong>{{ itemsSeleccionados.length }}</strong> {{ 'registro(s)' | translate }}</span>
       <button type="button" class="btn-eliminar-lote" (click)="eliminarSeleccionados()">
-        Eliminar seleccionados
+        {{ 'Eliminar seleccionados' | translate }}
       </button>
     </div>
   }
@@ -98,32 +98,32 @@
       <svg viewBox="0 0 24 24">
         <path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6" />
       </svg>
-      <h2>Existencias en Red de Sucursales</h2>
+      <h2>{{ 'Existencias en Red de Sucursales' | translate }}</h2>
     </div>
 
     @if (cargando) {
-      <p class="mensaje-vacio">Consultando existencias en pos_olimpo...</p>
+      <p class="mensaje-vacio">{{ 'Consultando existencias en pos_olimpo...' | translate }}</p>
     } @else if (listaInventario.length === 0) {
-      <p class="mensaje-vacio">No hay registros de inventario asignados a ninguna sucursal.</p>
+      <p class="mensaje-vacio">{{ 'No hay registros de inventario asignados a ninguna sucursal.' | translate }}</p>
     } @else {
       <div class="tabla-envoltura">
         <table class="tabla-olimpo">
           <thead>
             <tr>
               <th class="col-check">
-                <input 
-                  type="checkbox" 
-                  [(ngModel)]="seleccionarTodos" 
+                <input
+                  type="checkbox"
+                  [(ngModel)]="seleccionarTodos"
                   (change)="alternarSeleccionTodos()" />
               </th>
-              <th>Sucursal</th>
-              <th>Pieza</th>
-              <th>Metal</th>
-              <th>Ubicación</th>
-              <th class="col-num">Stock</th>
-              <th class="col-num">Precio</th>
-              <th class="col-center">Estado</th>
-              <th class="col-center">Acción</th>
+              <th>{{ 'Sucursal' | translate }}</th>
+              <th>{{ 'Pieza' | translate }}</th>
+              <th>{{ 'Metal' | translate }}</th>
+              <th>{{ 'Ubicación' | translate }}</th>
+              <th class="col-num">{{ 'Stock' | translate }}</th>
+              <th class="col-num">{{ 'Precio' | translate }}</th>
+              <th class="col-center">{{ 'Estado' | translate }}</th>
+              <th class="col-center">{{ 'Acción' | translate }}</th>
             </tr>
           </thead>
           <tbody>
@@ -133,24 +133,24 @@
                   <input type="checkbox" [(ngModel)]="item.seleccionado" />
                 </td>
                 <td><strong>{{ item.nombre_sucursal }}</strong></td>
-                <td class="celda-joya">{{ item.nombre_producto }}</td>
-                <td>{{ item.tipo_metal }} {{ item.kilataje || '' }}</td>
+                <td class="celda-joya">{{ productName(item.nombre_producto) }}</td>
+                <td>{{ language.catalogPhrase(item.tipo_metal) }} {{ item.kilataje || '' }}</td>
                 <td>{{ item.ubicacion_vitrina }}</td>
                 <td class="col-num celda-stock">{{ item.stock }}</td>
                 <td class="col-num celda-precio">{{ item.precio_venta | currency:'USD':'symbol':'1.0-0' }}</td>
                 <td class="col-center">
                   @if (item.stock <= item.stock_minimo) {
-                    <span class="insignia insignia-aviso">Stock bajo</span>
+                    <span class="insignia insignia-aviso">{{ 'Stock bajo' | translate }}</span>
                   } @else {
-                    <span class="insignia insignia-ok">Disponible</span>
+                    <span class="insignia insignia-ok">{{ 'Disponible' | translate }}</span>
                   }
                 </td>
                 <td class="col-center">
-                  <button 
-                    type="button" 
-                    class="btn-eliminar-item" 
+                  <button
+                    type="button"
+                    class="btn-eliminar-item"
                     (click)="eliminarIndividual(item.id, item.nombre_producto)">
-                    Eliminar
+                    {{ 'Eliminar' | translate }}
                   </button>
                 </td>
               </tr>

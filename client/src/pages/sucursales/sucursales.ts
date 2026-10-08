@@ -2,17 +2,20 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SucursalesService } from './../../services/sucursales.services';
+import { LanguageService } from '../../services/lenguage.service';
+import { TranslatePipe } from '../../services/translate.pipe';
 
 @Component({
   selector: 'app-sucursales',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './sucursales.html',
   styleUrls: ['./sucursales.css']
 })
 export class SucursalesComponent implements OnInit {
   private sucursalesService = inject(SucursalesService);
   private cd = inject(ChangeDetectorRef);
+  private language = inject(LanguageService);
 
   listaSucursales: any[] = [];
   cargando: boolean = true;
@@ -46,7 +49,7 @@ export class SucursalesComponent implements OnInit {
 
   guardarSucursal(): void {
     if (!this.nuevaSucursal.nombre.trim()) {
-      alert('El nombre de la sucursal es obligatorio');
+      alert(this.language.t('El nombre de la sucursal es obligatorio'));
       return;
     }
 
@@ -58,26 +61,28 @@ export class SucursalesComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al crear sucursal:', err);
-        alert('Error al crear sucursal. Por favor, inténtelo de nuevo.');
+        alert(this.language.t('Error al crear sucursal. Por favor, inténtelo de nuevo.'));
         this.cd.detectChanges();
       }
     });
   }
 
   eliminarSucursal(id: number, nombre: string): void {
-    if (confirm(`¿Está seguro de que desea eliminar la sucursal "${nombre}"?`)) {
+    const confirmacion = this.language.t('¿Está seguro de que desea eliminar la sucursal "{name}"?')
+      .replace('{name}', nombre);
+    if (confirm(confirmacion)) {
       this.sucursalesService.eliminarSucursal(id).subscribe({
         next: (respuesta) => {
           this.listaSucursales = this.listaSucursales.filter((s: any) => s?.id !== id);
-          alert(respuesta?.mensaje ?? 'Sucursal eliminada correctamente');
+          alert(this.language.t(respuesta?.mensaje ?? 'Sucursal eliminada correctamente'));
           this.cd.detectChanges();
         },
         error: (err) => {
           console.error('Error al eliminar sucursal:', err);
           if (err.status === 409) {
-            alert('No se puede eliminar la sucursal porque tiene piezas de inventario o ventas asociadas.');
+            alert(this.language.t('No se puede eliminar la sucursal porque tiene piezas de inventario o ventas asociadas.'));
           } else {
-            alert('Error al eliminar sucursal. Por favor, inténtelo de nuevo.');
+            alert(this.language.t('Error al eliminar sucursal. Por favor, inténtelo de nuevo.'));
           }
           this.cd.detectChanges();
         }

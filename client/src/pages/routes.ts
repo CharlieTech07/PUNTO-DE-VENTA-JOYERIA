@@ -29,6 +29,7 @@ export const routes: Routes = [
   // Cuando visites http://localhost:4200/inventario se muestra este componente
   { path: 'inventario', component: InventarioComponent },
 
+
   // Comodín: si escriben cualquier otra ruta inexistente, regresa a productos
   { path: '**', redirectTo: 'login' }
 ];

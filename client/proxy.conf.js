@@ -3,7 +3,9 @@
  */
 const PROXY_CONFIG = [
   {
-    context: ['/api', '/inventario', '/productos', '/sucursales'],
+    // Keep Angular page routes such as /productos and /sucursales local to
+    // the client. API requests use the /api prefix exclusively.
+    context: ['/api'],
     target: 'http://localhost:3000',
     secure: false,
     changeOrigin: true,

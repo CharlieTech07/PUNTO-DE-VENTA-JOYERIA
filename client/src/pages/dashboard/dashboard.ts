@@ -5,11 +5,13 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MenuComponent } from '../../components/menu/menu';
 import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
 import { SucursalesService, Sucursal } from  '../../services/sucursales.services';
+import { LanguageService } from '../../services/lenguage.service';
+import { TranslatePipe } from '../../services/translate.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MenuComponent, RouterLink],
+  imports: [CommonModule, MenuComponent, RouterLink, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -19,11 +21,21 @@ export class DashboardComponent implements OnInit {
   private inventarioService = inject(InventarioService);
   private sucursalesService = inject(SucursalesService);
   private cd = inject(ChangeDetectorRef);
+  private languageService = inject(LanguageService);
 
   public vistaActiva: string = 'resumen';
   public tituloVista: string = 'Resumen';
-  public fechaHoy: string = '';
   public segmentoSeleccionado: string = 'dia';
+
+  public get fechaHoy(): string {
+    const locale = this.languageService.lang === 'en' ? 'en-US' : 'es-MX';
+    return new Date().toLocaleDateString(locale, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
 
   // Colecciones de la base de datos pos_olimpo
   public listaInventario: InventarioItem[] = [];
@@ -47,7 +59,6 @@ export class DashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.inicializarFecha();
     this.cargarDatosBackend();
 
     this.route.fragment.subscribe(frag => {
@@ -124,12 +135,4 @@ export class DashboardComponent implements OnInit {
     this.cambiarVista(seccion, true);
   }
 
-  private inicializarFecha(): void {
-    this.fechaHoy = new Date().toLocaleDateString('es-MX', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
 }

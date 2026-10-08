@@ -6,29 +6,56 @@
   padding: 0;
 }
 
-body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden; /* Garantiza que NUNCA aparezca la barra de desplazamiento */
+:host {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  font-family: 'Cormorant Garamond', serif;
+  min-height: 100vh;
+  width: 100%;
+  font-family: var(--serif, 'Cormorant Garamond', serif);
   background:
-    radial-gradient(circle at 50% 0%, rgba(120, 90, 40, 0.35), transparent 60%),
-    linear-gradient(160deg, #1a1410 0%, #2b2119 45%, #171310 100%);
-  color: #e9dfc9;
+    radial-gradient(circle at 50% 0%, var(--oro-tenue), transparent 60%),
+    var(--fondo);
+  color: var(--texto);
+  transition: background-color 0.25s ease, color 0.25s ease;
+  position: relative;
 }
 
-/* Aumentamos el ancho máximo de la estructura principal */
+/* Botón flotante para cambiar de tema */
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 100px;
+  background: var(--superficie);
+  border: 1px solid var(--oro-borde);
+  color: var(--oro);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--sombra);
+  transition: all 0.25s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--oro);
+  background: var(--superficie-2);
+}
+
+/* Estrutura principal */
 .wrap {
   width: 100%;
-  max-width: 480px; /* Antes era 380px -> Ahora la tarjeta es mucho más amplia */
+  max-width: 480px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 20px;
 }
 
 /* --- LOGO Y MARCA --- */
@@ -42,7 +69,7 @@ body {
 
 .crest {
   display: block;
-  width: 175px; /* Logo más grande */
+  width: 175px;
   height: auto;
   margin: 0 auto 10px;
   object-fit: contain;
@@ -51,10 +78,10 @@ body {
 .brand h1 {
   font-family: 'Cinzel', serif;
   font-weight: 500;
-  font-size: 36px; /* Texto OLIMPO más grande */
+  font-size: 36px;
   letter-spacing: 12px;
   margin: 0;
-  color: #d8b978;
+  color: var(--oro);
 }
 
 .brand .divider {
@@ -69,14 +96,14 @@ body {
 .brand .divider span:last-child {
   height: 1px;
   width: 40px;
-  background: #8a7448;
+  background: var(--oro-medio);
 }
 
 .brand .tagline {
   font-family: 'Cinzel', serif;
   font-size: 12px;
   letter-spacing: 5px;
-  color: #a8916a;
+  color: var(--texto-2);
 }
 
 /* --- TARJETA --- */
@@ -90,9 +117,10 @@ body {
   overflow: hidden;
   width: 100%;
   border-radius: 20px;
-  padding: 36px 34px 30px; /* Padding interior más amplio */
+  padding: 36px 34px 30px;
   background: transparent;
   isolation: isolate;
+  box-shadow: var(--sombra);
 }
 
 .card::before {
@@ -107,9 +135,9 @@ body {
     from 0deg,
     transparent 0deg,
     transparent 300deg,
-    rgba(216, 185, 120, 0.5) 335deg,
-    #f3dfa3 350deg,
-    rgba(216, 185, 120, 0.5) 360deg
+    var(--oro-tenue) 335deg,
+    var(--oro-claro) 350deg,
+    var(--oro-tenue) 360deg
   );
   animation: girar 5s linear infinite;
   z-index: -2;
@@ -120,8 +148,9 @@ body {
   position: absolute;
   inset: 1.5px;
   border-radius: 19px;
-  background: linear-gradient(180deg, #332819 0%, #291f14 100%);
+  background: linear-gradient(180deg, var(--superficie) 0%, var(--superficie-2) 100%);
   z-index: -1;
+  transition: background 0.25s ease;
 }
 
 @keyframes girar {
@@ -139,15 +168,15 @@ body {
 .card h2 {
   text-align: center;
   font-weight: 500;
-  font-size: 30px; /* Título "Bienvenido" más grande */
+  font-size: 30px;
   margin: 0 0 4px;
-  color: #d8b978;
+  color: var(--oro);
 }
 
 .card .sub {
   text-align: center;
   font-size: 16px;
-  color: #b7a37c;
+  color: var(--texto-2);
   margin: 0 0 24px;
 }
 
@@ -157,7 +186,7 @@ label {
   font-family: 'Cinzel', serif;
   font-size: 11px;
   letter-spacing: 2px;
-  color: #b7a37c;
+  color: var(--texto-2);
   margin-bottom: 8px;
 }
 
@@ -166,31 +195,31 @@ label {
 }
 
 .error {
-  color: var(--rojo, #d88b78);
+  color: var(--rojo);
   font-size: 12px;
   margin: 5px 0 0;
 }
 
 input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(200, 170, 110, 0.3);
+  background: var(--superficie-3);
+  border: 1px solid var(--oro-borde);
   border-radius: 8px;
-  padding: 13px 15px; /* Inputs ligeramente más altos y cómodos */
-  font-family: 'Cormorant Garamond', serif;
+  padding: 13px 15px;
+  font-family: var(--serif, 'Cormorant Garamond', serif);
   font-size: 16px;
-  color: #f2e8d3;
+  color: var(--texto);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.25s ease;
 }
 
 input::placeholder {
-  color: #7d6c4d;
+  color: var(--texto-3);
 }
 
 input:focus {
-  border-color: #d8b978;
-  box-shadow: 0 0 0 3px rgba(216, 185, 120, 0.12);
+  border-color: var(--oro);
+  box-shadow: 0 0 0 3px var(--oro-tenue);
 }
 
 /* --- BOTONES --- */
@@ -229,8 +258,8 @@ button.primary {
   padding: 15px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(180deg, #e6cd94, #c9a865);
-  color: #2b2119;
+  background: linear-gradient(180deg, var(--oro-claro), var(--oro-medio));
+  color: var(--sobre-oro);
   font-family: 'Cinzel', serif;
   font-size: 13px;
   letter-spacing: 3px;
@@ -250,25 +279,21 @@ button.create {
   font-family: 'Cinzel', serif;
   font-size: 11px;
   letter-spacing: 2px;
-  color: #b7a37c;
+  color: var(--texto-2);
   background: none;
-  border: 1px solid rgba(200, 170, 110, 0.25);
+  border: 1px solid var(--oro-borde);
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease, background-color 0.25s ease;
 }
 
 button.create:hover {
-  color: #f2e8d3;
-  border-color: #d8b978;
+  color: var(--texto);
+  border-color: var(--oro);
 }
-/* ---------------------------------------------------------------
-   Mensajes de error
-   Nacen ocultos: sin esto los dos mensajes se leían desde que
-   cargaba la pantalla, antes de que el usuario escribiera nada.
-   acceso.ts le pone `con-error` al .field para mostrarlos.
-   --------------------------------------------------------------- */
+
+/* Mensajes de error */
 .field .error {
   display: none;
 }
@@ -278,18 +303,5 @@ button.create:hover {
 }
 
 .field.con-error input {
-  border-color: var(--rojo, #d88b78);
-}
-
-:host {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  width: 100%;
-  font-family: 'Cormorant Garamond', serif;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(120, 90, 40, 0.35), transparent 60%),
-    linear-gradient(160deg, #1a1410 0%, #2b2119 45%, #171310 100%);
-  color: #e9dfc9;
+  border-color: var(--rojo);
 }
