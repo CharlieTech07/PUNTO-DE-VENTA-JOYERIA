@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from './db.js';
+import authRoutes from './routes/auth';
 import productosRoutes from './routes/productos.js';
 import sucursalesRoutes from './routes/sucursales.js';
 import inventarioRoutes from './routes/inventario.js';
@@ -17,6 +18,7 @@ app.get('/', (_req, res) => {
   res.send('Servidor del Punto de Venta funcionando');
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/productos', productosRoutes);
 app.use('/api/sucursales', sucursalesRoutes);
 app.use('/api/inventario', inventarioRoutes);
