@@ -1,0 +1,159 @@
+<div class="rejilla rejilla--4">
+  <article class="kpi">
+    <div class="etiqueta">Total Personal</div>
+    <div class="kpi__valor">{{ listaEmpleados.length }}</div>
+    <div class="kpi__nota">Usuarios en base de datos</div>
+  </article>
+  <article class="kpi">
+    <div class="etiqueta">Administradores</div>
+    <div class="kpi__valor">1</div>
+    <div class="kpi__nota">Acceso Global</div>
+  </article>
+  <article class="kpi">
+    <div class="etiqueta">Sucursales</div>
+    <div class="kpi__valor">{{ listaSucursales.length }}</div>
+    <div class="kpi__nota">Tiendas operativas</div>
+  </article>
+  <article class="kpi">
+    <div class="etiqueta">Seguridad</div>
+    <div class="kpi__valor">JWT</div>
+    <div class="kpi__nota kpi__nota--sube">Bcrypt Hash</div>
+  </article>
+</div>
+
+<div class="rejilla rejilla--2-1">
+  <!-- TABLA DE PERSONAL -->
+  <article class="tarjeta">
+    <div class="tarjeta__cabecera">
+      <svg viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="3.4" />
+        <path d="M2.5 20a6.5 6.5 0 0113 0" />
+      </svg>
+      <h2 class="tarjeta__titulo">Personal registrado</h2>
+    </div>
+
+    <div class="tabla-envoltura">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Rol</th>
+            <th>Sucursal</th>
+            <th>Estado</th>
+            <th class="celda-acciones">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (emp of listaEmpleados; track emp.id) {
+            <tr>
+              <td class="celda-id">#{{ emp.id }}</td>
+              <td class="celda-pieza">{{ emp.nombres }} {{ emp.apellido_paterno }}</td>
+              <td>
+                <span class="insignia" 
+                  [class.insignia--riesgo]="emp.rol === 'Administrador'"
+                  [class.insignia--aviso]="emp.rol === 'Gerente'"
+                  [class.insignia--neutra]="emp.rol === 'Cajero'">
+                  {{ emp.rol }}
+                </span>
+              </td>
+              <td><strong>{{ emp.nombre_sucursal || 'Acceso Global' }}</strong></td>
+              <td>
+                <span class="insignia" [class.insignia--ok]="emp.activo" [class.insignia--riesgo]="!emp.activo">
+                  {{ emp.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="celda-acciones">
+                <button type="button" class="btn-accion-tabla btn-accion-tabla--editar" (click)="seleccionarParaEditar(emp)">
+                  Editar
+                </button>
+                <button 
+                  type="button" 
+                  class="btn-accion-tabla" 
+                  [class.btn-accion-tabla--desactivar]="emp.activo"
+                  [class.btn-accion-tabla--activar]="!emp.activo"
+                  (click)="alternarEstado(emp)">
+                  {{ emp.activo ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="vacio">No hay personal registrado en la joyería.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </article>
+
+  <!-- FORMULARIO DE ALTA / EDICIÓN -->
+  <article class="tarjeta">
+    <div class="tarjeta__cabecera">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="3.6" />
+        <path d="M4 20a8 8 0 0116 0" />
+        <path d="M18 3.5v5M15.5 6h5" />
+      </svg>
+      <h2 class="tarjeta__titulo">{{ editandoId ? 'Editar Personal' : 'Dar de alta' }}</h2>
+      @if (editandoId) {
+        <button type="button" class="tarjeta__accion boton boton--fantasma" (click)="cancelarEdicion()">
+          Cancelar
+        </button>
+      }
+    </div>
+
+    <form (ngSubmit)="guardar()">
+      <div class="campo">
+        <label class="etiqueta">Nombres *</label>
+        <input type="text" [(ngModel)]="formulario.nombres" name="nombres" placeholder="Ej. Camila" required />
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">Apellido Paterno *</label>
+        <input type="text" [(ngModel)]="formulario.apellido_paterno" name="apellido_paterno" placeholder="Ej. Torres" required />
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">Apellido Materno</label>
+        <input type="text" [(ngModel)]="formulario.apellido_materno" name="apellido_materno" placeholder="Ej. Gómez" />
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">Correo electrónico *</label>
+        <input type="email" [(ngModel)]="formulario.correo" name="correo" placeholder="ejemplo@olimpo.mx" required />
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">
+          {{ editandoId ? 'Nueva contraseña (dejar vacía para conservar)' : 'Contraseña inicial *' }}
+        </label>
+        <input type="password" [(ngModel)]="formulario.contrasena" name="contrasena" placeholder="••••••••" [required]="!editandoId" />
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta">Rol *</label>
+        <select [(ngModel)]="formulario.rol" name="rol" (change)="alCambiarRol()">
+          <option value="Cajero">Cajero</option>
+          <option value="Gerente">Gerente</option>
+          <option value="Administrador">Administrador</option>
+        </select>
+      </div>
+
+      @if (formulario.rol !== 'Administrador') {
+        <div class="campo">
+          <label class="etiqueta">Sucursal asignada *</label>
+          <select [(ngModel)]="formulario.id_sucursal" name="id_sucursal" required>
+            @for (suc of listaSucursales; track suc.id) {
+              <option [ngValue]="suc.id">{{ suc.nombre }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <button type="submit" [disabled]="guardando" class="boton boton--primario boton--bloque">
+        {{ guardando ? 'Guardando en pos_olimpo...' : (editandoId ? 'Guardar Cambios' : 'Crear usuario') }}
+      </button>
+    </form>
+  </article>
+</div>

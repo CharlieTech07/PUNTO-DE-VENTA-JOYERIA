@@ -21,36 +21,60 @@
 </head>
 <body class="dark-mode">
     <!-- Inserta el componente del menú -->
+<!-- client/src/pages/inicio/inicio.html -->
 <app-menu></app-menu>
 
 <div class="container">
   <header>
     <div class="header-top">
       <span class="subtitle">VITRINA DE MERCANCÍA</span>
-      <span class="item-count">{{ products.length }} piezas disponibles</span>
+      <div class="header-actions">
+        <span class="item-count">{{ productosFiltrados.length }} piezas en catálogo</span>
+        <button type="button" class="btn-dashboard" routerLink="/dashboard">
+          Ir al Dashboard
+        </button>
+      </div>
     </div>
     <h1 class="title">Home</h1>
   </header>
 
   <div class="search-bar">
     <span class="material-icons search-icon">search</span>
-    <input type="text" placeholder="Buscar pieza, piedra o metal...">
+    <input 
+      type="text" 
+      [(ngModel)]="terminoBusqueda" 
+      placeholder="Buscar por joya, metal o descripción..." />
   </div>
 
-  <div class="grid-container" id="product-grid">
-    @for (product of products; track product.id) {
-      <div class="card">
-        <img [src]="product.imageUrl" [alt]="product.name" class="card-image">
-        <div class="product-category">{{ product.category }}</div>
-        <h3 class="product-title">{{ product.name }}</h3>
-        <div class="product-desc">{{ product.description }}</div>
-        <div class="card-footer">
-          <span class="price">{{ product.price | currency:'USD':'symbol':'1.0-0' }}</span>
-          <button class="btn-add" (click)="agregarAlCarrito(product)">AGREGAR</button>
+  @if (cargando) {
+    <p style="color: #cbd5e1; text-align: center; margin-top: 40px;">Consultando joyas en PostgreSQL...</p>
+  } @else {
+    <div class="grid-container" id="product-grid">
+      @for (product of productosFiltrados; track product.id) {
+        <div class="card">
+          <!-- Si tiene imagen cargada en BD muestra la base64, si no un placeholder elegante -->
+          <img 
+            [src]="product.imagen_base64 ? ('data:image/jpeg;base64,' + product.imagen_base64) : 'https://images.unsplash.com/photo-1605100804763-247f67b4549e?auto=format&fit=crop&q=80&w=600'" 
+            [alt]="product.nombre" 
+            class="card-image" />
+          
+          <div class="product-category">{{ product.tipo_metal }} {{ product.kilataje || '' }}</div>
+          <h3 class="product-title">{{ product.nombre }}</h3>
+          <div class="product-desc">{{ product.descripcion || 'Pieza de joyería fina' }}</div>
+          <div class="card-footer">
+            <span class="price">{{ product.precio_venta | currency:'USD':'symbol':'1.0-0' }}</span>
+            <button type="button" class="btn-add" (click)="agregarAlCarrito(product)">
+              AGREGAR
+            </button>
+          </div>
         </div>
-      </div>
-    }
-  </div>
+      } @empty {
+        <p class="no-results" style="grid-column: 1 / -1; text-align: center; color: #94a3b8;">
+          No se encontraron joyas en la vitrina. Registra piezas en el catálogo para verlas aquí.
+        </p>
+      }
+    </div>
+  }
 </div>
 </body>
 </html>
