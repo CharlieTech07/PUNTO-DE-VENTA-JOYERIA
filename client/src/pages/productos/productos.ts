@@ -1,12 +1,10 @@
 // client/src/pages/productos/productos.ts
-import { Component, DestroyRef, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../../services/productos.service';
 import { LanguageService } from '../../services/lenguage.service';
 import { TranslatePipe } from '../../services/translate.pipe';
-import { DeepLTranslationService } from '../../services/deepl-translation.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-productos',
@@ -17,11 +15,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class ProductosComponent implements OnInit {
   private productosService = inject(ProductosService);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly deepL = inject(DeepLTranslationService);
   readonly languageService = inject(LanguageService);
   private cd = inject(ChangeDetectorRef);
-  private readonly translatedProductNames = new Map<number, string>();
 
   listaProductos: any[] = [];
   cargando: boolean = true;
@@ -40,15 +35,11 @@ export class ProductosComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.languageService.lang$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(lang => {
-        this.translatedProductNames.clear();
-        if (lang === 'en') {
-          this.translateProductNames();
-        }
-      });
     this.cargarProductos();
+  }
+
+  productName(item: any): string {
+    return this.languageService.catalogPhrase(item?.nombre ?? '');
   }
 
   cargarProductos(): void {
@@ -56,40 +47,15 @@ export class ProductosComponent implements OnInit {
       next: (datos) => {
         this.listaProductos = datos;
         this.cargando = false;
-        this.translateProductNames();
         this.cd.detectChanges();
       },
       error: (err) => {
         console.error('Error al consultar productos:', err);
-        this.errorCarga = 'error_carga_productos';
+        this.errorCarga = this.languageService.translate('error_carga_productos');
         this.cargando = false;
         this.cd.detectChanges();
       }
     });
-  }
-
-  productName(item: any): string {
-    return this.translatedProductNames.get(Number(item.id)) ?? item.nombre;
-  }
-
-  private translateProductNames(): void {
-    if (this.languageService.lang !== 'en' || this.listaProductos.length === 0) {
-      return;
-    }
-
-    const productsToTranslate = this.listaProductos.filter(item => typeof item.nombre === 'string' && item.nombre.trim());
-    this.deepL.translateMany(productsToTranslate.map(item => item.nombre))
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(translations => {
-        if (this.languageService.lang !== 'en') {
-          return;
-        }
-
-        productsToTranslate.forEach((item, index) => {
-          this.translatedProductNames.set(Number(item.id), translations[index] ?? item.nombre);
-        });
-        this.cd.detectChanges();
-      });
   }
 
   // Método que captura la foto cuando el usuario la elige
@@ -102,7 +68,7 @@ export class ProductosComponent implements OnInit {
 
   guardarProducto(): void {
     if (!this.nuevoItem.nombre.trim()) {
-      alert(this.languageService.t('Debes ingresar un nombre para la pieza'));
+      alert(this.languageService.translate('error_nombre_producto'));
       return;
     }
 
@@ -135,33 +101,30 @@ export class ProductosComponent implements OnInit {
           id_categoria: 1
         };
         this.archivoSeleccionado = null;
-        this.translateProductNames();
         this.cd.detectChanges();
-        alert(this.languageService.t('¡Joya e imagen guardadas con éxito en pos_olimpo!'));
+        alert(this.languageService.translate('exito_guardar_producto_imagen'));
       },
       error: (err) => {
         console.error('Error al guardar con imagen:', err);
-        alert(this.languageService.t('Ocurrió un error al guardar en la base de datos.'));
+        alert(this.languageService.translate('error_guardar_producto_imagen'));
       }
     });
   }
 
   borrarProducto(id: number, nombre: string): void {
-    const mensajeConfirmacion = this.languageService.t('¿Estás seguro de eliminar "{name}" de la base de datos?')
-      .replace('{name}', nombre);
-    const confirmacion = confirm(mensajeConfirmacion);
+    const confirmacion = confirm(`¿Estás seguro de eliminar "${nombre}" de la base de datos?`);
     if (!confirmacion) return;
 
     this.productosService.eliminarProducto(id).subscribe({
       next: () => {
         this.listaProductos = this.listaProductos.filter(item => item.id !== id);
         this.cd.detectChanges();
-        alert(this.languageService.t('Pieza eliminada correctamente de pos_olimpo'));
+        alert(this.languageService.translate('exito_eliminar_producto'));
       },
       error: (err) => {
         console.error('Error al eliminar:', err);
-        const mensajeError = err.error?.error || 'No se pudo eliminar el producto';
-        alert(this.languageService.t(mensajeError));
+        const mensajeError = err.error?.error || this.languageService.translate('error_eliminar_producto');
+        alert(mensajeError);
       }
     });
   }
