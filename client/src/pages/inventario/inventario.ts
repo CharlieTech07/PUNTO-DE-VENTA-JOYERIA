@@ -1,15 +1,15 @@
 import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
 import { ProductosService } from '../../services/productos.service';
-import { SucursalesService } from '../../services/sucursales.services';
+import { SucursalesService, Sucursal } from '../../services/sucursales.services';
 
 @Component({
   selector: 'app-inventario',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './inventario.html',
   styleUrls: ['./inventario.css']
 })
@@ -20,10 +20,11 @@ export class InventarioComponent implements OnInit {
   private sucursalesService = inject(SucursalesService);
   private cd = inject(ChangeDetectorRef);
 
-  public listaInventario: InventarioItem[] = [];
+  public listaInventario: (InventarioItem & { seleccionado?: boolean })[] = [];
   public catalogoProductos: any[] = [];
-  public catalogoSucursales: any[] = [];
+  public catalogoSucursales: Sucursal[] = [];
   public cargando: boolean = true;
+  public guardando: boolean = false;
   public seleccionarTodos: boolean = false;
 
   public nuevoRegistro = {
@@ -88,6 +89,7 @@ export class InventarioComponent implements OnInit {
       return;
     }
 
+    this.guardando = true;
     const payload = {
       id_sucursal: Number(this.nuevoRegistro.id_sucursal),
       id_producto: Number(this.nuevoRegistro.id_producto),
@@ -98,13 +100,15 @@ export class InventarioComponent implements OnInit {
 
     this.inventarioService.asignarStock(payload).subscribe({
       next: () => {
+        this.guardando = false;
         alert('Stock guardado correctamente en pos_olimpo');
         this.cargarDatos();
       },
       error: (err) => {
+        this.guardando = false;
         console.error('Error del servidor:', err);
-        const detalle = err.error?.error || 'No se pudo guardar el stock en la base de datos';
-        alert(detalle);
+        alert(err.error?.error || 'No se pudo guardar el stock');
+        this.cd.detectChanges();
       }
     });
   }
@@ -113,7 +117,7 @@ export class InventarioComponent implements OnInit {
     this.listaInventario.forEach(item => item.seleccionado = this.seleccionarTodos);
   }
 
-  public get itemsSeleccionados(): InventarioItem[] {
+  public get itemsSeleccionados(): (InventarioItem & { seleccionado?: boolean })[] {
     return this.listaInventario.filter(item => item.seleccionado);
   }
 
@@ -136,13 +140,14 @@ export class InventarioComponent implements OnInit {
     const ids = this.itemsSeleccionados.map(item => item.id);
     if (ids.length === 0) return;
 
-    if (!confirm(`¿Eliminar ${ids.length} registros seleccionados?`)) return;
+    if (!confirm(`¿Eliminar ${ids.length} registros seleccionados de inventario?`)) return;
 
     this.inventarioService.eliminarVarios(ids).subscribe({
       next: () => {
         this.listaInventario = this.listaInventario.filter(item => !ids.includes(item.id));
         this.seleccionarTodos = false;
         this.cd.detectChanges();
+        alert(`¡${ids.length} registros eliminados correctamente!`);
       },
       error: (err) => {
         console.error('Error al eliminar lote:', err);
