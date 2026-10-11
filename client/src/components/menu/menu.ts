@@ -1,9 +1,19 @@
+// client/src/components/menu/menu.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { AuthService, UsuarioSesion } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 export type TemaOlimpo = 'oscuro' | 'claro';
+
+export interface UsuarioSesionLocal {
+  id: number;
+  nombreCompleto: string;
+  correo: string;
+  rol: 'Administrador' | 'Gerente' | 'Cajero';
+  id_sucursal: number | null;
+  nombre_sucursal?: string;
+}
 
 export interface MenuItem {
   vista: string;
@@ -12,7 +22,7 @@ export interface MenuItem {
   fragmento?: string;
   svgPath: string[];
   insignia?: number;
-  rolesPermitidos?: ('Administrador' | 'Gerente' | 'Cajero')[]; // Control de acceso por rol
+  rolesPermitidos?: ('Administrador' | 'Gerente' | 'Cajero')[];
 }
 
 @Component({
@@ -24,13 +34,12 @@ export interface MenuItem {
 })
 export class MenuComponent implements OnInit {
   private readonly CLAVE_TEMA = 'olimpo:tema';
-  private authService: AuthService = inject(AuthService) as AuthService;
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   public temaActual: TemaOlimpo = 'oscuro';
-  public usuarioActual: UsuarioSesion | null = null;
+  public usuarioActual: UsuarioSesionLocal | null = null;
 
-  // Catálogo completo de items del menú con sus permisos
   public readonly todosLosItems: MenuItem[] = [
     {
       vista: 'home',
@@ -128,16 +137,15 @@ export class MenuComponent implements OnInit {
         'M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z',
         'M9 12l2 2 4-4.5'
       ],
-      rolesPermitidos: ['Administrador'] // Exclusivo del Administrador Global
+      rolesPermitidos: ['Administrador']
     }
   ];
 
   ngOnInit(): void {
     this.inicializarTema();
-    this.usuarioActual = this.authService.obtenerUsuario();
+    this.usuarioActual = this.authService.obtenerUsuario() as UsuarioSesionLocal;
   }
 
-  // Devuelve únicamente los botones a los que el rol actual tiene acceso
   get itemsMenu(): MenuItem[] {
     if (!this.usuarioActual) {
       return this.todosLosItems;
