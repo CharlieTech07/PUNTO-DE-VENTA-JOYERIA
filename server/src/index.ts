@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { db } from './db.js';
-import authRoutes from './routes/auth';
+import authRoutes from './routes/auth.js';
 import productosRoutes from './routes/productos.js';
 import sucursalesRoutes from './routes/sucursales.js';
 import inventarioRoutes from './routes/inventario.js';

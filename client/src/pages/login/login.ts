@@ -44,20 +44,21 @@ export class LoginComponent {
 
     this.loading = true;
 
+    // Asegurarse de enviar 'correo' y 'contrasena'
     const credenciales = {
-      correo: this.loginForm.value.email,
-      contrasena: this.loginForm.value.password
+      correo: this.loginForm.value.email.trim(),
+      contrasena: this.loginForm.value.password.trim()
     };
 
     this.authService.iniciarSesion(credenciales).subscribe({
-      next: (resp) => {
+      next: (_resp) => {
         this.loading = false;
-        // Redirige al inicio o dashboard tras loguear con éxito
         this.router.navigate(['/inicio']);
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err.error?.error || 'Error al iniciar sesión. Revisa tus credenciales.';
+        console.error('Error al iniciar sesión:', err);
+        this.errorMessage = err.error?.error || 'Credenciales inválidas o error de conexión.';
       }
     });
   }

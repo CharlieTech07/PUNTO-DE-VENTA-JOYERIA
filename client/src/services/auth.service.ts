@@ -23,7 +23,7 @@ export interface RespuestaLogin {
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:3000/api/auth';
+  private apiUrl = '/api/auth';
   private readonly TOKEN_KEY = 'olimpo_token';
   private readonly USER_KEY = 'olimpo_usuario';
 
