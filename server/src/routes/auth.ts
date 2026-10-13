@@ -44,7 +44,7 @@ router.post('/login', async (req: Request, res: Response) => {
     }
 
     const query = `
-      SELECT 
+      SELECT
         u.id,
         u.nombres,
         u.apellido_paterno,
@@ -104,14 +104,14 @@ router.post('/login', async (req: Request, res: Response) => {
 router.get('/usuarios', async (_req: Request, res: Response) => {
   try {
     const query = `
-      SELECT 
-        u.id, 
-        u.nombres, 
-        u.apellido_paterno, 
-        u.apellido_materno, 
-        u.correo, 
-        u.rol, 
-        u.id_sucursal, 
+      SELECT
+        u.id,
+        u.nombres,
+        u.apellido_paterno,
+        u.apellido_materno,
+        u.correo,
+        u.rol,
+        u.id_sucursal,
         u.activo,
         s.nombre AS nombre_sucursal
       FROM usuarios u
@@ -221,7 +221,7 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
     }
 
     const updateQuery = `
-      UPDATE usuarios 
+      UPDATE usuarios
       SET nombres = $1,
           apellido_paterno = $2,
           apellido_materno = $3,
@@ -289,9 +289,9 @@ router.patch('/usuarios/:id/estado', verificarToken, async (req: RequestConUsuar
     }
 
     const updateQuery = `
-      UPDATE usuarios 
-      SET activo = $1 
-      WHERE id = $2 
+      UPDATE usuarios
+      SET activo = $1
+      WHERE id = $2
       RETURNING id, nombres, apellido_paterno, activo;
     `;
     const result = await db.query(updateQuery, [Boolean(activo), idUsuarioDestino]);

@@ -50,7 +50,7 @@
               <td class="celda-id">#{{ emp.id }}</td>
               <td class="celda-pieza">{{ emp.nombres }} {{ emp.apellido_paterno }}</td>
               <td>
-                <span class="insignia" 
+                <span class="insignia"
                   [class.insignia--riesgo]="emp.rol === 'Administrador'"
                   [class.insignia--aviso]="emp.rol === 'Gerente'"
                   [class.insignia--neutra]="emp.rol === 'Cajero'">
@@ -67,9 +67,9 @@
                 <button type="button" class="btn-accion-tabla btn-accion-tabla--editar" (click)="seleccionarParaEditar(emp)">
                   Editar
                 </button>
-                <button 
-                  type="button" 
-                  class="btn-accion-tabla" 
+                <button
+                  type="button"
+                  class="btn-accion-tabla"
                   [class.btn-accion-tabla--desactivar]="emp.activo"
                   [class.btn-accion-tabla--activar]="!emp.activo"
                   (click)="alternarEstado(emp)">
