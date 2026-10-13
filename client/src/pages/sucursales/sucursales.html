@@ -1,45 +1,45 @@
 <!-- client/src/pages/sucursales/sucursales.html -->
 <div class="sucursales-container">
-  <h2 class="sucursales-title">Gestión de Sucursales — Joyería Olimpo</h2>
+  <h2 class="sucursales-title">{{ 'Gestión de Sucursales — Joyería Olimpo' | translate }}</h2>
 
   <!-- Tarjeta del Formulario -->
   <div class="form-card">
-    <h3>Registrar Nueva Tienda</h3>
+    <h3>{{ 'Registrar Nueva Tienda' | translate }}</h3>
     <form (ngSubmit)="guardarSucursal()" class="form-grid">
       <div class="form-group">
-        <label class="form-label">Nombre de la Sucursal:</label>
-        <input 
-          type="text" 
-          [(ngModel)]="nuevaSucursal.nombre" 
-          name="nombre" 
-          placeholder="ej. Sucursal Polanco" 
-          required 
+        <label class="form-label">{{ 'Nombre de la Sucursal:' | translate }}</label>
+        <input
+          type="text"
+          [(ngModel)]="nuevaSucursal.nombre"
+          name="nombre"
+          [placeholder]="'ej. Sucursal Polanco' | translate"
+          required
           class="form-input" />
       </div>
 
       <div class="form-group">
-        <label class="form-label">Dirección:</label>
-        <input 
-          type="text" 
-          [(ngModel)]="nuevaSucursal.direccion" 
-          name="direccion" 
-          placeholder="ej. Av. Presidente Masaryk #120" 
+        <label class="form-label">{{ 'Dirección:' | translate }}</label>
+        <input
+          type="text"
+          [(ngModel)]="nuevaSucursal.direccion"
+          name="direccion"
+          [placeholder]="'ej. Av. Presidente Masaryk #120' | translate"
           class="form-input" />
       </div>
 
       <div class="form-group">
-        <label class="form-label">Teléfono:</label>
-        <input 
-          type="text" 
-          [(ngModel)]="nuevaSucursal.telefono" 
-          name="telefono" 
-          placeholder="ej. 55 1234 5678" 
+        <label class="form-label">{{ 'Teléfono:' | translate }}</label>
+        <input
+          type="text"
+          [(ngModel)]="nuevaSucursal.telefono"
+          name="telefono"
+          [placeholder]="'ej. 55 1234 5678' | translate"
           class="form-input" />
       </div>
 
       <div class="form-actions">
         <button type="submit" class="btn-primary">
-          + Guardar Sucursal
+          {{ '+ Guardar Sucursal' | translate }}
         </button>
       </div>
     </form>
@@ -47,22 +47,22 @@
 
   <!-- Estado de carga y mensajes -->
   @if (cargando) {
-    <p class="estado-mensaje">⏳ Consultando sucursales en pos_olimpo...</p>
+    <p class="estado-mensaje">{{ '⏳ Consultando sucursales en pos_olimpo...' | translate }}</p>
   } @else if (errorCarga) {
-    <p class="estado-error">❌ {{ errorCarga }}</p>
+    <p class="estado-error">❌ {{ errorCarga | translate }}</p>
   } @else if (listaSucursales.length === 0) {
-    <p class="estado-mensaje">No hay sucursales registradas en el sistema.</p>
+    <p class="estado-mensaje">{{ 'No hay sucursales registradas en el sistema.' | translate }}</p>
   } @else {
     <!-- Tabla de Sucursales -->
     <table class="tabla-sucursales">
       <thead class="tabla-header">
         <tr>
-          <th class="col-id">ID</th>
-          <th>Nombre</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th class="col-center">Estado</th>
-          <th class="col-center">Acciones</th>
+          <th class="col-id">{{ 'ID' | translate }}</th>
+          <th>{{ 'Nombre' | translate }}</th>
+          <th>{{ 'Dirección' | translate }}</th>
+          <th>{{ 'Teléfono' | translate }}</th>
+          <th class="col-center">{{ 'Estado' | translate }}</th>
+          <th class="col-center">{{ 'Acciones' | translate }}</th>
         </tr>
       </thead>
       <tbody>
@@ -70,17 +70,17 @@
           <tr>
             <td class="col-id">{{ s.id }}</td>
             <td><strong>{{ s.nombre }}</strong></td>
-            <td>{{ s.direccion || 'Sin dirección asignada' }}</td>
-            <td>{{ s.telefono || 'Sin teléfono' }}</td>
+            <td>{{ (s.direccion || 'Sin dirección asignada') | translate }}</td>
+            <td>{{ (s.telefono || 'Sin teléfono') | translate }}</td>
             <td class="col-center">
-              <span class="badge badge-success">Activa</span>
+              <span class="badge badge-success">{{ 'Activa' | translate }}</span>
             </td>
             <td class="col-center">
-              <button 
-                type="button" 
-                (click)="eliminarSucursal(s.id, s.nombre)" 
+              <button
+                type="button"
+                (click)="eliminarSucursal(s.id, s.nombre)"
                 class="btn-danger">
-                Eliminar
+                {{ 'Eliminar' | translate }}
               </button>
             </td>
           </tr>

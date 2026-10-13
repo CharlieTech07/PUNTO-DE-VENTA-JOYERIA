@@ -8,12 +8,14 @@ import { forkJoin } from 'rxjs';
 import { MenuComponent } from '../../components/menu/menu';
 import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
 import { SucursalesService, Sucursal } from '../../services/sucursales.services';
+import { LanguageService } from '../../services/lenguage.service';
+import { TranslatePipe } from '../../services/translate.pipe';
 import { EmpleadosComponent } from '../empleados/empleados';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, RouterLink, MenuComponent, EmpleadosComponent],
+  imports: [CommonModule, CurrencyPipe, RouterLink, MenuComponent, EmpleadosComponent, TranslatePipe],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
@@ -22,13 +24,24 @@ export class DashboardComponent implements OnInit {
   private inventarioService = inject(InventarioService);
   private sucursalesService = inject(SucursalesService);
   private cd = inject(ChangeDetectorRef);
+  private languageService = inject(LanguageService);
   private destroyRef = inject(DestroyRef);
 
   public vistaActiva: string = 'resumen';
   public tituloVista: string = 'Resumen';
-  public fechaHoy: string = '';
   public segmentoSeleccionado: string = 'dia';
 
+  public get fechaHoy(): string {
+    const locale = this.languageService.lang === 'en' ? 'en-US' : 'es-MX';
+    return new Date().toLocaleDateString(locale, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  // Colecciones de la base de datos pos_olimpo
   public listaInventario: InventarioItem[] = [];
   public listaSucursales: Sucursal[] = [];
   public cargandoDatos: boolean = true;
@@ -49,7 +62,6 @@ export class DashboardComponent implements OnInit {
   };
 
   ngOnInit(): void {
-    this.inicializarFecha();
     this.cargarDatosBackend();
 
     this.route.fragment
@@ -127,12 +139,4 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  private inicializarFecha(): void {
-    this.fechaHoy = new Date().toLocaleDateString('es-MX', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  }
 }

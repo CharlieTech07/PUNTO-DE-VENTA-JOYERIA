@@ -3,16 +3,19 @@ import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../../services/productos.service';
+import { LanguageService } from '../../services/lenguage.service';
+import { TranslatePipe } from '../../services/translate.pipe';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './productos.html',
   styleUrls: ['./productos.css']
 })
 export class ProductosComponent implements OnInit {
   private productosService = inject(ProductosService);
+  readonly languageService = inject(LanguageService);
   private cd = inject(ChangeDetectorRef);
 
   listaProductos: any[] = [];
@@ -35,6 +38,10 @@ export class ProductosComponent implements OnInit {
     this.cargarProductos();
   }
 
+  productName(item: any): string {
+    return this.languageService.catalogPhrase(item?.nombre ?? '');
+  }
+
   cargarProductos(): void {
     this.productosService.getProductos().subscribe({
       next: (datos) => {
@@ -44,7 +51,7 @@ export class ProductosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al consultar productos:', err);
-        this.errorCarga = 'Error al conectar con la base de datos';
+        this.errorCarga = this.languageService.translate('error_carga_productos');
         this.cargando = false;
         this.cd.detectChanges();
       }
@@ -61,7 +68,7 @@ export class ProductosComponent implements OnInit {
 
   guardarProducto(): void {
     if (!this.nuevoItem.nombre.trim()) {
-      alert('Debes ingresar un nombre para la pieza');
+      alert(this.languageService.translate('error_nombre_producto'));
       return;
     }
 
@@ -95,11 +102,11 @@ export class ProductosComponent implements OnInit {
         };
         this.archivoSeleccionado = null;
         this.cd.detectChanges();
-        alert('¡Joya e imagen guardadas con éxito en pos_olimpo!');
+        alert(this.languageService.translate('exito_guardar_producto_imagen'));
       },
       error: (err) => {
         console.error('Error al guardar con imagen:', err);
-        alert('Ocurrió un error al guardar en la base de datos.');
+        alert(this.languageService.translate('error_guardar_producto_imagen'));
       }
     });
   }
@@ -112,11 +119,11 @@ export class ProductosComponent implements OnInit {
       next: () => {
         this.listaProductos = this.listaProductos.filter(item => item.id !== id);
         this.cd.detectChanges();
-        alert('Pieza eliminada correctamente de pos_olimpo');
+        alert(this.languageService.translate('exito_eliminar_producto'));
       },
       error: (err) => {
         console.error('Error al eliminar:', err);
-        const mensajeError = err.error?.error || 'No se pudo eliminar el producto';
+        const mensajeError = err.error?.error || this.languageService.translate('error_eliminar_producto');
         alert(mensajeError);
       }
     });
