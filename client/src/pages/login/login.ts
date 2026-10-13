@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+// client/src/pages/login/login.ts
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -11,17 +13,18 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./login.css']
 })
 export class LoginComponent {
-  loginForm: FormGroup;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+
   submitted = false;
   loading = false;
   errorMessage = '';
-
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    });
-  }
 
   get email() {
     return this.loginForm.get('email');
@@ -41,7 +44,22 @@ export class LoginComponent {
 
     this.loading = true;
 
-    // Aquí irá la llamada al backend más adelante
-    this.router.navigate(['/inicio']);
+    // Asegurarse de enviar 'correo' y 'contrasena'
+    const credenciales = {
+      correo: this.loginForm.value.email.trim(),
+      contrasena: this.loginForm.value.password.trim()
+    };
+
+    this.authService.iniciarSesion(credenciales).subscribe({
+      next: (_resp) => {
+        this.loading = false;
+        this.router.navigate(['/inicio']);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error al iniciar sesión:', err);
+        this.errorMessage = err.error?.error || 'Credenciales inválidas o error de conexión.';
+      }
+    });
   }
 }

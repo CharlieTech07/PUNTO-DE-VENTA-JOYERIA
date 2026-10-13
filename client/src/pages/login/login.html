@@ -65,6 +65,10 @@
 
         <button type="submit" class="primary" [disabled]="loading">
           {{ loading ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA' }}
+          <!-- Agrega este párrafo antes del botón submit en login.html -->
+          <p class="error-servidor" *ngIf="errorMessage" style="color: #e57373; font-size: 0.9rem; margin-bottom: 12px; text-align: center;">
+            {{ errorMessage }}
+          </p>
         </button>
 
         <button type="button" class="create">CREAR NUEVA CUENTA</button>

@@ -1,36 +1,38 @@
 // client/src/pages/dashboard/dashboard.ts
-import { Component, OnInit, HostListener, inject, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Component, OnInit, HostListener, inject, ChangeDetectorRef, DestroyRef } from '@angular/core';
+import { CommonModule, CurrencyPipe } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { forkJoin } from 'rxjs';
+
 import { MenuComponent } from '../../components/menu/menu';
 import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
-import { SucursalesService, Sucursal } from  '../../services/sucursales.services';
+import { SucursalesService, Sucursal } from '../../services/sucursales.services';
+import { EmpleadosComponent } from '../empleados/empleados';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MenuComponent, RouterLink],
+  imports: [CommonModule, CurrencyPipe, RouterLink, MenuComponent, EmpleadosComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
 export class DashboardComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private inventarioService = inject(InventarioService);
   private sucursalesService = inject(SucursalesService);
   private cd = inject(ChangeDetectorRef);
+  private destroyRef = inject(DestroyRef);
 
   public vistaActiva: string = 'resumen';
   public tituloVista: string = 'Resumen';
   public fechaHoy: string = '';
   public segmentoSeleccionado: string = 'dia';
 
-  // Colecciones de la base de datos pos_olimpo
   public listaInventario: InventarioItem[] = [];
   public listaSucursales: Sucursal[] = [];
   public cargandoDatos: boolean = true;
 
-  // Métricas calculadas en vivo
   public totalPiezasStock: number = 0;
   public valorTotalInventario: number = 0;
   public cantidadStockBajo: number = 0;
@@ -50,35 +52,34 @@ export class DashboardComponent implements OnInit {
     this.inicializarFecha();
     this.cargarDatosBackend();
 
-    this.route.fragment.subscribe(frag => {
-      this.cambiarVista(frag || 'resumen', false);
-    });
+    this.route.fragment
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((fragmento) => {
+        if (fragmento) {
+          this.cambiarVista(fragmento, false);
+        }
+      });
   }
 
   public cargarDatosBackend(): void {
     this.cargandoDatos = true;
 
-    // 1. Cargar Inventario
-    this.inventarioService.getInventario().subscribe({
-      next: (inventario) => {
+    forkJoin({
+      inventario: this.inventarioService.getInventario(),
+      sucursales: this.sucursalesService.getSucursales()
+    }).subscribe({
+      next: ({ inventario, sucursales }: { inventario: InventarioItem[]; sucursales: Sucursal[] }) => {
         this.listaInventario = inventario;
+        this.listaSucursales = sucursales;
         this.calcularMetricasInventario(inventario);
         this.cargandoDatos = false;
         this.cd.detectChanges();
       },
       error: (err) => {
-        console.error('Error al cargar inventario en dashboard:', err);
+        console.error('Error al sincronizar datos en Dashboard:', err);
         this.cargandoDatos = false;
-      }
-    });
-
-    // 2. Cargar Sucursales
-    this.sucursalesService.getSucursales().subscribe({
-      next: (sucursales) => {
-        this.listaSucursales = sucursales;
         this.cd.detectChanges();
-      },
-      error: (err) => console.error('Error al cargar sucursales en dashboard:', err)
+      }
     });
   }
 
@@ -121,7 +122,9 @@ export class DashboardComponent implements OnInit {
   @HostListener('window:hashchange')
   onHashChange(): void {
     const seccion = window.location.hash.replace('#', '') || 'resumen';
-    this.cambiarVista(seccion, true);
+    if (seccion !== this.vistaActiva) {
+      this.cambiarVista(seccion, false);
+    }
   }
 
   private inicializarFecha(): void {
