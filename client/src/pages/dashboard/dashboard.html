@@ -21,7 +21,6 @@
 <app-menu></app-menu>
 
 <div class="app">
-  <!-- ===================== CONTENIDO ===================== -->
   <main class="contenido">
     <header class="cabecera">
       <div>
@@ -31,8 +30,8 @@
       <div class="cabecera__fecha" id="fechaHoy">{{ fechaHoy }}</div>
     </header>
 
-    <!-- ---------- Degradado compartido por las gráficas ---------- -->
-    <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+    <!-- Degradado compartido por las gráficas -->
+    <svg width="0" height="0" aria-hidden="true" class="grafica-degradado-base">
       <defs>
         <linearGradient id="degradadoOro" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#ebd5a6" />
@@ -44,7 +43,6 @@
     <!-- ==================== VISTA: RESUMEN ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'resumen'" id="vista-resumen">
       <div class="rejilla rejilla--4">
-        <!-- Sucursales reales de pos_olimpo -->
         <article class="tarjeta">
           <div class="tarjeta__cabecera">
             <svg viewBox="0 0 24 24"><path d="M3 21h18" /><path d="M5 21V8l7-5 7 5v13" /><path d="M10 21v-6h4v6" /></svg>
@@ -68,12 +66,11 @@
         </article>
       </div>
 
-      <!-- Cotización del metal: el precio de venta depende de esto -->
       <div class="metal">
         <div class="metal__intro">
           <div class="etiqueta">{{ 'Cotización del día' | translate }}</div>
           <div class="metal__titulo">{{ 'Precio del metal' | translate }}</div>
-          <div class="kpi__nota">{{ 'Actualizado hoy, 08:00 · Doña Valentina Ruiz' | translate }}</div>
+          <div class="kpi__nota">{{ 'Actualizado hoy, 08:00 · Joyería Olimpo' | translate }}</div>
         </div>
         <div class="metal__dato">
           <div class="etiqueta">{{ 'Oro 24k' | translate }}</div>
@@ -98,13 +95,9 @@
       </div>
 
       <div class="rejilla rejilla--2-1">
-        <!-- Ventas de la semana -->
         <article class="tarjeta">
           <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 17l6-6 4 4 7-7" />
-              <path d="M14 8h6v6" />
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7" /><path d="M14 8h6v6" /></svg>
             <h2 class="tarjeta__titulo">{{ 'Ventas de la semana' | translate }}</h2>
             <div class="tarjeta__accion segmentos">
               <button [class.activo]="segmentoSeleccionado === 'dia'" (click)="seleccionarSegmento('dia')">{{ 'Semana' | translate }}</button>
@@ -148,16 +141,11 @@
           </svg>
         </article>
 
-        <!-- Alertas operativas -->
         <article class="tarjeta">
           <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 3l9.5 17h-19z" />
-              <path d="M12 10v4M12 17.2v.1" />
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4M12 17.2v.1" /></svg>
             <h2 class="tarjeta__titulo">{{ 'Alertas' | translate }}</h2>
           </div>
-
           <div class="lista">
             <div class="lista__fila alerta alerta--critica">
               <svg class="alerta__icono" viewBox="0 0 24 24">
@@ -171,12 +159,10 @@
             </div>
 
             <div class="lista__fila alerta alerta--media">
-              <svg class="alerta__icono" viewBox="0 0 24 24">
-                <path d="M6 3h12l3 6-9 12L3 9z" />
-              </svg>
+              <svg class="alerta__icono" viewBox="0 0 24 24"><path d="M6 3h12l3 6-9 12L3 9z" /></svg>
               <div>
                 <div class="lista__principal">{{ 'Stock bajo' | translate }}</div>
-                <div class="lista__secundario">{{ '8 piezas por debajo del mínimo' | translate }}</div>
+                <div class="lista__secundario">{{ cantidadStockBajo }} {{ 'piezas por debajo del mínimo' | translate }}</div>
               </div>
             </div>
 
@@ -191,19 +177,22 @@
             </div>
 
             <div class="lista__fila alerta">
-              <svg class="alerta__icono" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 7.5v5l3 2" />
-              </svg>
+              <svg class="alerta__icono" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7.5v5l3 2" /></svg>
               <div>
                 <div class="lista__principal">{{ 'Cotización sin actualizar' | translate }}</div>
                 <div class="lista__secundario">{{ 'La plata no se actualiza desde ayer' | translate }}</div>
               </div>
             </div>
+            <div class="lista__fila alerta">
+              <svg class="alerta__icono" viewBox="0 0 24 24"><path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" /><path d="m9 12 2 2 4-4.5" /></svg>
+              <div>
+                <div class="lista__principal">{{ 'Sistema operativo' | translate }}</div>
+                <div class="lista__secundario">{{ 'Base de datos pos_olimpo sincronizada' | translate }}</div>
+              </div>
+            </div>
           </div>
         </article>
       </div>
-
       <div class="rejilla rejilla--2">
         <!-- Actividad reciente -->
         <article class="tarjeta">
@@ -328,7 +317,6 @@
           <div class="kpi__nota">{{ '248 transacciones' | translate }}</div>
         </article>
       </div>
-
       <article class="tarjeta" style="margin-bottom: 20px">
         <div class="tarjeta__cabecera">
           <svg viewBox="0 0 24 24">
@@ -866,135 +854,7 @@
 
     <!-- ==================== VISTA: EMPLEADOS ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'empleados'" id="vista-empleados">
-      <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Total' | translate }}</div>
-          <div class="kpi__valor">{{ '43' | translate }}</div>
-          <div class="kpi__nota">{{ 'Activos' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Cajeros' | translate }}</div>
-          <div class="kpi__valor">{{ '24' | translate }}</div>
-          <div class="kpi__nota">{{ 'Venden y cobran' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Gerentes' | translate }}</div>
-          <div class="kpi__valor">{{ '8' | translate }}</div>
-          <div class="kpi__nota">{{ 'Autorizan descuentos' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Administradores' | translate }}</div>
-          <div class="kpi__valor">{{ '2' | translate }}</div>
-          <div class="kpi__nota">{{ 'Acceso total' | translate }}</div>
-        </article>
-      </div>
-
-      <div class="rejilla rejilla--2-1">
-        <article class="tarjeta">
-          <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <circle cx="9" cy="8" r="3.4" />
-              <path d="M2.5 20a6.5 6.5 0 0113 0" />
-            </svg>
-            <h2 class="tarjeta__titulo">{{ 'Personal registrado' | translate }}</h2>
-          </div>
-
-          <div class="tabla-envoltura">
-            <table class="tabla">
-              <thead>
-                <tr>
-                  <th>{{ 'ID' | translate }}</th>
-                  <th>{{ 'Nombre' | translate }}</th>
-                  <th>{{ 'Rol' | translate }}</th>
-                  <th>{{ 'Sucursal' | translate }}</th>
-                  <th>{{ 'Estado' | translate }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="celda-id">{{ 'E-001' | translate }}</td>
-                  <td class="celda-pieza">{{ 'Camila Torres' | translate }}</td>
-                  <td><span class="insignia insignia--neutra">{{ 'Cajero' | translate }}</span></td>
-                  <td>{{ 'Santa Fe' | translate }}</td>
-                  <td><span class="insignia insignia--ok">{{ 'Activa' | translate }}</span></td>
-                </tr>
-                <tr>
-                  <td class="celda-id">{{ 'E-002' | translate }}</td>
-                  <td class="celda-pieza">{{ 'Diego Molina' | translate }}</td>
-                  <td><span class="insignia insignia--neutra">{{ 'Cajero' | translate }}</span></td>
-                  <td>{{ 'Polanco' | translate }}</td>
-                  <td><span class="insignia insignia--ok">{{ 'Activo' | translate }}</span></td>
-                </tr>
-                <tr>
-                  <td class="celda-id">{{ 'E-003' | translate }}</td>
-                  <td class="celda-pieza">{{ 'Isabela Cruz' | translate }}</td>
-                  <td><span class="insignia insignia--neutra">{{ 'Cajero' | translate }}</span></td>
-                  <td>{{ 'Querétaro' | translate }}</td>
-                  <td><span class="insignia insignia--ok">{{ 'Activa' | translate }}</span></td>
-                </tr>
-                <tr>
-                  <td class="celda-id">{{ 'E-004' | translate }}</td>
-                  <td class="celda-pieza">{{ 'Santiago Vega' | translate }}</td>
-                  <td><span class="insignia insignia--aviso">{{ 'Gerente' | translate }}</span></td>
-                  <td>{{ 'Santa Fe' | translate }}</td>
-                  <td><span class="insignia insignia--ok">{{ 'Activo' | translate }}</span></td>
-                </tr>
-                <tr>
-                  <td class="celda-id">{{ 'E-005' | translate }}</td>
-                  <td class="celda-pieza">{{ 'Valentina Ruiz' | translate }}</td>
-                  <td><span class="insignia insignia--riesgo">{{ 'Administrador' | translate }}</span></td>
-                  <td>{{ 'Corporativo' | translate }}</td>
-                  <td><span class="insignia insignia--ok">{{ 'Activa' | translate }}</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </article>
-
-        <article class="tarjeta">
-          <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <circle cx="12" cy="8" r="3.6" />
-              <path d="M4 20a8 8 0 0116 0" />
-              <path d="M18 3.5v5M15.5 6h5" />
-            </svg>
-            <h2 class="tarjeta__titulo">{{ 'Dar de alta' | translate }}</h2>
-          </div>
-
-          <div class="campo">
-            <label class="etiqueta">{{ 'Nombre completo' | translate }}</label>
-            <input type="text" [placeholder]="'Ej. Elena Rodríguez' | translate" />
-          </div>
-          <div class="campo">
-            <label class="etiqueta">{{ 'Correo electrónico' | translate }}</label>
-            <input type="email" [placeholder]="'ejemplo@olimpo.mx' | translate" />
-          </div>
-          <div class="campo">
-            <label class="etiqueta">{{ 'Rol' | translate }}</label>
-            <select>
-              <option>{{ 'Cajero' | translate }}</option>
-              <option>{{ 'Gerente' | translate }}</option>
-              <option>{{ 'Administrador' | translate }}</option>
-            </select>
-            <p class="campo__ayuda">
-              {{ 'El rol define los permisos en el backend, no solo lo que se ve en pantalla.' | translate }}
-            </p>
-          </div>
-          <div class="campo">
-            <label class="etiqueta">{{ 'Sucursal asignada' | translate }}</label>
-            <select>
-              <option>{{ 'Olimpo Santa Fe' | translate }}</option>
-              <option>{{ 'Olimpo Polanco' | translate }}</option>
-              <option>{{ 'Olimpo Querétaro' | translate }}</option>
-            </select>
-          </div>
-
-          <button class="boton boton--primario boton--bloque">
-            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-            {{ 'Crear usuario' | translate }}
-          </button>
-        </article>
-      </div>
+      <app-empleados></app-empleados>
     </section>
 
     <!-- ==================== VISTA: PRECIO DEL METAL ==================== -->
@@ -1021,7 +881,6 @@
           <div class="kpi__nota kpi__nota--baja">{{ '−1.2% vs. ayer' | translate }}</div>
         </article>
       </div>
-
       <div class="rejilla rejilla--2-1">
         <article class="tarjeta">
           <div class="tarjeta__cabecera">

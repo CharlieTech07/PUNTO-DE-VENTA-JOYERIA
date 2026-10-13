@@ -25,8 +25,8 @@
 
     <form (ngSubmit)="guardarStock()" class="formulario-grid">
       <div class="campo">
-        <label class="etiqueta">{{ 'Sucursal asignada' | translate }}</label>
-        <select [(ngModel)]="nuevoRegistro.id_sucursal" name="id_sucursal" class="input-olimpo">
+        <label class="etiqueta">{{ 'Sucursal asignada' | translate }} *</label>
+        <select [(ngModel)]="nuevoRegistro.id_sucursal" name="id_sucursal" class="input-olimpo" required>
           @for (s of catalogoSucursales; track s.id) {
             <option [ngValue]="s.id">{{ s.nombre }}</option>
           }
@@ -34,8 +34,8 @@
       </div>
 
       <div class="campo">
-        <label class="etiqueta">{{ 'Pieza / Joya' | translate }}</label>
-        <select [(ngModel)]="nuevoRegistro.id_producto" name="id_producto" class="input-olimpo">
+        <label class="etiqueta">{{ 'Pieza / Joya' | translate }} *</label>
+        <select [(ngModel)]="nuevoRegistro.id_producto" name="id_producto" class="input-olimpo" required>
           @for (p of catalogoProductos; track p.id) {
             <option [ngValue]="p.id">{{ productName(p.nombre) }} ({{ language.catalogPhrase(p.tipo_metal) }})</option>
           }
@@ -60,6 +60,7 @@
           min="0"
           [(ngModel)]="nuevoRegistro.stock_minimo"
           name="stock_minimo"
+          required
           class="input-olimpo" />
       </div>
 
@@ -74,9 +75,9 @@
       </div>
 
       <div class="acciones-form">
-        <button type="submit" class="btn-oro">
+        <button type="submit" [disabled]="guardando" class="btn-oro">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-          {{ 'Guardar Existencias' | translate }}
+          {{ (guardando ? 'Guardando existencias...' : 'Guardar Existencias') | translate }}
         </button>
       </div>
     </form>

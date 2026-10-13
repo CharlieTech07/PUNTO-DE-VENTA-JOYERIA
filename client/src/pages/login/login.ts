@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../services/translate.pipe';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -12,22 +13,22 @@ import { TranslatePipe } from '../../services/translate.pipe';
   styleUrls: ['./login.css']
 })
 export class LoginComponent implements OnInit {
-  loginForm: FormGroup;
+  private fb = inject(FormBuilder);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]]
+  });
   submitted = false;
   loading = false;
   errorMessage = '';
   isModoClaro = false;
   showPassword = false;
 
-  constructor(private fb: FormBuilder, private router: Router) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]]
-    });
-  }
-
   ngOnInit(): void {
-    const temaGuardado = localStorage.getItem('tema');
+    const temaGuardado = localStorage.getItem('olimpo:tema');
     this.isModoClaro = temaGuardado === 'claro';
     this.aplicarTema();
   }
@@ -44,7 +45,7 @@ export class LoginComponent implements OnInit {
   private aplicarTema(): void {
     const tema = this.isModoClaro ? 'claro' : 'oscuro';
     document.documentElement.setAttribute('data-tema', tema);
-    localStorage.setItem('tema', tema);
+    localStorage.setItem('olimpo:tema', tema);
   }
 
   get email() {
@@ -65,7 +66,21 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
 
-    // Llamada al backend
-    this.router.navigate(['/inicio']);
+    const credenciales = {
+      correo: this.loginForm.value.email.trim(),
+      contrasena: this.loginForm.value.password.trim()
+    };
+
+    this.authService.iniciarSesion(credenciales).subscribe({
+      next: (_resp) => {
+        this.loading = false;
+        this.router.navigate(['/inicio']);
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error al iniciar sesión:', err);
+        this.errorMessage = err.error?.error || 'Credenciales inválidas o error de conexión.';
+      }
+    });
   }
 }
