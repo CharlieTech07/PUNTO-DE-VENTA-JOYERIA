@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
   loading = false;
   errorMessage = '';
   isModoClaro = false;
+  showPassword = false;
 
   constructor(private fb: FormBuilder, private router: Router) {
     this.loginForm = this.fb.group({
@@ -34,6 +35,10 @@ export class LoginComponent implements OnInit {
   toggleTema(): void {
     this.isModoClaro = !this.isModoClaro;
     this.aplicarTema();
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   private aplicarTema(): void {

@@ -38,12 +38,33 @@
 
         <div class="field" [class.con-error]="submitted && password?.invalid">
           <label for="password">{{ 'Contraseña' | translate }}</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            placeholder="••••••••"
-            autocomplete="current-password">
+          <div class="password-control">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password">
+
+            <button
+              type="button"
+              class="password-portal"
+              [class.is-visible]="showPassword"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="(showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña') | translate"
+              [attr.aria-pressed]="showPassword"
+              aria-controls="password">
+              <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <circle class="portal-orbit portal-orbit--outer" cx="16" cy="16" r="13.4"></circle>
+                <circle class="portal-orbit portal-orbit--inner" cx="16" cy="16" r="10.6"></circle>
+                <path class="portal-eye" d="M3 16c3.2-6.1 7.5-9 13-9s9.8 2.9 13 9c-3.2 6.1-7.5 9-13 9S6.2 22.1 3 16Z"></path>
+                <circle class="portal-iris" cx="16" cy="16" r="5.2"></circle>
+                <path class="portal-pupil" d="m16 11.8 1.7 2.5 2.5 1.7-2.5 1.7-1.7 2.5-1.7-2.5-2.5-1.7 2.5-1.7 1.7-2.5Z"></path>
+                <path class="portal-shutter" d="m7 7 18 18"></path>
+                <circle class="portal-glint" cx="18.1" cy="13.9" r="1"></circle>
+              </svg>
+            </button>
+          </div>
 
           <p class="error" *ngIf="submitted && password?.errors?.['required']">
             {{ 'La contraseña es obligatoria.' | translate }}

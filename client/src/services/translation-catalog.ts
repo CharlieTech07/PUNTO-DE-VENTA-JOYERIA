@@ -10,6 +10,8 @@ export const translationCatalog: Record<string, Translation> = {
   'OLIMPO': { es: 'OLIMPO', en: 'OLIMPO' },
   'HAUTE JOAILLERIE': { es: 'HAUTE JOAILLERIE', en: 'HAUTE JOAILLERIE' },
   'Bienvenido': { es: 'Bienvenido', en: 'Welcome' },
+  'Mostrar contraseña': { es: 'Mostrar contraseña', en: 'Show password' },
+  'Ocultar contraseña': { es: 'Ocultar contraseña', en: 'Hide password' },
   'Acceda a su vitrina privada': { es: 'Acceda a su vitrina privada', en: 'Access your private showcase' },
   'Correo electrónico': { es: 'Correo electrónico', en: 'Email address' },
   'Ej: olimpo@gmail.com': { es: 'Ej: olimpo@gmail.com', en: 'e.g. olimpo@gmail.com' },
