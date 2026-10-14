@@ -27,9 +27,9 @@
 <div class="container">
   <header>
     <div class="header-top">
-      <span class="subtitle">VITRINA DE MERCANCÍA</span>
+      <span class="subtitle">VITRINA DE MERCANCÍA@if (nombreSucursal) { · {{ nombreSucursal | uppercase }} }</span>
       <div class="header-actions">
-        <span class="item-count">{{ productosFiltrados.length }} piezas en catálogo</span>
+        <span class="item-count">{{ productosFiltrados.length }} piezas en inventario</span>
         <button type="button" class="btn-dashboard" routerLink="/dashboard">
           Ir al Dashboard
         </button>
@@ -47,10 +47,10 @@
   </div>
 
   @if (cargando) {
-    <p style="color: #cbd5e1; text-align: center; margin-top: 40px;">Consultando joyas en PostgreSQL...</p>
+    <p style="color: #cbd5e1; text-align: center; margin-top: 40px;">Consultando inventario...</p>
   } @else {
     <div class="grid-container" id="product-grid">
-      @for (product of productosFiltrados; track product.id) {
+      @for (product of productosFiltrados; track product.id_inventario) {
         <div class="card">
           <!-- Si tiene imagen cargada en BD muestra la base64, si no un placeholder elegante -->
           <img 
@@ -61,16 +61,20 @@
           <div class="product-category">{{ product.tipo_metal }} {{ product.kilataje || '' }}</div>
           <h3 class="product-title">{{ product.nombre }}</h3>
           <div class="product-desc">{{ product.descripcion || 'Pieza de joyería fina' }}</div>
+          @if (esAdmin && product.nombre_sucursal) {
+            <div class="product-desc">Sucursal: {{ product.nombre_sucursal }}</div>
+          }
+          <div class="product-desc">Disponibles: {{ product.stock }}</div>
           <div class="card-footer">
             <span class="price">{{ product.precio_venta | currency:'USD':'symbol':'1.0-0' }}</span>
-            <button type="button" class="btn-add" (click)="agregarAlCarrito(product)">
-              AGREGAR
+            <button type="button" class="btn-add" [disabled]="product.stock === 0" (click)="agregarAlCarrito(product)">
+              {{ product.stock === 0 ? 'AGOTADO' : 'AGREGAR' }}
             </button>
           </div>
         </div>
       } @empty {
         <p class="no-results" style="grid-column: 1 / -1; text-align: center; color: #94a3b8;">
-          No se encontraron joyas en la vitrina. Registra piezas en el catálogo para verlas aquí.
+          No hay productos en el inventario. Asigna existencias desde la página de Inventario para verlos aquí.
         </p>
       }
     </div>
