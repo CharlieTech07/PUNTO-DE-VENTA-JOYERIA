@@ -1,6 +1,7 @@
 // server/src/routes/inventario.ts
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
+import { verificarToken, RequestConUsuario } from '../middleware/verificarToken';
 
 const router = Router();
 
@@ -41,6 +42,66 @@ router.get('/', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error al consultar inventario:', error);
     res.status(500).json({ error: 'Error al consultar inventario en pos_olimpo', detalle: error });
+  }
+});
+
+// GET: Inventario para la página de inicio
+// - Gerente / Cajero: solo ven el de su sucursal (sale del token, no se puede cambiar).
+// - Administrador: ve todas las sucursales, o una si manda ?sucursalId=
+router.get('/mi-sucursal', verificarToken, async (req: RequestConUsuario, res: Response) => {
+  try {
+    const usuario = req.usuarioToken;
+
+    if (!usuario) {
+      return res.status(401).json({ error: 'No autorizado' });
+    }
+
+    let sucursalFiltro: number | null = null;
+
+    if (usuario.rol === 'Administrador') {
+      if (req.query.sucursalId) sucursalFiltro = Number(req.query.sucursalId);
+    } else {
+      if (!usuario.id_sucursal) {
+        return res.status(403).json({ error: 'Tu usuario no tiene una sucursal asignada' });
+      }
+      sucursalFiltro = usuario.id_sucursal;
+    }
+
+    let query = `
+      SELECT
+        p.id,
+        inv.id AS id_inventario,
+        inv.id_sucursal,
+        s.nombre AS nombre_sucursal,
+        p.nombre,
+        p.descripcion,
+        p.tipo_metal,
+        p.kilataje,
+        p.precio_venta,
+        inv.stock,
+        inv.stock_minimo,
+        inv.ubicacion_vitrina,
+        CASE
+          WHEN p.imagen IS NOT NULL THEN encode(p.imagen, 'base64')
+          ELSE NULL
+        END AS imagen_base64
+      FROM inventario_sucursal inv
+      INNER JOIN productos p ON inv.id_producto = p.id
+      INNER JOIN sucursales s ON inv.id_sucursal = s.id
+    `;
+
+    const values: any[] = [];
+    if (sucursalFiltro) {
+      query += ` WHERE inv.id_sucursal = $1`;
+      values.push(sucursalFiltro);
+    }
+    query += ` ORDER BY s.nombre ASC, p.nombre ASC;`;
+
+    const result = await pool.query(query, values);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error al consultar inventario para inicio:', error);
+    res.status(500).json({ error: 'Error al consultar el inventario' });
   }
 });
 
