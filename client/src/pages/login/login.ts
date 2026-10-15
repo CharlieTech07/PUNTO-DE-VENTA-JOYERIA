@@ -1,30 +1,52 @@
-// client/src/pages/login/login.ts
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '../../services/translate.pipe';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(6)]]
+    password: ['', [Validators.required, Validators.minLength(8)]]
   });
-
   submitted = false;
   loading = false;
   errorMessage = '';
+  isModoClaro = false;
+  showPassword = false;
+
+  ngOnInit(): void {
+    const temaGuardado = localStorage.getItem('olimpo:tema');
+    this.isModoClaro = temaGuardado === 'claro';
+    this.aplicarTema();
+  }
+
+  toggleTema(): void {
+    this.isModoClaro = !this.isModoClaro;
+    this.aplicarTema();
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  private aplicarTema(): void {
+    const tema = this.isModoClaro ? 'claro' : 'oscuro';
+    document.documentElement.setAttribute('data-tema', tema);
+    localStorage.setItem('olimpo:tema', tema);
+  }
 
   get email() {
     return this.loginForm.get('email');
@@ -44,7 +66,6 @@ export class LoginComponent {
 
     this.loading = true;
 
-    // Asegurarse de enviar 'correo' y 'contrasena'
     const credenciales = {
       correo: this.loginForm.value.email.trim(),
       contrasena: this.loginForm.value.password.trim()

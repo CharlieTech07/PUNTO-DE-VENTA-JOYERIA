@@ -16,36 +16,33 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   // Rutas protegidas por autenticación
-  { 
-    path: 'inicio', 
-    component: InicioComponent, 
-    canActivate: [authGuard] 
-  },
-  { 
-    path: 'dashboard', 
-    component: DashboardComponent, 
-    canActivate: [authGuard],
-    data: { roles: ['Administrador', 'Gerente'] } // Cajero no tiene acceso total
-  },
-  { 
-    path: 'productos', 
-    component: ProductosComponent, 
-    canActivate: [authGuard] 
-  },
-  { 
-    path: 'inventario', 
-    component: InventarioComponent, 
+  {
+    path: 'inicio',
+    component: InicioComponent,
     canActivate: [authGuard]
   },
-  { 
-    path: 'sucursales', 
-    component: SucursalesComponent, 
-    canActivate: [authGuard],
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Administrador', 'Gerente'] } // Cajero no tiene acceso total
+  },
+  {
+    path: 'productos',
+    component: ProductosComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'inventario',
+    component: InventarioComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'sucursales',
+    component: SucursalesComponent,
+    canActivate: [authGuard, roleGuard],
     data: { roles: ['Administrador'] } // Solo el Administrador Global
   },
-
   // Redirección si la URL no existe
   { path: '**', redirectTo: 'login' }
 ];
-
-

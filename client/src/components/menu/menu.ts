@@ -3,16 +3,17 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { TranslatePipe } from '../../services/translate.pipe';
 
 export type TemaOlimpo = 'oscuro' | 'claro';
 
 export interface UsuarioSesionLocal {
-  id: number;
+  id: number | string;
   nombreCompleto: string;
   correo: string;
   rol: 'Administrador' | 'Gerente' | 'Cajero';
   id_sucursal: number | null;
-  nombre_sucursal?: string;
+  nombre_sucursal: string;
 }
 
 export interface MenuItem {
@@ -28,7 +29,7 @@ export interface MenuItem {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, TranslatePipe],
   templateUrl: './menu.html',
   styleUrls: ['./menu.css']
 })
@@ -143,7 +144,7 @@ export class MenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.inicializarTema();
-    this.usuarioActual = this.authService.obtenerUsuario() as UsuarioSesionLocal;
+    this.usuarioActual = this.authService.obtenerUsuario();
   }
 
   get itemsMenu(): MenuItem[] {
