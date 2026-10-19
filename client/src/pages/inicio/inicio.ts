@@ -9,10 +9,13 @@ import { LanguageService, Lang } from '../../services/lenguage.service';
 import { InventarioService } from '../../services/inventario_sucursal.service';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../services/translate.pipe';
+import { CarritoService } from '../../services/carrito.service';
+import { VentasComponent } from '../ventas/ventas';
 
 export interface ProductoVisual {
   id: number;
   id_inventario: number;
+  id_sucursal: number;
   nombre_sucursal?: string;
   nombre: string;
   descripcion: string;
@@ -28,7 +31,7 @@ type CampoTraducible = 'descripcion' | 'tipo_metal';
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, UpperCasePipe, FormsModule, RouterLink, MenuComponent, TranslatePipe],
+  imports: [CommonModule, CurrencyPipe, UpperCasePipe, FormsModule, RouterLink, MenuComponent, TranslatePipe, VentasComponent],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
@@ -40,6 +43,7 @@ export class InicioComponent implements OnInit {
   private readonly inventarioService = inject(InventarioService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly carrito = inject(CarritoService);
   private readonly translatedProducts = new Map<number, Partial<Record<CampoTraducible, string>>>();
 
   public terminoBusqueda = '';
@@ -108,8 +112,14 @@ export class InicioComponent implements OnInit {
   }
 
   public agregarAlCarrito(product: ProductoVisual): void {
-    console.log('Joya seleccionada para ticket:', product);
-    alert(`"${product.nombre}" agregada al flujo de venta.`);
+    const resultado = this.carrito.agregar(product);
+    if (resultado === 'otra-sucursal') {
+      alert(this.language.t('Una venta solo puede incluir piezas de una sucursal. Vacía el carrito para cambiar de sucursal.'));
+      return;
+    }
+    if (resultado === 'sin-existencias') {
+      alert(this.language.t('No hay más existencias disponibles para esta pieza.'));
+    }
   }
 
   private updateCatalogTranslations(lang: Lang): void {

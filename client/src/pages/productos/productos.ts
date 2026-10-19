@@ -22,6 +22,7 @@ export class ProductosComponent implements OnInit {
   cargando: boolean = true;
   errorCarga: string = '';
   archivoSeleccionado: File | null = null;
+  editandoId: number | null = null;
 
   nuevoItem = {
     nombre: '',
@@ -87,28 +88,63 @@ export class ProductosComponent implements OnInit {
       formData.append('imagen', this.archivoSeleccionado, this.archivoSeleccionado.name);
     }
 
-    this.productosService.crearProducto(formData).subscribe({
+    const solicitud = this.editandoId === null
+      ? this.productosService.crearProducto(formData)
+      : this.productosService.actualizarProducto(this.editandoId, formData);
+    const estabaEditando = this.editandoId !== null;
+
+    solicitud.subscribe({
       next: (guardado) => {
-        this.listaProductos.push(guardado);
-        this.nuevoItem = {
-          nombre: '',
-          descripcion: '',
-          tipo_metal: 'Oro',
-          kilataje: '14k',
-          peso_gramos: 0,
-          precio_compra: 0,
-          precio_venta: 0,
-          id_categoria: 1
-        };
-        this.archivoSeleccionado = null;
+        if (!estabaEditando) {
+          this.listaProductos = [...this.listaProductos, guardado];
+        } else {
+          this.listaProductos = this.listaProductos.map(item => item.id === guardado.id ? guardado : item);
+        }
+        this.limpiarFormulario();
         this.cd.detectChanges();
-        alert(this.languageService.translate('exito_guardar_producto_imagen'));
+        alert(this.languageService.translate(!estabaEditando
+          ? 'exito_guardar_producto_imagen'
+          : 'Producto actualizado correctamente.'));
       },
       error: (err) => {
         console.error('Error al guardar con imagen:', err);
         alert(this.languageService.translate('error_guardar_producto_imagen'));
       }
     });
+  }
+
+  editarProducto(item: any): void {
+    this.editandoId = Number(item.id);
+    this.nuevoItem = {
+      nombre: item.nombre ?? '',
+      descripcion: item.descripcion ?? '',
+      tipo_metal: item.tipo_metal ?? 'Oro',
+      kilataje: item.kilataje ?? '',
+      peso_gramos: Number(item.peso_gramos ?? 0),
+      precio_compra: Number(item.precio_compra ?? 0),
+      precio_venta: Number(item.precio_venta ?? 0),
+      id_categoria: Number(item.id_categoria ?? 1)
+    };
+    this.archivoSeleccionado = null;
+  }
+
+  cancelarEdicion(): void {
+    this.limpiarFormulario();
+  }
+
+  private limpiarFormulario(): void {
+    this.editandoId = null;
+    this.nuevoItem = {
+      nombre: '',
+      descripcion: '',
+      tipo_metal: 'Oro',
+      kilataje: '14k',
+      peso_gramos: 0,
+      precio_compra: 0,
+      precio_venta: 0,
+      id_categoria: 1
+    };
+    this.archivoSeleccionado = null;
   }
 
   borrarProducto(id: number, nombre: string): void {

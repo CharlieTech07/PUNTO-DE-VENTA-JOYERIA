@@ -37,8 +37,11 @@
       </span>
     </div>
 
-    <button type="button" class="venta__finalizar" (click)="resumenAbierto.set(true)">
-      {{ 'Finalizar venta' | translate }}
+    @if (errorVenta()) {
+      <p role="alert">{{ errorVenta() | translate }}</p>
+    }
+    <button type="button" class="venta__finalizar" [disabled]="guardando()" (click)="finalizarVenta()">
+      {{ (guardando() ? 'Registrando venta...' : 'Finalizar venta') | translate }}
     </button>
     <button type="button" class="venta__vaciar" (click)="vaciar()">
       {{ 'Vaciar carrito' | translate }}
@@ -47,5 +50,5 @@
 </section>
 
 @if (resumenAbierto()) {
-  <app-resumen-venta (cerrar)="resumenAbierto.set(false)"></app-resumen-venta>
+  <app-resumen-venta (cerrar)="cerrarResumen()"></app-resumen-venta>
 }

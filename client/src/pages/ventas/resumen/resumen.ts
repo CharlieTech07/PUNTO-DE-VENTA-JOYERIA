@@ -35,7 +35,6 @@ export const USOS_CFDI = [
 
 // Se despliega al dar "Finalizar venta": el resumen de lo agregado y, al lado,
 // la vista previa del ticket o la factura.
-// Todavía no registra la venta: no existe /api/ventas en el servidor.
 @Component({
   selector: 'app-resumen-venta',
   standalone: true,

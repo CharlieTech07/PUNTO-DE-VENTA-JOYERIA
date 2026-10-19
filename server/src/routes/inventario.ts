@@ -107,38 +107,61 @@ router.get('/mi-sucursal', verificarToken, async (req: RequestConUsuario, res: R
 
 // POST: Asignar o actualizar existencias en una sucursal (UPSERT)
 router.post('/', async (req: Request, res: Response) => {
+  const client = await pool.connect();
   try {
     const { id_sucursal, id_producto, stock, stock_minimo, ubicacion_vitrina } = req.body;
+    const sucursalId = Number(id_sucursal);
+    const productoId = Number(id_producto);
+    const existencias = Number(stock ?? 0);
+    const minimo = Number(stock_minimo ?? 1);
 
-    if (!id_sucursal || !id_producto) {
+    if (!Number.isSafeInteger(sucursalId) || sucursalId <= 0 ||
+        !Number.isSafeInteger(productoId) || productoId <= 0) {
       return res.status(400).json({ error: 'La sucursal y el producto son obligatorios' });
     }
+    if (!Number.isSafeInteger(existencias) || existencias < 0 ||
+        !Number.isSafeInteger(minimo) || minimo < 0) {
+      return res.status(400).json({ error: 'El stock y el mínimo deben ser números enteros no negativos' });
+    }
 
-    const query = `
-      INSERT INTO inventario_sucursal (id_sucursal, id_producto, stock, stock_minimo, ubicacion_vitrina, actualizado_en)
-      VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)
-      ON CONFLICT (id_sucursal, id_producto)
-      DO UPDATE SET 
-        stock = EXCLUDED.stock,
-        stock_minimo = EXCLUDED.stock_minimo,
-        ubicacion_vitrina = EXCLUDED.ubicacion_vitrina,
-        actualizado_en = CURRENT_TIMESTAMP
-      RETURNING *;
-    `;
+    await client.query('BEGIN');
+    // Serializa altas y modificaciones del mismo producto en la misma sucursal.
+    // La tabla restaurada no define una clave única para este par.
+    await client.query(
+      `SELECT pg_advisory_xact_lock(hashtext($1::text || ':' || $2::text))`,
+      [sucursalId, productoId]
+    );
+    const existente = await client.query(
+      `SELECT id FROM inventario_sucursal
+       WHERE id_sucursal = $1 AND id_producto = $2
+       ORDER BY id LIMIT 1 FOR UPDATE`, [sucursalId, productoId]
+    );
 
-    const values = [
-      Number(id_sucursal),
-      Number(id_producto),
-      Number(stock) || 0,
-      Number(stock_minimo) || 1,
-      ubicacion_vitrina || 'Vitrina Principal'
-    ];
+    let result;
+    if (existente.rowCount) {
+      result = await client.query(
+        `UPDATE inventario_sucursal
+         SET stock = $1, stock_minimo = $2, ubicacion_vitrina = $3, actualizado_en = CURRENT_TIMESTAMP
+         WHERE id = $4 RETURNING *`,
+        [existencias, minimo, ubicacion_vitrina || 'Vitrina Principal', existente.rows[0].id]
+      );
+    } else {
+      result = await client.query(
+        `INSERT INTO inventario_sucursal
+           (id_sucursal, id_producto, stock, stock_minimo, ubicacion_vitrina, actualizado_en)
+         VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *`,
+        [sucursalId, productoId, existencias, minimo, ubicacion_vitrina || 'Vitrina Principal']
+      );
+    }
 
-    const result = await pool.query(query, values);
+    await client.query('COMMIT');
     res.status(201).json(result.rows[0]);
   } catch (error) {
+    await client.query('ROLLBACK').catch(() => undefined);
     console.error('Error al registrar inventario:', error);
     res.status(500).json({ error: 'Error al actualizar inventario', detalle: error });
+  } finally {
+    client.release();
   }
 });
 

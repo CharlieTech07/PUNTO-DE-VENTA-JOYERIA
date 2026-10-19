@@ -34,6 +34,7 @@ export class InventarioComponent implements OnInit {
   public cargando: boolean = true;
   public guardando: boolean = false;
   public seleccionarTodos: boolean = false;
+  public inventarioEditandoId: number | null = null;
 
   public nuevoRegistro = {
     id_sucursal: null as number | null,
@@ -69,7 +70,13 @@ export class InventarioComponent implements OnInit {
 
     this.inventarioService.getInventario().subscribe({
       next: (datos) => {
-        this.listaInventario = datos.map(item => ({ ...item, seleccionado: false }));
+        this.listaInventario = datos.map(item => ({
+          ...item,
+          id: Number(item.id),
+          id_sucursal: Number(item.id_sucursal),
+          id_producto: Number(item.id_producto),
+          seleccionado: false
+        }));
         this.cargando = false;
         this.translateProductNames();
         this.cd.detectChanges();
@@ -83,7 +90,11 @@ export class InventarioComponent implements OnInit {
 
     this.productosService.getProductos().subscribe({
       next: (prods) => {
-        this.catalogoProductos = prods;
+        this.catalogoProductos = prods.map(producto => ({
+          ...producto,
+          id: Number(producto.id),
+          id_categoria: Number(producto.id_categoria)
+        }));
         if (prods.length > 0 && this.nuevoRegistro.id_producto === null) {
           this.nuevoRegistro.id_producto = Number(prods[0].id);
         }
@@ -95,7 +106,10 @@ export class InventarioComponent implements OnInit {
 
     this.sucursalesService.getSucursales().subscribe({
       next: (sucs) => {
-        this.catalogoSucursales = sucs;
+        this.catalogoSucursales = sucs.map(sucursal => ({
+          ...sucursal,
+          id: Number(sucursal.id)
+        }));
         if (sucs.length > 0 && this.nuevoRegistro.id_sucursal === null) {
           this.nuevoRegistro.id_sucursal = Number(sucs[0].id);
         }
@@ -151,6 +165,7 @@ export class InventarioComponent implements OnInit {
     this.inventarioService.asignarStock(payload).subscribe({
       next: () => {
         this.guardando = false;
+        this.inventarioEditandoId = null;
         alert(this.language.t('Stock guardado correctamente en pos_olimpo'));
         this.cargarDatos();
       },
@@ -162,6 +177,29 @@ export class InventarioComponent implements OnInit {
         this.cd.detectChanges();
       }
     });
+  }
+
+  public editarStock(item: InventarioItem): void {
+    this.inventarioEditandoId = item.id;
+    this.nuevoRegistro = {
+      id_sucursal: Number(item.id_sucursal),
+      id_producto: Number(item.id_producto),
+      stock: Number(item.stock),
+      stock_minimo: Number(item.stock_minimo),
+      ubicacion_vitrina: item.ubicacion_vitrina ?? ''
+    };
+    document.querySelector('.inventario-header')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  public cancelarEdicionStock(): void {
+    this.inventarioEditandoId = null;
+    this.nuevoRegistro = {
+      id_sucursal: this.catalogoSucursales[0] ? Number(this.catalogoSucursales[0].id) : null,
+      id_producto: this.catalogoProductos[0] ? Number(this.catalogoProductos[0].id) : null,
+      stock: 1,
+      stock_minimo: 1,
+      ubicacion_vitrina: 'Vitrina Central - Charola 1'
+    };
   }
 
   public alternarSeleccionTodos(): void {

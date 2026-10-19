@@ -1,12 +1,12 @@
 export interface Venta {
-  id?: number;
+  id?: number | string;
   folio: string;
-  clienteId?: number;
-  usuarioId: number;
-  fecha: Date;
-  subtotal: number;
-  descuento?: number;
-  total: number;
-  metodoPago: 'efectivo' | 'tarjeta' | 'transferencia' | 'mixto';
+  id_sucursal: number | string;
+  id_usuario: number | string;
+  fecha: string;
+  subtotal: number | string;
+  total: number | string;
+  iva: number | string;
+  metodo_pago: 'efectivo' | 'tarjeta' | 'transferencia' | 'mixto';
   estado?: 'pendiente' | 'completada' | 'cancelada';
 }

@@ -104,6 +104,49 @@ router.post('/', upload.single('imagen'), async (req: Request, res: Response) =>
   }
 });
 
+// PUT: Actualizar los datos de una pieza y conservar la imagen si no se envía otra.
+router.put('/:id', upload.single('imagen'), async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const {
+      nombre, descripcion, tipo_metal, kilataje, peso_gramos,
+      precio_compra, precio_venta, id_categoria
+    } = req.body;
+    const peso = Number(peso_gramos);
+    const compra = Number(precio_compra);
+    const venta = Number(precio_venta);
+    const categoria = Number(id_categoria);
+
+    if (!Number.isSafeInteger(id) || id <= 0 || !nombre?.trim()) {
+      return res.status(400).json({ error: 'El ID y el nombre del producto son obligatorios' });
+    }
+    if (!Number.isFinite(peso) || peso < 0 || !Number.isFinite(compra) || compra < 0 ||
+        !Number.isFinite(venta) || venta < 0 || !Number.isSafeInteger(categoria) || categoria <= 0) {
+      return res.status(400).json({ error: 'Revisa el peso, los precios y la categoría del producto' });
+    }
+
+    const result = await pool.query(
+      `UPDATE productos
+       SET nombre = $1, descripcion = $2, tipo_metal = $3, kilataje = $4,
+           peso_gramos = $5, precio_compra = $6, precio_venta = $7,
+           id_categoria = $8, imagen = COALESCE($9, imagen)
+       WHERE id = $10
+       RETURNING id, nombre, descripcion, tipo_metal, kilataje, peso_gramos,
+                 precio_compra, precio_venta, id_categoria,
+                 CASE WHEN imagen IS NOT NULL THEN encode(imagen, 'base64') ELSE NULL END AS imagen_base64`,
+      [nombre.trim(), descripcion || null, tipo_metal || 'Oro', kilataje || null,
+        peso, compra, venta, categoria, req.file?.buffer ?? null, id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'El producto no existe' });
+    }
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error al actualizar producto:', error);
+    res.status(500).json({ error: 'No se pudo actualizar el producto' });
+  }
+});
+
 // DELETE: Eliminar una joya por ID
 router.delete('/:id', async (req: Request, res: Response) => {
   try {

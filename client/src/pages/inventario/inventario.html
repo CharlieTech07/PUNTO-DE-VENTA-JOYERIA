@@ -77,8 +77,11 @@
       <div class="acciones-form">
         <button type="submit" [disabled]="guardando" class="btn-oro">
           <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-          {{ (guardando ? 'Guardando existencias...' : 'Guardar Existencias') | translate }}
+          {{ (guardando ? 'Guardando existencias...' : (inventarioEditandoId !== null ? 'Actualizar existencias' : 'Guardar Existencias')) | translate }}
         </button>
+        @if (inventarioEditandoId !== null) {
+          <button type="button" class="btn-volver" (click)="cancelarEdicionStock()">{{ 'Cancelar' | translate }}</button>
+        }
       </div>
     </form>
   </section>
@@ -147,6 +150,12 @@
                   }
                 </td>
                 <td class="col-center">
+                  <button
+                    type="button"
+                    class="btn-oro"
+                    (click)="editarStock(item)">
+                    {{ 'Editar' | translate }}
+                  </button>
                   <button
                     type="button"
                     class="btn-eliminar-item"

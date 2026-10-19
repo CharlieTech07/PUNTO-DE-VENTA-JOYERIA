@@ -1,15 +1,12 @@
 // client/src/pages/ventas/ventas.ts
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { CarritoService } from '../../services/carrito.service';
 import { LanguageService } from '../../services/lenguage.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { ResumenVentaComponent } from './resumen/resumen';
+import { VentasService } from '../../services/ventas.service';
 
-// Módulo de ventas: el panel "Venta actual" con las piezas que se van a cobrar.
-// TODAVÍA NO ESTÁ CONECTADO: no tiene ruta, no sale en el menú y la vitrina
-// no le manda piezas. Falta decidir dónde se coloca.
-// Para llenarlo, quien lo conecte llama a CarritoService.agregar(pieza).
 @Component({
   selector: 'app-ventas',
   standalone: true,
@@ -20,8 +17,12 @@ import { ResumenVentaComponent } from './resumen/resumen';
 export class VentasComponent implements OnInit {
   public readonly carrito = inject(CarritoService);
   private readonly language = inject(LanguageService);
+  private readonly ventasService = inject(VentasService);
 
   public readonly resumenAbierto = signal(false);
+  public readonly guardando = signal(false);
+  public readonly errorVenta = signal('');
+  public readonly ventaRegistrada = output<void>();
 
   ngOnInit(): void {
     this.carrito.sincronizarConSesion();
@@ -31,5 +32,33 @@ export class VentasComponent implements OnInit {
     if (confirm(this.language.t('¿Vaciar el carrito? Se quitarán todas las piezas.'))) {
       this.carrito.vaciar();
     }
+  }
+
+  public finalizarVenta(): void {
+    if (this.carrito.vacio() || this.guardando()) return;
+    this.guardando.set(true);
+    this.errorVenta.set('');
+    this.ventasService.create({
+      metodo_pago: 'efectivo',
+      items: this.carrito.items().map(item => ({
+        id_inventario: item.id_inventario,
+        cantidad: item.cantidad
+      }))
+    }).subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.resumenAbierto.set(true);
+        this.ventaRegistrada.emit();
+      },
+      error: error => {
+        this.guardando.set(false);
+        this.errorVenta.set(error.error?.error ?? 'No se pudo registrar la venta. Intenta de nuevo.');
+      }
+    });
+  }
+
+  public cerrarResumen(): void {
+    this.resumenAbierto.set(false);
+    this.carrito.vaciar();
   }
 }
