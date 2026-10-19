@@ -94,6 +94,7 @@
         <div class="ticket__renglon ticket__total"><span>{{ 'Total' | translate }}</span><span>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }}</span></div>
         <div class="ticket__corte"></div>
         <p class="ticket__gracias">{{ 'Gracias por su compra' | translate }}</p>
+        <p class="ticket__privacidad">{{ 'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.' | translate }}</p>
         <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
       </div>
       <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
@@ -206,6 +207,12 @@
             <input id="factura-correo" type="email" formControlName="correo" autocomplete="off" placeholder="Ej: cliente@correo.com">
             @if (error('correo')) { <small>{{ 'Ingresa un formato de correo válido.' | translate }}</small> }
           </label>
+
+          <!-- Se abre en otra pestaña para no perder la venta ni el formulario -->
+          <p class="aviso-datos">
+            {{ 'Usamos estos datos solo para emitir su factura.' | translate }}
+            <a routerLink="/privacidad" target="_blank" rel="noopener">{{ 'Consulte el aviso de privacidad' | translate }}</a>
+          </p>
 
           <button type="submit" class="btn btn--claro">{{ 'Ver factura' | translate }}</button>
         </form>

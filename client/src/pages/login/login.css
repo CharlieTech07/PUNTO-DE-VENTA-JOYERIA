@@ -445,6 +445,117 @@ button.create:hover {
   border-color: var(--oro);
 }
 
+/* --- CASILLA DE TÉRMINOS Y AVISO DE PRIVACIDAD --- */
+.casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+/* Casilla nativa con apariencia propia: sigue funcionando con teclado y lector de pantalla */
+.casilla input {
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  padding: 0;
+  border: 1.5px solid var(--oro-medio);
+  border-radius: 4px;
+  background: var(--superficie-3);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.casilla input::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--sobre-oro);
+  border-bottom: 2px solid var(--sobre-oro);
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+}
+
+.casilla input:checked {
+  background: var(--oro);
+  border-color: var(--oro);
+}
+
+.casilla input:checked::after {
+  opacity: 1;
+}
+
+.casilla input:focus {
+  box-shadow: none;
+}
+
+.casilla input:focus-visible {
+  outline: 2px solid var(--oro);
+  outline-offset: 2px;
+}
+
+.casilla label {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0;
+  line-height: 1.45;
+  color: var(--texto-2);
+  cursor: pointer;
+}
+
+.casilla a {
+  color: var(--oro);
+  text-decoration: underline;
+  text-decoration-color: var(--oro-borde);
+  text-underline-offset: 3px;
+}
+
+.casilla a:hover {
+  text-decoration-color: var(--oro);
+}
+
+.casilla a:focus-visible {
+  outline: 2px solid var(--oro);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Sin la casilla el botón se ve apagado. No va "disabled" para que siga
+   recibiendo el foco y, al intentar entrar, se marque en rojo qué falta. */
+button.primary.bloqueado {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+button.primary.bloqueado:hover {
+  filter: none;
+}
+
+button.primary.bloqueado::after {
+  display: none;
+}
+
+.pista-casilla {
+  margin-top: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  text-align: center;
+  color: var(--texto-3);
+}
+
+.pista-casilla--error {
+  color: var(--rojo);
+}
+
+.pista-casilla.oculta {
+  visibility: hidden;
+}
+
 /* Mensajes de error */
 .field .error {
   display: none;
