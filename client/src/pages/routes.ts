@@ -7,6 +7,7 @@ import { DashboardComponent } from './dashboard/dashboard';
 import { ProductosComponent } from './productos/productos';
 import { SucursalesComponent } from './sucursales/sucursales';
 import { InventarioComponent } from './inventario/inventario';
+import { LegalComponent } from './legal/legal';
 
 export const routes: Routes = [
   // Ruta raíz va al login
@@ -14,6 +15,10 @@ export const routes: Routes = [
 
   // Ruta pública
   { path: 'login', component: LoginComponent },
+
+  // Avisos legales: también públicos, se abren desde los enlaces del login
+  { path: 'privacidad', component: LegalComponent, data: { documento: 'privacidad' } },
+  { path: 'terminos', component: LegalComponent, data: { documento: 'terminos' } },
 
   // Rutas protegidas por autenticación
   {

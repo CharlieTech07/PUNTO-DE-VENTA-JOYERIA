@@ -1,0 +1,37 @@
+<header class="barra">
+  <div class="marca">
+    <img src="logonuevo.png" alt="" class="marca__logo">
+    <span>OLIMPO</span>
+  </div>
+  <a class="volver" routerLink="/login"><span aria-hidden="true">←</span> {{ 'Volver al acceso' | translate }}</a>
+</header>
+
+<main class="hoja">
+  <nav class="pestanas" [attr.aria-label]="'Avisos legales' | translate">
+    <a routerLink="/privacidad" routerLinkActive="activa" ariaCurrentWhenActive="page">{{ 'Aviso de privacidad' | translate }}</a>
+    <a routerLink="/terminos" routerLinkActive="activa" ariaCurrentWhenActive="page">{{ 'Términos y condiciones' | translate }}</a>
+  </nav>
+
+  <article class="documento">
+    <h1>{{ texto().titulo }}</h1>
+    @for (parrafo of texto().intro; track $index) {
+      <p class="intro">{{ parrafo }}</p>
+    }
+
+    @for (seccion of texto().secciones; track seccion.titulo) {
+      <section>
+        <h2>{{ seccion.titulo }}</h2>
+        @if (seccion.lista) {
+          <ul>
+            @for (punto of seccion.lista; track $index) { <li>{{ punto }}</li> }
+          </ul>
+        }
+        @for (parrafo of seccion.parrafos ?? []; track $index) {
+          <p>{{ parrafo }}</p>
+        }
+      </section>
+    }
+
+    <p class="fecha">{{ 'Última actualización' | translate }}: {{ actualizado() }}</p>
+  </article>
+</main>
