@@ -1,0 +1,216 @@
+<!-- <dialog> nativo abierto con showModal(): va en la capa superior del navegador,
+     encima del menú y de todo, aunque el panel viva dentro de una columna sticky -->
+<dialog
+  #dialogo
+  class="dialogo"
+  [class.dialogo--doble]="vista() !== 'ninguna'"
+  aria-labelledby="resumen-titulo"
+  (cancel)="$event.preventDefault(); cerrar.emit()"
+  (click)="alClicDialogo($event)">
+<div class="contenido">
+
+  <button type="button" class="cerrar" [attr.aria-label]="'Cerrar' | translate" (click)="cerrar.emit()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+  </button>
+
+  <!-- ===================== Resumen ===================== -->
+  <section class="resumen">
+    <span class="etiqueta">{{ 'Finalizar venta' | translate }}</span>
+    <h2 id="resumen-titulo" class="titulo">{{ 'Resumen de la venta' | translate }}</h2>
+    <p class="meta">
+      @if (carrito.sucursal()) { {{ 'Sucursal' | translate }}: {{ carrito.sucursal() }} · }
+      {{ fecha | date:'dd/MM/yyyy HH:mm' }}
+      @if (atendio) { · {{ 'Atendió' | translate }}: {{ atendio }} }
+    </p>
+
+    <div class="tabla-contenedor">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>{{ 'Pieza' | translate }}</th>
+            <th class="num">{{ 'Cant.' | translate }}</th>
+            <th class="num">{{ 'Precio' | translate }}</th>
+            <th class="num">{{ 'Importe' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of carrito.items(); track item.id_inventario) {
+            <tr>
+              <td>
+                <span class="pieza">{{ item.nombre }}</span>
+                <span class="pieza-detalle">{{ item.tipo_metal }} {{ item.kilataje }}</span>
+              </td>
+              <td class="num">{{ item.cantidad }}</td>
+              <td class="num">{{ item.precio_unitario | currency:'USD':'symbol':'1.2-2' }}</td>
+              <td class="num">{{ item.precio_unitario * item.cantidad | currency:'USD':'symbol':'1.2-2' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <dl class="totales">
+      <div><dt>{{ 'Subtotal' | translate }}</dt><dd>{{ carrito.subtotal() | currency:'USD':'symbol':'1.2-2' }}</dd></div>
+      <div><dt>{{ 'IVA 16%' | translate }}</dt><dd>{{ carrito.iva() | currency:'USD':'symbol':'1.2-2' }}</dd></div>
+      <div class="totales__total"><dt>{{ 'Total' | translate }}</dt><dd>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }}</dd></div>
+    </dl>
+    <p class="nota">{{ 'Los precios ya incluyen IVA.' | translate }}</p>
+
+    <div class="acciones">
+      <button type="button" class="btn btn--claro" [attr.aria-pressed]="vista() === 'ticket'" (click)="ver('ticket')">
+        {{ 'Vista previa del ticket' | translate }}
+      </button>
+      <button type="button" class="btn btn--borde" [attr.aria-pressed]="vista() === 'factura'" (click)="ver('factura')">
+        {{ 'Generar factura' | translate }}
+      </button>
+      <button type="button" class="btn btn--texto" (click)="cerrar.emit()">
+        {{ 'Seguir vendiendo' | translate }}
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== Vista previa del ticket ===================== -->
+  @if (vista() === 'ticket') {
+    <aside class="lado" [attr.aria-label]="'Vista previa del ticket' | translate">
+      <div class="papel ticket">
+        <p class="ticket__marca">OLIMPO</p>
+        <p class="ticket__lema">HAUTE JOAILLERIE</p>
+        <div class="ticket__datos">
+          @if (carrito.sucursal()) { <span>{{ 'Sucursal' | translate }}: {{ carrito.sucursal() }}</span> }
+          <span>{{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+          @if (atendio) { <span>{{ 'Atendió' | translate }}: {{ atendio }}</span> }
+        </div>
+        <div class="ticket__corte"></div>
+        @for (item of carrito.items(); track item.id_inventario) {
+          <div class="ticket__renglon">
+            <span>{{ item.nombre }}</span>
+            <span>{{ item.precio_unitario * item.cantidad | currency:'USD':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="ticket__sub">{{ item.cantidad }} x {{ item.precio_unitario | currency:'USD':'symbol':'1.2-2' }}</div>
+        }
+        <div class="ticket__corte"></div>
+        <div class="ticket__renglon"><span>{{ 'Subtotal' | translate }}</span><span>{{ carrito.subtotal() | currency:'USD':'symbol':'1.2-2' }}</span></div>
+        <div class="ticket__renglon"><span>{{ 'IVA 16%' | translate }}</span><span>{{ carrito.iva() | currency:'USD':'symbol':'1.2-2' }}</span></div>
+        <div class="ticket__renglon ticket__total"><span>{{ 'Total' | translate }}</span><span>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }}</span></div>
+        <div class="ticket__corte"></div>
+        <p class="ticket__gracias">{{ 'Gracias por su compra' | translate }}</p>
+        <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
+      </div>
+      <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
+    </aside>
+  }
+
+  <!-- ===================== Factura ===================== -->
+  @if (vista() === 'factura') {
+    <aside class="lado" [attr.aria-label]="'Generar factura' | translate">
+      @if (datosFactura(); as datos) {
+        <div class="papel factura">
+          <div class="factura__cabeza">
+            <div>
+              <p class="factura__titulo">{{ 'Factura' | translate }}</p>
+              <p class="factura__aviso">{{ 'Sin timbrar: no tiene validez fiscal hasta que se timbre con un PAC.' | translate }}</p>
+            </div>
+            <span class="factura__fecha">{{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+
+          <div class="factura__partes">
+            <div>
+              <p class="factura__etiqueta">{{ 'Emisor' | translate }}</p>
+              <p>Olimpo Haute Joaillerie</p>
+              @if (carrito.sucursal()) { <p>{{ 'Sucursal' | translate }}: {{ carrito.sucursal() }}</p> }
+            </div>
+            <div>
+              <p class="factura__etiqueta">{{ 'Receptor' | translate }}</p>
+              <p>{{ datos.nombre }}</p>
+              <p>RFC: {{ datos.rfc }} · CP {{ datos.cp }}</p>
+              <p>{{ nombreDe(regimenes, datos.regimen) }}</p>
+              <p>{{ 'Uso del CFDI' | translate }}: {{ nombreDe(usos, datos.uso) }}</p>
+              <p>{{ datos.correo }}</p>
+            </div>
+          </div>
+
+          <table class="factura__conceptos">
+            <thead>
+              <tr>
+                <th class="num">{{ 'Cant.' | translate }}</th>
+                <th>{{ 'Descripción' | translate }}</th>
+                <th class="num">{{ 'Valor unitario' | translate }}</th>
+                <th class="num">{{ 'Importe' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of carrito.items(); track item.id_inventario) {
+                <tr>
+                  <td class="num">{{ item.cantidad }}</td>
+                  <td>{{ item.nombre }} · {{ item.tipo_metal }} {{ item.kilataje }}</td>
+                  <td class="num">{{ sinIva(item.precio_unitario) | currency:'USD':'symbol':'1.2-2' }}</td>
+                  <td class="num">{{ sinIva(item.precio_unitario * item.cantidad) | currency:'USD':'symbol':'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <dl class="factura__totales">
+            <div><dt>{{ 'Subtotal' | translate }}</dt><dd>{{ carrito.subtotal() | currency:'USD':'symbol':'1.2-2' }}</dd></div>
+            <div><dt>{{ 'IVA 16%' | translate }}</dt><dd>{{ carrito.iva() | currency:'USD':'symbol':'1.2-2' }}</dd></div>
+            <div class="factura__total"><dt>{{ 'Total' | translate }}</dt><dd>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }} MXN</dd></div>
+          </dl>
+        </div>
+        <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>
+      } @else {
+        <form class="formulario" [formGroup]="formulario" (ngSubmit)="generarFactura()" novalidate>
+          <p class="formulario__titulo">{{ 'Datos de facturación' | translate }}</p>
+
+          <label class="campo" [class.campo--error]="error('rfc')">
+            <span>RFC</span>
+            <input id="factura-rfc" formControlName="rfc" maxlength="13" autocomplete="off"
+                   [placeholder]="'Ej: XAXX010101000'" (blur)="rfcEnMayusculas()">
+            @if (error('rfc')) { <small>{{ 'Revisa el RFC: son 12 o 13 caracteres.' | translate }}</small> }
+          </label>
+
+          <label class="campo" [class.campo--error]="error('nombre')">
+            <span>{{ 'Nombre o razón social' | translate }}</span>
+            <input id="factura-nombre" formControlName="nombre" autocomplete="off"
+                   [placeholder]="'Como aparece en su constancia fiscal' | translate">
+            @if (error('nombre')) { <small>{{ 'Este dato es obligatorio.' | translate }}</small> }
+          </label>
+
+          <div class="campo-doble">
+            <label class="campo" [class.campo--error]="error('cp')">
+              <span>{{ 'Código postal' | translate }}</span>
+              <input id="factura-cp" formControlName="cp" inputmode="numeric" maxlength="5" autocomplete="off" placeholder="Ej: 28200">
+              @if (error('cp')) { <small>{{ 'El código postal son 5 números.' | translate }}</small> }
+            </label>
+
+            <label class="campo" [class.campo--error]="error('uso')">
+              <span>{{ 'Uso del CFDI' | translate }}</span>
+              <select id="factura-uso" formControlName="uso">
+                <option value="" disabled>{{ 'Selecciona una opción' | translate }}</option>
+                @for (u of usos; track u.clave) { <option [value]="u.clave">{{ u.clave }} · {{ u.nombre }}</option> }
+              </select>
+              @if (error('uso')) { <small>{{ 'Este dato es obligatorio.' | translate }}</small> }
+            </label>
+          </div>
+
+          <label class="campo" [class.campo--error]="error('regimen')">
+            <span>{{ 'Régimen fiscal' | translate }}</span>
+            <select id="factura-regimen" formControlName="regimen">
+              <option value="" disabled>{{ 'Selecciona una opción' | translate }}</option>
+              @for (r of regimenes; track r.clave) { <option [value]="r.clave">{{ r.clave }} · {{ r.nombre }}</option> }
+            </select>
+            @if (error('regimen')) { <small>{{ 'Este dato es obligatorio.' | translate }}</small> }
+          </label>
+
+          <label class="campo" [class.campo--error]="error('correo')">
+            <span>{{ 'Correo electrónico' | translate }}</span>
+            <input id="factura-correo" type="email" formControlName="correo" autocomplete="off" placeholder="Ej: cliente@correo.com">
+            @if (error('correo')) { <small>{{ 'Ingresa un formato de correo válido.' | translate }}</small> }
+          </label>
+
+          <button type="submit" class="btn btn--claro">{{ 'Ver factura' | translate }}</button>
+        </form>
+      }
+    </aside>
+  }
+</div>
+</dialog>

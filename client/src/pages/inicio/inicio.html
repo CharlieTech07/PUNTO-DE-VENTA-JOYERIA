@@ -17,9 +17,9 @@
 <div class="container">
   <header>
     <div class="header-top">
-      <span class="subtitle">{{ 'VITRINA DE MERCANCÍA' | translate }}</span>
+      <span class="subtitle">{{ 'VITRINA DE MERCANCÍA' | translate }}@if (nombreSucursal) { · {{ nombreSucursal | uppercase }} }</span>
       <div class="header-actions">
-        <span class="item-count">{{ productosFiltrados.length }} {{ 'piezas disponibles' | translate }}</span>
+        <span class="item-count">{{ productosFiltrados.length }} {{ 'piezas en inventario' | translate }}</span>
         <button type="button" class="btn-dashboard" routerLink="/dashboard">
           {{ 'Ir al Dashboard' | translate }}
         </button>
@@ -36,39 +36,48 @@
       [placeholder]="'Buscar pieza, piedra o metal...' | translate">
   </div>
 
-  @if (cargando) {
-    <p class="no-results">{{ 'Consultando joyas en PostgreSQL...' | translate }}</p>
-  } @else if (errorCarga) {
-    <p class="no-results" role="alert">{{ 'No se pudieron cargar los productos.' | translate }}</p>
-  } @else {
-    <div class="grid-container" id="product-grid">
-      @for (product of productosFiltrados; track product.id) {
-        <div class="card">
-          <img
-            [src]="product.imagen_base64 ? ('data:image/jpeg;base64,' + product.imagen_base64) : 'https://images.unsplash.com/photo-1605100804763-247f67b4549e?auto=format&fit=crop&q=80&w=600'"
-            [alt]="product.nombre"
-            class="card-image">
-          <div class="product-category">
-            {{ productText(product, 'tipo_metal') }} {{ product.kilataje || '' }}
-          </div>
-          <h3 class="product-title">{{ product.nombre }}</h3>
-          <div class="product-desc">
-            {{ product.descripcion ? productText(product, 'descripcion') : ('Pieza de joyería fina' | translate) }}
-          </div>
-          <div class="card-footer">
-            <span class="price">{{ product.precio_venta | currency:'USD':'symbol':'1.0-0' }}</span>
-            <button type="button" class="btn-add" (click)="agregarAlCarrito(product)">
-              {{ 'AGREGAR' | translate }}
-            </button>
-          </div>
+  <div class="ventas-layout">
+    <div class="vitrina">
+      @if (cargando) {
+        <p class="no-results">{{ 'Consultando joyas en PostgreSQL...' | translate }}</p>
+      } @else if (errorCarga) {
+        <p class="no-results" role="alert">{{ 'No se pudieron cargar los productos.' | translate }}</p>
+      } @else {
+        <div class="grid-container" id="product-grid">
+          @for (product of productosFiltrados; track product.id_inventario) {
+            <div class="card">
+              <img
+                [src]="product.imagen_base64 ? ('data:image/jpeg;base64,' + product.imagen_base64) : 'https://images.unsplash.com/photo-1605100804763-247f67b4549e?auto=format&fit=crop&q=80&w=600'"
+                [alt]="product.nombre"
+                class="card-image">
+              <div class="product-category">
+                {{ productText(product, 'tipo_metal') }} {{ product.kilataje || '' }}
+              </div>
+              <h3 class="product-title">{{ product.nombre }}</h3>
+              <div class="product-desc">
+                {{ product.descripcion ? productText(product, 'descripcion') : ('Pieza de joyería fina' | translate) }}
+              </div>
+              @if (esAdmin && product.nombre_sucursal) {
+                <div class="product-desc">{{ 'Sucursal' | translate }}: {{ product.nombre_sucursal }}</div>
+              }
+              <div class="product-desc">{{ 'Disponibles' | translate }}: {{ product.stock }}</div>
+              <div class="card-footer">
+                <span class="price">{{ product.precio_venta | currency:'USD':'symbol':'1.0-0' }}</span>
+                <button type="button" class="btn-add" [disabled]="product.stock === 0" (click)="agregarAlCarrito(product)">
+                  {{ (product.stock === 0 ? 'AGOTADO' : 'AGREGAR') | translate }}
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <p class="no-results">
+              {{ 'No hay productos en el inventario. Asigna existencias desde la página de Inventario para verlos aquí.' | translate }}
+            </p>
+          }
         </div>
-      } @empty {
-        <p class="no-results">
-          {{ 'No se encontraron joyas en la vitrina.' | translate }}
-        </p>
       }
     </div>
-  }
+    <app-ventas class="ventas-panel" (ventaRegistrada)="cargarVitrina()"></app-ventas>
+  </div>
 </div>
 </body>
 </html>

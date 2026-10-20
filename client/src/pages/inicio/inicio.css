@@ -139,6 +139,23 @@
   color: var(--btn-bg-dark);
 }
 
+/* Carrito conectado a la vitrina: permanece visible mientras se seleccionan piezas. */
+.ventas-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+  align-items: start;
+  gap: 24px;
+}
+
+.vitrina { min-width: 0; }
+
+.ventas-panel {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+}
+
 /* ---------- Rejilla de piezas ---------- */
 
 .grid-container {
@@ -264,6 +281,15 @@
 
   .grid-container {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1050px) {
+  .ventas-layout { grid-template-columns: 1fr; }
+  .ventas-panel {
+    position: static;
+    max-height: none;
+    overflow: visible;
   }
 }
 

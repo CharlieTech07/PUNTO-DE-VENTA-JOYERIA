@@ -4,7 +4,7 @@
 
   <!-- Formulario con selector de archivo -->
   <div style="background: #3d0d0d; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 25px;">
-    <h3>{{ 'Registrar Nueva Pieza con Foto' | translate }}</h3>
+    <h3>{{ (editandoId === null ? 'Registrar Nueva Pieza con Foto' : 'Editar pieza') | translate }}</h3>
     <form (ngSubmit)="guardarProducto()" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
       
       <div>
@@ -41,6 +41,11 @@
         <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_venta" name="precio_venta" style="width: 100%; padding: 8px; box-sizing: border-box;" />
       </div>
 
+      <div>
+        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Precio Compra:' | translate }}</label>
+        <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_compra" name="precio_compra" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      </div>
+
       <!-- Selector de Imagen -->
       <div style="grid-column: 1 / -1;">
         <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Fotografía de la Joya:' | translate }}</label>
@@ -49,8 +54,13 @@
 
       <div style="grid-column: 1 / -1; margin-top: 10px;">
         <button type="submit" style="background-color: #059669; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-          {{ '+ Guardar Joya con Imagen' | translate }}
+          {{ (editandoId === null ? '+ Guardar Joya con Imagen' : 'Guardar cambios') | translate }}
         </button>
+        @if (editandoId !== null) {
+          <button type="button" (click)="cancelarEdicion()" style="margin-left: 8px; padding: 10px 24px; border-radius: 6px; cursor: pointer;">
+            {{ 'Cancelar' | translate }}
+          </button>
+        }
       </div>
     </form>
   </div>
@@ -90,8 +100,14 @@
         <td>{{ item.kilataje || 'N/A' }}</td>
         <td style="color: #059669; font-weight: bold;">${{ item.precio_venta }}</td>
         
-        <!-- Botón de Eliminar -->
+          <!-- Acciones de edición y eliminación -->
         <td style="text-align: center;">
+          <button
+            type="button"
+            (click)="editarProducto(item)"
+            style="background-color: #d4a34c; color: #1e293b; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500; margin-right: 6px;">
+            {{ 'Editar' | translate }}
+          </button>
           <button 
             type="button"
             (click)="borrarProducto(item.id, item.nombre)"

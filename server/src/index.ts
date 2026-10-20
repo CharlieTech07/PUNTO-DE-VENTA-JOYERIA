@@ -6,6 +6,7 @@ import productosRoutes from './routes/productos.js';
 import sucursalesRoutes from './routes/sucursales.js';
 import inventarioRoutes from './routes/inventario.js';
 import traduccionRoutes from './routes/traduccion.js';
+import ventasRoutes from './routes/ventas.js';
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use('/api/productos', productosRoutes);
 app.use('/api/sucursales', sucursalesRoutes);
 app.use('/api/inventario', inventarioRoutes);
 app.use('/api/traduccion', traduccionRoutes);
+app.use('/api/ventas', ventasRoutes);
 
 const PORT = process.env.PORT || 3000;
 

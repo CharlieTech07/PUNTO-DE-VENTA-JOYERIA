@@ -1,22 +1,29 @@
 import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule, CurrencyPipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MenuComponent } from '../../components/menu/menu';
 import { DeepLTranslationService } from '../../services/deepl-translation.service';
 import { LanguageService, Lang } from '../../services/lenguage.service';
-import { ProductosService } from '../../services/productos.service';
+import { InventarioService } from '../../services/inventario_sucursal.service';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../services/translate.pipe';
+import { CarritoService } from '../../services/carrito.service';
+import { VentasComponent } from '../ventas/ventas';
 
 export interface ProductoVisual {
   id: number;
+  id_inventario: number;
+  id_sucursal: number;
+  nombre_sucursal?: string;
   nombre: string;
   descripcion: string;
   tipo_metal: string;
   kilataje: string;
   precio_venta: number;
   imagen_base64?: string;
+  stock?: number; // solo viene cuando se carga el inventario de una sucursal
 }
 
 type CampoTraducible = 'descripcion' | 'tipo_metal';
@@ -24,7 +31,7 @@ type CampoTraducible = 'descripcion' | 'tipo_metal';
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, FormsModule, RouterLink, MenuComponent, TranslatePipe],
+  imports: [CommonModule, CurrencyPipe, UpperCasePipe, FormsModule, RouterLink, MenuComponent, TranslatePipe, VentasComponent],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
@@ -33,13 +40,18 @@ export class InicioComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly language = inject(LanguageService);
   private readonly deepL = inject(DeepLTranslationService);
-  private readonly productosService = inject(ProductosService);
+  private readonly inventarioService = inject(InventarioService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly carrito = inject(CarritoService);
   private readonly translatedProducts = new Map<number, Partial<Record<CampoTraducible, string>>>();
 
   public terminoBusqueda = '';
   public products: ProductoVisual[] = [];
   public cargando = true;
   public errorCarga = false;
+  public nombreSucursal = '';
+  public esAdmin = false;
 
   ngOnInit(): void {
     this.language.lang$
@@ -55,8 +67,13 @@ export class InicioComponent implements OnInit {
   public cargarVitrina(): void {
     this.cargando = true;
     this.errorCarga = false;
+    const usuario = this.authService.obtenerUsuario();
 
-    this.productosService.getProductos()
+    // Gerente y Cajero: su sucursal. Administrador: todas las sucursales.
+    this.esAdmin = usuario?.rol === 'Administrador';
+    this.nombreSucursal = this.esAdmin ? '' : (usuario?.nombre_sucursal ?? '');
+
+    this.inventarioService.getMiInventario()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: productos => {
@@ -67,9 +84,15 @@ export class InicioComponent implements OnInit {
           this.changeDetector.detectChanges();
         },
         error: err => {
-          console.error('Error al cargar la vitrina de joyas:', err);
-          this.errorCarga = true;
+          console.error('Error al cargar el inventario:', err);
           this.cargando = false;
+          // Token vencido o inválido: se regresa al login
+          if (err.status === 401) {
+            this.authService.cerrarSesion();
+            this.router.navigate(['/login']);
+            return;
+          }
+          this.errorCarga = true;
           this.changeDetector.detectChanges();
         }
       });
@@ -89,8 +112,14 @@ export class InicioComponent implements OnInit {
   }
 
   public agregarAlCarrito(product: ProductoVisual): void {
-    console.log('Joya seleccionada para ticket:', product);
-    alert(`"${product.nombre}" agregada al flujo de venta.`);
+    const resultado = this.carrito.agregar(product);
+    if (resultado === 'otra-sucursal') {
+      alert(this.language.t('Una venta solo puede incluir piezas de una sucursal. Vacía el carrito para cambiar de sucursal.'));
+      return;
+    }
+    if (resultado === 'sin-existencias') {
+      alert(this.language.t('No hay más existencias disponibles para esta pieza.'));
+    }
   }
 
   private updateCatalogTranslations(lang: Lang): void {

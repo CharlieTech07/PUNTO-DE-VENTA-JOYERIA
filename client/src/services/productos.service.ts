@@ -18,6 +18,10 @@ export class ProductosService {
     return this.http.post<any>(this.apiUrl, datos);
   }
 
+  actualizarProducto(id: number, datos: FormData): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, datos);
+  }
+
   eliminarProducto(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
