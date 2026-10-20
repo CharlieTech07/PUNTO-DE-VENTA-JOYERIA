@@ -1,10 +1,19 @@
+<!-- Intro "Luz de vitrina": solo existe mientras corre (ver login-intro.css) -->
+<div class="intro-penumbra" *ngIf="introActiva()" aria-hidden="true"></div>
+
 <button class="theme-toggle" (click)="toggleTema()" type="button">
   <span>{{ isModoClaro ? ('MODO OSCURO' | translate) : ('MODO CLARO' | translate) }}</span>
 </button>
 
 <div class="wrap">
   <div class="brand">
-    <img src="logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
+    <div class="crest-marco">
+      <img src="logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
+      <ng-container *ngIf="introActiva()">
+        <img src="logonuevo.png" alt="" class="crest-brillo" aria-hidden="true">
+        <span class="chispa" aria-hidden="true"></span>
+      </ng-container>
+    </div>
     <h1>{{ 'OLIMPO' | translate }}</h1>
     <div class="divider">
       <span></span>
@@ -24,6 +33,7 @@
           <input
             id="email"
             type="email"
+            #correo
             formControlName="email"
             [placeholder]="'Ej: olimpo@gmail.com' | translate"
             autocomplete="username">
@@ -74,14 +84,38 @@
           </p>
         </div>
 
+        <!-- Términos: sin marcar la casilla no se puede ingresar.
+             Los enlaces abren otra pestaña para no perder lo escrito. -->
+        <div class="field" [class.con-error]="submitted && aceptaTerminos?.invalid">
+          <div class="casilla">
+            <input id="acepta-terminos" type="checkbox" formControlName="aceptaTerminos" aria-describedby="pista-casilla">
+            <label for="acepta-terminos">
+              {{ 'He leído y acepto los' | translate }}
+              <a routerLink="/terminos" target="_blank" rel="noopener">{{ 'términos y condiciones' | translate }}</a>
+              {{ 'y el' | translate }}
+              <a routerLink="/privacidad" target="_blank" rel="noopener">{{ 'aviso de privacidad' | translate }}</a>
+            </label>
+          </div>
+        </div>
+
         <p class="error-servidor" *ngIf="errorMessage" role="alert">
           {{ errorMessage }}
         </p>
 
-        <button type="submit" class="primary" [disabled]="loading">
+        <button type="submit" class="primary" [disabled]="loading"
+                [class.bloqueado]="!aceptaTerminos?.value"
+                [attr.aria-disabled]="!aceptaTerminos?.value">
           {{ (loading ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA') | translate }}
         </button>
+
+        <p id="pista-casilla" class="pista-casilla"
+           [class.oculta]="aceptaTerminos?.value"
+           [class.pista-casilla--error]="submitted">
+          {{ 'Marque la casilla para poder ingresar' | translate }}
+        </p>
       </form>
     </div>
   </div>
 </div>
+
+<div class="intro-foco" *ngIf="introActiva()" aria-hidden="true"></div>

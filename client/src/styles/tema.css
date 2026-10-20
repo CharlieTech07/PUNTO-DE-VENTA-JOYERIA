@@ -49,6 +49,11 @@ html, body {
   --radio: 14px;
   --radio-sm: 10px;
   --sombra: 0 18px 40px rgba(0, 0, 0, 0.28);
+
+  /* Intro del login ("Luz de vitrina") */
+  --intro-penumbra: #0b0805;
+  --intro-luz: rgba(255, 236, 196, 0.2);
+  --intro-chispa: #fff6dc;
 }
 
 /* Modo claro: superficies invertidas */
@@ -75,6 +80,10 @@ html[data-tema="claro"] {
   --rojo: #b34b3c;
 
   --sombra: 0 14px 30px rgba(0, 0, 0, 0.06);
+
+  --intro-penumbra: #2e2418;
+  --intro-luz: rgba(255, 244, 220, 0.45);
+  --intro-chispa: #fffaf0;
 }
 /* El fondo y el color de letra base los pone el tema, para que ninguna
    pantalla se quede con el color viejo al cambiar de modo. */

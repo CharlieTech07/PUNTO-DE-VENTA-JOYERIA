@@ -361,5 +361,18 @@ export const translationCatalog: Record<string, Translation> = {
   '100k': { es: '100k', en: '100k' },
   '150k': { es: '150k', en: '150k' },
   '200k': { es: '200k', en: '200k' },
-  'No se pudo eliminar': { es: 'No se pudo eliminar', en: 'Could not delete' }
+  'No se pudo eliminar': { es: 'No se pudo eliminar', en: 'Could not delete' },
+  'Avisos legales': { es: 'Avisos legales', en: 'Legal notices' },
+  'Aviso de privacidad': { es: 'Aviso de privacidad', en: 'Privacy notice' },
+  'Términos y condiciones': { es: 'Términos y condiciones', en: 'Terms and conditions' },
+  'Volver al acceso': { es: 'Volver al acceso', en: 'Back to sign in' },
+  'He leído y acepto los': { es: 'He leído y acepto los', en: 'I have read and accept the' },
+  'términos y condiciones': { es: 'términos y condiciones', en: 'terms and conditions' },
+  'y el': { es: 'y el', en: 'and the' },
+  'aviso de privacidad': { es: 'aviso de privacidad', en: 'privacy notice' },
+  'Marque la casilla para poder ingresar': { es: 'Marque la casilla para poder ingresar', en: 'Check the box to sign in' },
+  'Última actualización': { es: 'Última actualización', en: 'Last updated' },
+  'Usamos estos datos solo para emitir su factura.': { es: 'Usamos estos datos solo para emitir su factura.', en: 'We use this data only to issue your invoice.' },
+  'Consulte el aviso de privacidad': { es: 'Consulte el aviso de privacidad', en: 'See our privacy notice' },
+  'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.': { es: 'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.', en: 'Your data is handled under our privacy notice, available in store.' }
 };

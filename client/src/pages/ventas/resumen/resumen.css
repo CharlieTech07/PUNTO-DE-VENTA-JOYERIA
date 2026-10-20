@@ -210,6 +210,7 @@
 .ticket__sub { color: var(--tinta-suave); margin-bottom: 4px; }
 .ticket__total { font-weight: 700; font-size: 0.95rem; margin-top: 4px; }
 .ticket__gracias { font-weight: 700; }
+.ticket .ticket__privacidad { margin-top: 6px; font-size: 0.66rem; color: var(--tinta-suave); }
 .ticket__aviso { margin-top: 4px !important; font-size: 0.66rem; letter-spacing: 1px; color: var(--tinta-suave); text-transform: uppercase; }
 
 /* Factura */
@@ -255,6 +256,10 @@
 .campo--error input,
 .campo--error select { border-color: var(--rojo); }
 .campo-doble { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: 12px; }
+.aviso-datos { margin: 0; font-size: 0.74rem; line-height: 1.5; color: var(--texto-3); }
+.aviso-datos a { color: var(--texto-2); text-decoration-color: var(--oro-borde); text-underline-offset: 3px; }
+.aviso-datos a:hover { color: var(--oro); }
+.aviso-datos a:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
 
 /* ---------- Pantalla angosta: todo en una columna ---------- */
 
