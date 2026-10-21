@@ -57,7 +57,7 @@ table {
 
 /* Etiqueta pequeña en versalitas doradas (patrón del POS) */
 .etiqueta {
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -116,7 +116,7 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .cabecera__fecha {
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--texto-3);
   white-space: nowrap;
   padding-bottom: 6px;
@@ -168,6 +168,7 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .tarjeta__titulo {
+  font-family: var(--serif);
   font-size: 21px;
   color: var(--texto);
 }
@@ -215,7 +216,7 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .kpi__valor {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 34px;
   line-height: 1.15;
   margin-top: 8px;
@@ -224,7 +225,7 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .kpi__nota {
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--texto-3);
   margin-top: 2px;
 }
@@ -270,14 +271,14 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .metal__precio {
-  font-family: var(--serif);
+  font-family: var(--sans);
   font-size: 23px;
   color: var(--oro-claro);
   font-variant-numeric: oldstyle-nums;
 }
 
 .metal__unidad {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--texto-3);
 }
 
@@ -306,13 +307,13 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .lista__principal {
-  font-family: var(--serif);
-  font-size: 17px;
+  font-family: var(--sans);
+  font-size: 18px;
   color: var(--texto);
 }
 
 .lista__secundario {
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--texto-3);
   margin-top: 2px;
 }
@@ -324,8 +325,8 @@ html[data-tema="claro"] .cabecera__fecha {
 }
 
 .lista__monto {
-  font-family: var(--serif);
-  font-size: 16px;
+  font-family: var(--sans);
+  font-size: 17px;
   color: var(--oro-claro);
   font-variant-numeric: oldstyle-nums;
 }
@@ -379,7 +380,7 @@ html[data-tema="claro"] .cabecera__fecha {
   text-align: left;
   padding: 0 16px 12px;
   border-bottom: 1px solid var(--oro-borde);
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -390,7 +391,7 @@ html[data-tema="claro"] .cabecera__fecha {
 .tabla td {
   padding: 15px 16px;
   border-bottom: 1px solid rgba(224, 194, 137, 0.07);
-  font-size: 13.5px;
+  font-size: 14.5px;
   color: var(--texto-2);
 }
 
@@ -408,21 +409,21 @@ html[data-tema="claro"] .cabecera__fecha {
 
 .tabla .celda-id {
   color: var(--texto-3);
-  font-size: 12.5px;
+  font-size: 13.5px;
   letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
 .tabla .celda-pieza {
-  font-family: var(--serif);
-  font-size: 16px;
+  font-family: var(--sans);
+  font-size: 17px;
   color: var(--texto);
   white-space: nowrap;
 }
 
 .tabla .celda-monto {
-  font-family: var(--serif);
-  font-size: 15px;
+  font-family: var(--sans);
+  font-size: 16px;
   color: var(--oro-claro);
   text-align: right;
   font-variant-numeric: oldstyle-nums;
@@ -440,7 +441,7 @@ html[data-tema="claro"] .cabecera__fecha {
   display: inline-block;
   padding: 3px 11px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -514,7 +515,7 @@ html[data-tema="claro"] .progreso {
   padding: 12px 22px;
   border: 1px solid transparent;
   border-radius: var(--radio-sm);
-  font-size: 11.5px;
+  font-size: 12.5px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   transition: filter 0.18s ease, background 0.18s ease;
@@ -572,7 +573,7 @@ html[data-tema="claro"] .progreso {
   border-radius: var(--radio-sm);
   color: var(--texto);
   font-family: inherit;
-  font-size: 14px;
+  font-size: 15px;
   transition: border-color 0.18s ease;
 }
 
@@ -587,7 +588,7 @@ html[data-tema="claro"] .progreso {
 }
 
 .campo__ayuda {
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--texto-3);
   margin-top: 7px;
 }
@@ -608,7 +609,7 @@ html[data-tema="claro"] .progreso {
   border-radius: 999px;
   background: transparent;
   color: var(--texto-3);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   transition: background 0.18s ease, color 0.18s ease;
@@ -635,7 +636,7 @@ html[data-tema="claro"] .progreso {
 
 .grafica__eje {
   fill: var(--texto-3);
-  font-size: 10px;
+  font-size: 11px;
   font-family: var(--sans);
 }
 
@@ -683,7 +684,7 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
   gap: 18px;
   justify-content: center;
   margin-top: 14px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--texto-3);
 }
 
@@ -703,7 +704,7 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
 /* ---------- 17. Utilidades ---------- */
 
 .sub {
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--texto-3);
   margin-bottom: 18px;
 }
@@ -712,7 +713,7 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
   text-align: center;
   padding: 34px 0;
   color: var(--texto-3);
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* ---------- 18. Adaptable ---------- */
