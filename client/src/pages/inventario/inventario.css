@@ -22,7 +22,7 @@
 }
 
 .etiqueta {
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -32,7 +32,7 @@
 }
 
 .titulo-pantalla {
-  font-family: var(--serif, 'Cormorant Garamond', serif);
+  font-family: var(--serif, 'Cinzel', serif);
   font-size: 38px;
   font-weight: 500;
   margin: 0;
@@ -51,7 +51,7 @@
   padding: 10px 18px;
   border-radius: 6px;
   font-family: var(--sans, 'Jost', sans-serif);
-  font-size: 11.5px;
+  font-size: 12.5px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
@@ -97,7 +97,7 @@
 }
 
 .tarjeta-cabecera h2 {
-  font-family: var(--serif, 'Cormorant Garamond', serif);
+  font-family: var(--serif, 'Cinzel', serif);
   font-size: 22px;
   font-weight: 500;
   margin: 0;
@@ -128,7 +128,7 @@
   border-radius: 6px;
   color: var(--texto, #f6eee2);
   font-family: inherit;
-  font-size: 13.5px;
+  font-size: 14.5px;
   box-sizing: border-box;
   outline: none;
   transition: border-color 0.2s ease;
@@ -152,7 +152,7 @@
   border: none;
   padding: 11px 24px;
   border-radius: 6px;
-  font-size: 11.5px;
+  font-size: 12.5px;
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -183,7 +183,7 @@
   border-radius: 6px;
   margin-bottom: 20px;
   color: #fca5a5;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .btn-eliminar-lote {
@@ -192,7 +192,7 @@
   border: none;
   padding: 7px 16px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   font-weight: 600;
@@ -214,7 +214,7 @@
   text-align: left;
   padding: 0 16px 12px;
   border-bottom: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.3));
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -225,7 +225,7 @@
 .tabla-olimpo td {
   padding: 14px 16px;
   border-bottom: 1px solid rgba(224, 194, 137, 0.08);
-  font-size: 13.5px;
+  font-size: 14.5px;
   color: var(--texto-2, #d6c7b2);
 }
 
@@ -252,8 +252,8 @@
 }
 
 .celda-joya {
-  font-family: var(--serif, 'Cormorant Garamond', serif);
-  font-size: 16px;
+  font-family: var(--sans, 'Jost', sans-serif);
+  font-size: 17px;
   color: var(--texto, #f6eee2);
 }
 
@@ -264,8 +264,8 @@
 
 .celda-precio {
   color: var(--oro-claro, #ebd5a6);
-  font-family: var(--serif, 'Cormorant Garamond', serif);
-  font-size: 15px;
+  font-family: var(--sans, 'Jost', sans-serif);
+  font-size: 16px;
 }
 
 /* Insignias */
@@ -273,7 +273,7 @@
   display: inline-block;
   padding: 3px 10px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -298,7 +298,7 @@
   border: 1px solid rgba(239, 68, 68, 0.4);
   padding: 5px 10px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   cursor: pointer;
@@ -314,5 +314,5 @@
   text-align: center;
   padding: 30px;
   color: var(--texto-3, #a89887);
-  font-size: 13.5px;
+  font-size: 14.5px;
 }

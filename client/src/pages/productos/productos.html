@@ -1,5 +1,5 @@
 <!-- client/src/pages/productos/productos.html -->
-<div style="padding: 24px; font-family: sans-serif; max-width: 1100px; margin: auto;">
+<div style="padding: 24px; font-family: var(--sans, 'Jost', sans-serif); max-width: 1100px; margin: auto;">
   <h2>{{ 'Catálogo de Productos — Joyería Olimpo' | translate }}</h2>
 
   <!-- Formulario con selector de archivo -->
@@ -81,7 +81,7 @@
           @if (item.imagen_base64) {
             <img [src]="'data:image/jpeg;base64,' + item.imagen_base64" [alt]="'Joya' | translate" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
           } @else {
-            <span style="font-size: 11px; color: #94a3b8;">{{ 'Sin foto' | translate }}</span>
+            <span style="font-size: 12px; color: #94a3b8;">{{ 'Sin foto' | translate }}</span>
           }
         </td>
         <td>{{ item.id }}</td>

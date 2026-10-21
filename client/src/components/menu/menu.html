@@ -1,9 +1,12 @@
 <aside class="menu-olimpo">
-  <div class="menu-olimpo__marca">
+  <a
+    class="menu-olimpo__marca"
+    routerLink="/inicio"
+    [attr.aria-label]="'Ir al inicio' | translate">
     <img src="logonuevo.png" alt="Olimpo" class="menu-olimpo__emblema">
     <div class="menu-olimpo__nombre">{{ 'OLIMPO' | translate }}</div>
     <div class="menu-olimpo__rol">{{ 'HAUTE JOAILLERIE' | translate }}</div>
-  </div>
+  </a>
 
   <div class="menu-olimpo__etiqueta menu-olimpo__titulo">{{ 'Navegación' | translate }}</div>
 

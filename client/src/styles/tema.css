@@ -1,4 +1,6 @@
 /* client/src/styles/tema.css */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Jost:wght@300;400;500;600;700&display=swap');
+
 html, body {
   margin: 0;
   padding: 0;
@@ -10,8 +12,20 @@ html, body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+html {
+  font-size: 17px;
+}
+
 *, *::before, *::after {
   box-sizing: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--serif);
+}
+
+button, input, select, textarea {
+  font-family: var(--sans);
 }
 
 :root {
@@ -41,7 +55,7 @@ html, body {
   --rojo: #d97a6c;
 
   /* Tipografía */
-  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --serif: "Cinzel", "Iowan Old Style", Georgia, serif;
   --sans: "Jost", "Segoe UI", system-ui, -apple-system, sans-serif;
 
   /* Métrica */
@@ -53,11 +67,11 @@ html, body {
 
 /* Modo claro: superficies invertidas */
 html[data-tema="claro"] {
-  --fondo: #f4efe6;
-  --fondo-barra: #ebe3d5;
-  --superficie: #ffffff;
-  --superficie-2: #faf6ee;
-  --superficie-3: #f0e9dc;
+  --fondo: #e9dfc9;
+  --fondo-barra: #ddcda9;
+  --superficie: #f2e7ce;
+  --superficie-2: #eadbbd;
+  --superficie-3: #dfcfaa;
 
   --oro-claro: #8a6a2f;
   --oro: #9c7a38;
@@ -81,5 +95,7 @@ html[data-tema="claro"] {
 body {
   background-color: var(--fondo);
   color: var(--texto);
+  font-family: var(--sans);
+  line-height: 1.5;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
