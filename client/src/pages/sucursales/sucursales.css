@@ -1,7 +1,7 @@
 /* client/src/pages/sucursales/sucursales.css */
 :host {
   display: block;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--sans, 'Jost', sans-serif);
   color: #1e293b;
 }
 
@@ -12,6 +12,7 @@
 }
 
 .sucursales-title {
+  font-family: var(--serif, 'Cinzel', serif);
   font-size: 1.75rem;
   font-weight: 700;
   margin-bottom: 20px;
@@ -28,6 +29,7 @@
 }
 
 .form-card h3 {
+  font-family: var(--serif, 'Cinzel', serif);
   margin-top: 0;
   margin-bottom: 16px;
   font-size: 1.15rem;
