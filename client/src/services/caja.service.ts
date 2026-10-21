@@ -1,30 +1,28 @@
+// client/src/services/caja.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface CierreCaja {
-  fecha: string;
-  ingresos: number;
-  egresos: number;
-  saldoFinal: number;
+export interface MovimientoCaja {
+  id?: number;
+  tipo: 'APERTURA' | 'INGRESO' | 'EGRESO' | 'CORTE';
+  monto: number;
+  motivo?: string;
+  fecha?: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class CajaService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:3000/api/caja';
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:3000/api/caja';
 
-  getEstado(): Observable<{ apertura: boolean; monto: number }> {
-    return this.http.get<{ apertura: boolean; monto: number }>(`${this.apiUrl}/estado`);
+  obtenerEstadoCaja(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/estado`);
   }
 
-  abrirCaja(montoBase: number): Observable<{ mensaje: string }> {
-    return this.http.post<{ mensaje: string }>(`${this.apiUrl}/abrir`, { montoBase });
-  }
-
-  cerrarCaja(): Observable<CierreCaja> {
-    return this.http.post<CierreCaja>(`${this.apiUrl}/cerrar`, {});
+  registrarMovimiento(movimiento: MovimientoCaja): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/movimientos`, movimiento);
   }
 }

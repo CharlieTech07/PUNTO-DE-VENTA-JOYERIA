@@ -74,6 +74,10 @@
           </p>
         </div>
 
+        <p class="error-servidor" *ngIf="errorMessage" role="alert">
+          {{ errorMessage }}
+        </p>
+
         <button type="submit" class="primary" [disabled]="loading">
           {{ (loading ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA') | translate }}
         </button>

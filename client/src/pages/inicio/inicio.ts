@@ -1,25 +1,30 @@
 import { ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Router } from '@angular/router';
-import { MenuComponent } from '../../components/menu/menu';
-import { TranslatePipe } from '../../services/translate.pipe';
-import { LanguageService, Lang } from '../../services/lenguage.service';
-import { DeepLTranslationService } from '../../services/deepl-translation.service';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MenuComponent } from '../../components/menu/menu';
+import { DeepLTranslationService } from '../../services/deepl-translation.service';
+import { LanguageService, Lang } from '../../services/lenguage.service';
+import { ProductosService } from '../../services/productos.service';
+import { TranslatePipe } from '../../services/translate.pipe';
 
-export interface Product {
+export interface ProductoVisual {
   id: number;
-  category: string;
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
+  nombre: string;
+  descripcion: string;
+  tipo_metal: string;
+  kilataje: string;
+  precio_venta: number;
+  imagen_base64?: string;
 }
+
+type CampoTraducible = 'descripcion' | 'tipo_metal';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, CurrencyPipe, MenuComponent, TranslatePipe],
+  imports: [CommonModule, CurrencyPipe, FormsModule, RouterLink, MenuComponent, TranslatePipe],
   templateUrl: './inicio.html',
   styleUrls: ['./inicio.css']
 })
@@ -28,124 +33,90 @@ export class InicioComponent implements OnInit {
   private readonly changeDetector = inject(ChangeDetectorRef);
   private readonly language = inject(LanguageService);
   private readonly deepL = inject(DeepLTranslationService);
-  private readonly translatedProducts: Record<number, { category?: string; description?: string }> = {};
+  private readonly productosService = inject(ProductosService);
+  private readonly translatedProducts = new Map<number, Partial<Record<CampoTraducible, string>>>();
 
-  public products: Product[] = [
-    {
-      id: 1,
-      category: 'ANILLO SOLITARIO',
-      name: 'Éclat de la Rose',
-      description: '1.2 ct - Oro blanco 18k',
-      price: 48200,
-      // Imagen funcional de anillo
-      imageUrl: 'anillo.webp'
-    },
-    {
-      id: 2,
-      category: 'COLGANTE',
-      name: 'Larme Dorée',
-      description: 'Pera 0.8 ct - Oro amarillo',
-      price: 32900,
-      // Imagen funcional de colgante
-      imageUrl: 'colla.webp'
-    },
-    {
-      id: 3,
-      category: 'PENDIENTES',
-      name: 'Aurore Éternelle',
-      description: 'Halo 0.5 ct c/u - Oro amarillo',
-      price: 21400,
-      imageUrl: 'pendientes.webp'
-    },
-    {
-      id: 4,
-      category: 'ANILLO SOLITARIO',
-      name: "Lumière d'Amour",
-      description: '1.5 ct - Oro blanco 18k',
-      price: 55000,
-      imageUrl: 'anillo2.webp'
-    },
-    {
-      id: 5,
-      category: 'COLGANTE',
-      name: 'Goutte de Ciel',
-      description: 'Zafiro y diamantes - Oro blanco',
-      price: 41200,
-      imageUrl: 'collar2.webp'
-    },
-    {
-      id: 6,
-      category: 'PENDIENTES',
-      name: 'Étoile Brillante',
-      description: '0.3 ct c/u - Oro amarillo',
-      price: 18500,
-      imageUrl: 'pendientes-de-novia-estilo-vintage-en-plata-.jpg'
-    },
-    {
-      id: 7,
-      category: 'COLLAR',
-      name: 'Braise Royale',
-      description: 'Rubí cojín 5.2 ct - Oro blanco 18k',
-      price: 86400,
-      imageUrl: 'collar-rubi.jpg'
-    },
-    {
-      id: 8,
-      category: 'COLLAR',
-      name: 'Cascade Royale',
-      description: 'Diamante pera 3.8 ct - Oro blanco 18k',
-      price: 124900,
-      imageUrl: 'collar-diamantes.jpg'
-    },
-    {
-      id: 9,
-      category: 'COLLAR',
-      name: 'Clair de Lune',
-      description: 'Perlas Akoya tres hilos - Oro blanco 18k',
-      price: 57800,
-      imageUrl: 'collar-perlas.jpg'
-    }
-  ];
-
-  constructor(private router: Router) {}
+  public terminoBusqueda = '';
+  public products: ProductoVisual[] = [];
+  public cargando = true;
+  public errorCarga = false;
 
   ngOnInit(): void {
     this.language.lang$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(lang => this.updateCatalogTranslations(lang));
+    this.cargarVitrina();
   }
 
-  public productText(product: Product, field: 'category' | 'description'): string {
-    return this.translatedProducts[product.id]?.[field] ?? product[field];
+  public productText(product: ProductoVisual, field: CampoTraducible): string {
+    return this.translatedProducts.get(product.id)?.[field] ?? product[field];
+  }
+
+  public cargarVitrina(): void {
+    this.cargando = true;
+    this.errorCarga = false;
+
+    this.productosService.getProductos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: productos => {
+          this.products = productos;
+          this.translatedProducts.clear();
+          this.cargando = false;
+          this.updateCatalogTranslations(this.language.lang);
+          this.changeDetector.detectChanges();
+        },
+        error: err => {
+          console.error('Error al cargar la vitrina de joyas:', err);
+          this.errorCarga = true;
+          this.cargando = false;
+          this.changeDetector.detectChanges();
+        }
+      });
+  }
+
+  public get productosFiltrados(): ProductoVisual[] {
+    const query = this.terminoBusqueda.trim().toLocaleLowerCase();
+    if (!query) {
+      return this.products;
+    }
+
+    return this.products.filter(product =>
+      product.nombre.toLocaleLowerCase().includes(query) ||
+      product.tipo_metal.toLocaleLowerCase().includes(query) ||
+      product.descripcion.toLocaleLowerCase().includes(query)
+    );
+  }
+
+  public agregarAlCarrito(product: ProductoVisual): void {
+    console.log('Joya seleccionada para ticket:', product);
+    alert(`"${product.nombre}" agregada al flujo de venta.`);
   }
 
   private updateCatalogTranslations(lang: Lang): void {
-    Object.keys(this.translatedProducts).forEach(id => delete this.translatedProducts[Number(id)]);
-    if (lang !== 'en') {
+    this.translatedProducts.clear();
+    if (lang !== 'en' || this.products.length === 0) {
       return;
     }
 
-    const fields = this.products.flatMap(product => [
-      { productId: product.id, field: 'category' as const, text: product.category },
-      { productId: product.id, field: 'description' as const, text: product.description }
-    ]);
+    const entries = this.products.flatMap(product => [
+      { id: product.id, field: 'tipo_metal' as const, text: product.tipo_metal },
+      { id: product.id, field: 'descripcion' as const, text: product.descripcion }
+    ]).filter(entry => !!entry.text?.trim());
 
-    this.deepL.translateMany(fields.map(entry => entry.text))
+    this.deepL.translateMany(entries.map(entry => entry.text))
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(translations => {
         if (this.language.lang !== 'en') {
           return;
         }
 
-        fields.forEach((entry, index) => {
-          this.translatedProducts[entry.productId] ??= {};
-          this.translatedProducts[entry.productId][entry.field] = translations[index];
+        entries.forEach((entry, index) => {
+          const translated = this.translatedProducts.get(entry.id) ?? {};
+          translated[entry.field] = translations[index] ?? entry.text;
+          this.translatedProducts.set(entry.id, translated);
         });
         this.changeDetector.markForCheck();
       });
-  }
-
-  public agregarAlCarrito(product: Product): void {
-    console.log('Producto agregado:', product);
   }
 }

@@ -42,8 +42,13 @@
 
   <div class="menu-olimpo__pie">
     <div class="menu-olimpo__usuario">
-      <div class="menu-olimpo__etiqueta">{{ 'Sesión activa' | translate }}</div>
-      <div class="menu-olimpo__usuario-nombre">{{ 'Administrador' | translate }}</div>
+      <div class="menu-olimpo__etiqueta">{{ usuarioActual?.nombre_sucursal || ('Sesión activa' | translate) }}</div>
+      <div class="menu-olimpo__usuario-nombre">
+        {{ usuarioActual?.nombreCompleto || ('Invitado' | translate) }}
+        @if (usuarioActual) {
+          <small style="opacity: 0.7; display: block; font-size: 0.75rem;">({{ usuarioActual.rol }})</small>
+        }
+      </div>
     </div>
 
     <button type="button" class="menu-olimpo__accion" (click)="alternarTema()">
@@ -54,13 +59,13 @@
       <span>{{ 'Tema:' | translate }} {{ temaActual | translate }}</span>
     </button>
 
-    <a routerLink="/login" class="menu-olimpo__accion menu-olimpo__accion--tenue">
+    <button type="button" class="menu-olimpo__accion menu-olimpo__accion--tenue" (click)="cerrarSesion()">
       <svg viewBox="0 0 24 24">
         <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"></path>
         <polyline points="16 17 21 12 16 7"></polyline>
         <line x1="21" y1="12" x2="9" y2="12"></line>
       </svg>
       <span>{{ 'Salir' | translate }}</span>
-    </a>
+    </button>
   </div>
 </aside>

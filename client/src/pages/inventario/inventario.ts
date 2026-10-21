@@ -4,11 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { InventarioService, InventarioItem } from '../../services/inventario_sucursal.service';
 import { ProductosService } from '../../services/productos.service';
-import { SucursalesService } from '../../services/sucursales.services';
 import { LanguageService } from '../../services/lenguage.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { DeepLTranslationService } from '../../services/deepl-translation.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { SucursalesService, Sucursal } from '../../services/sucursales.services';
 
 @Component({
   selector: 'app-inventario',
@@ -28,10 +28,11 @@ export class InventarioComponent implements OnInit {
   public readonly language = inject(LanguageService);
   private readonly translatedProductNames = new Map<string, string>();
 
-  public listaInventario: InventarioItem[] = [];
+  public listaInventario: (InventarioItem & { seleccionado?: boolean })[] = [];
   public catalogoProductos: any[] = [];
-  public catalogoSucursales: any[] = [];
+  public catalogoSucursales: Sucursal[] = [];
   public cargando: boolean = true;
+  public guardando: boolean = false;
   public seleccionarTodos: boolean = false;
 
   public nuevoRegistro = {
@@ -138,6 +139,7 @@ export class InventarioComponent implements OnInit {
       return;
     }
 
+    this.guardando = true;
     const payload = {
       id_sucursal: Number(this.nuevoRegistro.id_sucursal),
       id_producto: Number(this.nuevoRegistro.id_producto),
@@ -148,13 +150,16 @@ export class InventarioComponent implements OnInit {
 
     this.inventarioService.asignarStock(payload).subscribe({
       next: () => {
+        this.guardando = false;
         alert(this.language.t('Stock guardado correctamente en pos_olimpo'));
         this.cargarDatos();
       },
       error: (err) => {
+        this.guardando = false;
         console.error('Error del servidor:', err);
         const detalle = err.error?.error || 'No se pudo guardar el stock en la base de datos';
         alert(this.language.t(detalle));
+        this.cd.detectChanges();
       }
     });
   }
@@ -163,7 +168,7 @@ export class InventarioComponent implements OnInit {
     this.listaInventario.forEach(item => item.seleccionado = this.seleccionarTodos);
   }
 
-  public get itemsSeleccionados(): InventarioItem[] {
+  public get itemsSeleccionados(): (InventarioItem & { seleccionado?: boolean })[] {
     return this.listaInventario.filter(item => item.seleccionado);
   }
 
@@ -197,6 +202,7 @@ export class InventarioComponent implements OnInit {
         this.listaInventario = this.listaInventario.filter(item => !ids.includes(item.id));
         this.seleccionarTodos = false;
         this.cd.detectChanges();
+        alert(`¡${ids.length} registros eliminados correctamente!`);
       },
       error: (err) => {
         console.error('Error al eliminar lote:', err);
