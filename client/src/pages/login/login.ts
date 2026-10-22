@@ -1,21 +1,43 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { AuthService } from '../../services/auth.service';
 
+// Intro "Luz de vitrina": su animación más larga dura 1.6 s (login-intro.css), más un margen
+const DURACION_INTRO_MS = 1650;
+const INTRO_VISTA = 'olimpo:intro-vista';
+
+// Solo la primera vez por sesión y nunca con "reducir movimiento".
+// Si el navegador no deja usar sessionStorage, mejor sin intro que repetirla siempre.
+function tocaIntro(): boolean {
+  try {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return false;
+    if (sessionStorage.getItem(INTRO_VISTA)) return false;
+    sessionStorage.setItem(INTRO_VISTA, '1');
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './login.html',
-  styleUrls: ['./login.css']
+  styleUrls: ['./login.css', './login-intro.css'],
+  host: { '[class.con-intro]': 'introActiva()' }
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(AuthService);
+
+  readonly introActiva = signal(tocaIntro());
+  private correo = viewChild<ElementRef<HTMLInputElement>>('correo');
+  private finIntro?: ReturnType<typeof setTimeout>;
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -34,6 +56,19 @@ export class LoginComponent implements OnInit {
     const temaGuardado = localStorage.getItem('olimpo:tema');
     this.isModoClaro = temaGuardado === 'claro';
     this.aplicarTema();
+
+    // Al terminar la intro (o de una vez si no hubo) el cursor queda en el correo.
+    // En pantallas táctiles no, para que no salte el teclado encima del login.
+    this.finIntro = setTimeout(() => {
+      this.introActiva.set(false);
+      if (matchMedia('(pointer: fine)').matches) {
+        this.correo()?.nativeElement.focus({ preventScroll: true });
+      }
+    }, this.introActiva() ? DURACION_INTRO_MS : 0);
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.finIntro);
   }
 
   toggleTema(): void {
