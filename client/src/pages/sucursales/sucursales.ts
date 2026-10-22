@@ -1,7 +1,9 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+// client/src/pages/sucursales/sucursales.ts
+import { Component, OnInit, Output, EventEmitter, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SucursalesService } from './../../services/sucursales.services';
+import { SucursalesService, Sucursal } from '../../services/sucursales.services';
+import { AuthService } from '../../services/auth.service';
 import { LanguageService } from '../../services/lenguage.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 
@@ -14,24 +16,49 @@ import { TranslatePipe } from '../../services/translate.pipe';
 })
 export class SucursalesComponent implements OnInit {
   private sucursalesService = inject(SucursalesService);
+  private authService = inject(AuthService);
+  private languageService = inject(LanguageService);
   private cd = inject(ChangeDetectorRef);
-  private language = inject(LanguageService);
 
-  listaSucursales: any[] = [];
-  cargando: boolean = true;
-  errorCarga: string = '';
+  // Avisa al dashboard cuando se crea o elimina una sucursal, para que refresque sus datos
+  @Output() cambio = new EventEmitter<void>();
 
-  nuevaSucursal = {
+  public usuario = this.authService.obtenerUsuario();
+
+  public listaSucursales: Sucursal[] = [];
+  public cargando: boolean = true;
+  public errorCarga: string = '';
+  public guardando: boolean = false;
+
+  public aviso: { tipo: 'ok' | 'error'; texto: string } | null = null;
+  private temporizadorAviso: any;
+
+  public nuevaSucursal = {
     nombre: '',
     direccion: '',
     telefono: ''
   };
 
+  // Solo el Administrador puede dar de alta o eliminar sucursales
+  public get esAdmin(): boolean {
+    return this.usuario?.rol === 'Administrador';
+  }
+
+  public get totalActivas(): number {
+    return this.listaSucursales.filter(s => s.activa !== false).length;
+  }
+
+  public get masReciente(): string {
+    if (this.listaSucursales.length === 0) return '—';
+    const ultima = this.listaSucursales.reduce((a, b) => (Number(b.id) > Number(a.id) ? b : a));
+    return ultima.nombre;
+  }
+
   ngOnInit(): void {
     this.cargarSucursales();
   }
 
-  cargarSucursales(): void {
+  public cargarSucursales(): void {
     this.sucursalesService.getSucursales().subscribe({
       next: (datos) => {
         this.listaSucursales = datos;
@@ -47,46 +74,59 @@ export class SucursalesComponent implements OnInit {
     });
   }
 
-  guardarSucursal(): void {
-    if (!this.nuevaSucursal.nombre.trim()) {
-      alert(this.language.t('El nombre de la sucursal es obligatorio'));
+  public guardarSucursal(): void {
+    if (!this.esAdmin) {
+      this.mostrarAviso('error', 'Solo el Administrador puede dar de alta sucursales.');
+      return;
+    }
+    if (!this.nuevaSucursal.nombre.trim() || !this.nuevaSucursal.direccion.trim()) {
+      this.mostrarAviso('error', 'El nombre y la dirección son obligatorios.');
       return;
     }
 
+    this.guardando = true;
     this.sucursalesService.crearSucursal(this.nuevaSucursal).subscribe({
-      next: (sucursalCreada) => {
-        this.listaSucursales.push(sucursalCreada);
+      next: (creada) => {
+        this.listaSucursales = [...this.listaSucursales, creada];
         this.nuevaSucursal = { nombre: '', direccion: '', telefono: '' };
-        this.cd.detectChanges();
+        this.guardando = false;
+        this.mostrarAviso('ok', this.languageService.t('Sucursal registrada correctamente.') + ` (${creada.nombre})`);
+        this.cambio.emit();
       },
       error: (err) => {
         console.error('Error al crear sucursal:', err);
-        alert(this.language.t('Error al crear sucursal. Por favor, inténtelo de nuevo.'));
-        this.cd.detectChanges();
+        this.guardando = false;
+        this.mostrarAviso('error', err.error?.error || 'No se pudo registrar la sucursal.');
       }
     });
   }
 
-  eliminarSucursal(id: number, nombre: string): void {
-    const confirmacion = this.language.t('¿Está seguro de que desea eliminar la sucursal "{name}"?')
-      .replace('{name}', nombre);
-    if (confirm(confirmacion)) {
-      this.sucursalesService.eliminarSucursal(id).subscribe({
-        next: (respuesta) => {
-          this.listaSucursales = this.listaSucursales.filter((s: any) => s?.id !== id);
-          alert(this.language.t(respuesta?.mensaje ?? 'Sucursal eliminada correctamente'));
-          this.cd.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error al eliminar sucursal:', err);
-          if (err.status === 409) {
-            alert(this.language.t('No se puede eliminar la sucursal porque tiene piezas de inventario o ventas asociadas.'));
-          } else {
-            alert(this.language.t('Error al eliminar sucursal. Por favor, inténtelo de nuevo.'));
-          }
-          this.cd.detectChanges();
-        }
-      });
-    }
+  public eliminarSucursal(id: number, nombre: string): void {
+    if (!this.esAdmin) return;
+    const pregunta = this.languageService.t('¿Seguro que deseas eliminar la sucursal "{item}"?').replace('{item}', nombre);
+    if (!confirm(pregunta)) return;
+
+    this.sucursalesService.eliminarSucursal(id).subscribe({
+      next: () => {
+        this.listaSucursales = this.listaSucursales.filter(s => s.id !== id);
+        this.mostrarAviso('ok', 'Sucursal eliminada correctamente.');
+        this.cambio.emit();
+      },
+      error: (err) => {
+        console.error('Error al eliminar sucursal:', err);
+        this.mostrarAviso('error', err.error?.error || 'No se pudo eliminar la sucursal.');
+      }
+    });
+  }
+
+  private mostrarAviso(tipo: 'ok' | 'error', texto: string): void {
+    // Los mensajes fijos se traducen; los que vienen del servidor se muestran tal cual
+    this.aviso = { tipo, texto: this.languageService.t(texto) };
+    clearTimeout(this.temporizadorAviso);
+    this.temporizadorAviso = setTimeout(() => {
+      this.aviso = null;
+      this.cd.detectChanges();
+    }, 4500);
+    this.cd.detectChanges();
   }
 }

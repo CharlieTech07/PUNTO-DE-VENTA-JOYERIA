@@ -1,123 +1,186 @@
 <!-- client/src/pages/productos/productos.html -->
-<div style="padding: 24px; font-family: var(--sans, 'Jost', sans-serif); max-width: 1100px; margin: auto;">
-  <h2>{{ 'Catálogo de Productos — Joyería Olimpo' | translate }}</h2>
+<div class="productos-layout">
+  <!-- Cabecera -->
+  <header class="productos-header">
+    <div>
+      <span class="etiqueta">{{ 'Catálogo' | translate }}</span>
+      <h1 class="titulo-pantalla">{{ 'Administrar Productos' | translate }}</h1>
+    </div>
+    <button type="button" class="btn-volver" (click)="volverAlDashboard()">
+      <svg viewBox="0 0 24 24">
+        <path d="M19 12H5M12 19l-7-7 7-7" />
+      </svg>
+      {{ 'Volver al Dashboard' | translate }}
+    </button>
+  </header>
 
-  <!-- Formulario con selector de archivo -->
-  <div style="background: #3d0d0d; padding: 20px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 25px;">
-    <h3>{{ (editandoId === null ? 'Registrar Nueva Pieza con Foto' : 'Editar pieza') | translate }}</h3>
-    <form (ngSubmit)="guardarProducto()" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-      
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Nombre:' | translate }}</label>
-        <input type="text" [(ngModel)]="nuevoItem.nombre" name="nombre" required style="width: 100%; padding: 8px; box-sizing: border-box;" />
+  <!-- Aviso de resultado (éxito / error) -->
+  @if (aviso) {
+    <div class="aviso" [class.aviso-ok]="aviso.tipo === 'ok'" [class.aviso-error]="aviso.tipo === 'error'">
+      {{ aviso.texto }}
+    </div>
+  }
+
+  <!-- Formulario: registrar o editar -->
+  <section class="tarjeta" [class.tarjeta-edicion]="enEdicion">
+    <div class="tarjeta-cabecera">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3l-3 6 3 12 3-12-3-6z" />
+        <path d="M6 3h12l3 6-9 12L3 9z" />
+      </svg>
+      <h2>{{ enEdicion ? (('Editar pieza' | translate) + ' #' + productoEditandoId) : ('Registrar nueva pieza' | translate) }}</h2>
+      @if (enEdicion) {
+        <span class="insignia insignia-aviso">{{ 'Modo edición' | translate }}</span>
+      }
+    </div>
+
+    <form (ngSubmit)="guardarProducto()" class="formulario-grid">
+      <div class="campo">
+        <label class="etiqueta">{{ 'Nombre *' | translate }}</label>
+        <input type="text" [(ngModel)]="formulario.nombre" name="nombre" required
+               [placeholder]="'Ej. Anillo solitario' | translate" class="input-olimpo" />
       </div>
 
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Descripción:' | translate }}</label>
-        <input type="text" [(ngModel)]="nuevoItem.descripcion" name="descripcion" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      <div class="campo">
+        <label class="etiqueta">{{ 'Descripción' | translate }}</label>
+        <input type="text" [(ngModel)]="formulario.descripcion" name="descripcion"
+               [placeholder]="'Detalles de la pieza' | translate" class="input-olimpo" />
       </div>
 
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Metal:' | translate }}</label>
-        <select [(ngModel)]="nuevoItem.tipo_metal" name="tipo_metal" style="width: 100%; padding: 8px; box-sizing: border-box;">
-          <option value="Oro">{{ 'Oro' | translate }}</option>
-          <option value="Plata">{{ 'Plata' | translate }}</option>
-          <option value="Platino">{{ 'Platino' | translate }}</option>
+      <div class="campo">
+        <label class="etiqueta">{{ 'Metal *' | translate }}</label>
+        <select [(ngModel)]="formulario.tipo_metal" name="tipo_metal" class="input-olimpo">
+          @for (metal of metales; track metal) {
+            <option [value]="metal">{{ languageService.catalogPhrase(metal) }}</option>
+          }
         </select>
       </div>
 
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Kilataje:' | translate }}</label>
-        <input type="text" [(ngModel)]="nuevoItem.kilataje" name="kilataje" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      <div class="campo">
+        <label class="etiqueta">{{ 'Kilataje' | translate }}</label>
+        <input type="text" [(ngModel)]="formulario.kilataje" name="kilataje"
+               [placeholder]="'Ej. 14k, 925' | translate" class="input-olimpo" />
       </div>
 
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Peso (g):' | translate }}</label>
-        <input type="number" step="0.001" [(ngModel)]="nuevoItem.peso_gramos" name="peso_gramos" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      <div class="campo">
+        <label class="etiqueta">{{ 'Peso (g)' | translate }}</label>
+        <input type="number" step="0.001" min="0" [(ngModel)]="formulario.peso_gramos"
+               name="peso_gramos" class="input-olimpo" />
       </div>
 
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Precio Venta:' | translate }}</label>
-        <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_venta" name="precio_venta" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      <div class="campo">
+        <label class="etiqueta">{{ 'Precio de compra' | translate }}</label>
+        <input type="number" step="0.01" min="0" [(ngModel)]="formulario.precio_compra"
+               name="precio_compra" class="input-olimpo" />
       </div>
 
-      <div>
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Precio Compra:' | translate }}</label>
-        <input type="number" step="0.01" [(ngModel)]="nuevoItem.precio_compra" name="precio_compra" style="width: 100%; padding: 8px; box-sizing: border-box;" />
+      <div class="campo">
+        <label class="etiqueta">{{ 'Precio de venta' | translate }}</label>
+        <input type="number" step="0.01" min="0" [(ngModel)]="formulario.precio_venta"
+               name="precio_venta" class="input-olimpo" />
       </div>
 
-      <!-- Selector de Imagen -->
-      <div style="grid-column: 1 / -1;">
-        <label style="display: block; font-weight: bold; margin-bottom: 4px;">{{ 'Fotografía de la Joya:' | translate }}</label>
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" style="padding: 5px;" />
+      <!-- Fotografía -->
+      <div class="campo campo-completo campo-foto">
+        @if (enEdicion && imagenActual) {
+          <img class="miniatura-actual" [src]="'data:image/jpeg;base64,' + imagenActual" [alt]="'Foto actual' | translate" />
+        }
+        <div class="campo-foto-input">
+          <label class="etiqueta">
+            {{ (enEdicion ? 'Cambiar fotografía (opcional)' : 'Fotografía de la joya') | translate }}
+          </label>
+          <input #inputFoto type="file" (change)="onFileSelected($event)" accept="image/*"
+                 class="input-olimpo input-archivo" />
+          <span class="ayuda">
+            {{ (enEdicion ? 'Si no eliges una imagen nueva, se conserva la actual.' : 'Formatos de imagen, máximo 5 MB.') | translate }}
+          </span>
+        </div>
       </div>
 
-      <div style="grid-column: 1 / -1; margin-top: 10px;">
-        <button type="submit" style="background-color: #059669; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
-          {{ (editandoId === null ? '+ Guardar Joya con Imagen' : 'Guardar cambios') | translate }}
+      <div class="acciones-form">
+        <button type="submit" [disabled]="guardando" class="btn-oro">
+          @if (enEdicion) {
+            <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7" /></svg>
+            {{ (guardando ? 'Guardando cambios...' : 'Guardar cambios') | translate }}
+          } @else {
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            {{ (guardando ? 'Guardando pieza...' : 'Guardar pieza') | translate }}
+          }
         </button>
-        @if (editandoId !== null) {
-          <button type="button" (click)="cancelarEdicion()" style="margin-left: 8px; padding: 10px 24px; border-radius: 6px; cursor: pointer;">
-            {{ 'Cancelar' | translate }}
-          </button>
+        @if (enEdicion) {
+          <button type="button" class="btn-secundario" (click)="cancelarEdicion()">{{ 'Cancelar' | translate }}</button>
         }
       </div>
     </form>
-  </div>
+  </section>
 
-  <!-- Tabla que muestra la imagen leída desde bytea -->
-  @if (cargando) {
-    <p>{{ '⏳ Consultando base de datos...' | translate }}</p>
-  } @else if (errorCarga) {
-    <p style="color: red;">❌ {{ errorCarga | translate }}</p>
-  } @else {
-    <!-- client/src/pages/productos/productos.html -->
-<table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%;">
-  <thead style="background-color: #1e293b; color: white;">
-    <tr>
-      <th>{{ 'Foto' | translate }}</th>
-      <th>{{ 'ID' | translate }}</th>
-      <th>{{ 'Nombre' | translate }}</th>
-      <th>{{ 'Metal' | translate }}</th>
-      <th>{{ 'Kilataje' | translate }}</th>
-      <th>{{ 'P. Venta' | translate }}</th>
-      <th style="text-align: center;">{{ 'Acciones' | translate }}</th> <!-- Nueva columna -->
-    </tr>
-  </thead>
-  <tbody>
-    @for (item of listaProductos; track item.id) {
-      <tr>
-        <td style="text-align: center; width: 70px;">
-          @if (item.imagen_base64) {
-            <img [src]="'data:image/jpeg;base64,' + item.imagen_base64" [alt]="'Joya' | translate" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />
-          } @else {
-            <span style="font-size: 12px; color: #94a3b8;">{{ 'Sin foto' | translate }}</span>
-          }
-        </td>
-        <td>{{ item.id }}</td>
-        <td><strong>{{ productName(item) }}</strong></td>
-        <td>{{ languageService.catalogPhrase(item.tipo_metal) }}</td>
-        <td>{{ item.kilataje || 'N/A' }}</td>
-        <td style="color: #059669; font-weight: bold;">${{ item.precio_venta }}</td>
-        
-          <!-- Acciones de edición y eliminación -->
-        <td style="text-align: center;">
-          <button
-            type="button"
-            (click)="editarProducto(item)"
-            style="background-color: #d4a34c; color: #1e293b; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500; margin-right: 6px;">
-            {{ 'Editar' | translate }}
-          </button>
-          <button 
-            type="button"
-            (click)="borrarProducto(item.id, item.nombre)"
-            style="background-color: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: 500;">
-            {{ 'Eliminar' | translate }}
-          </button>
-        </td>
-      </tr>
+  <!-- Tabla de productos -->
+  <section class="tarjeta">
+    <div class="tarjeta-cabecera">
+      <svg viewBox="0 0 24 24">
+        <path d="M21 8l-9-5-9 5v8l9 5 9-5z" />
+        <path d="M3 8l9 5 9-5" />
+        <path d="M12 13v8" />
+      </svg>
+      <h2>{{ 'Piezas registradas' | translate }}</h2>
+      <span class="contador">{{ listaProductos.length }} {{ 'en catálogo' | translate }}</span>
+    </div>
+
+    @if (cargando) {
+      <p class="mensaje-vacio">{{ 'Consultando base de datos...' | translate }}</p>
+    } @else if (errorCarga) {
+      <p class="mensaje-vacio mensaje-error">{{ errorCarga | translate }}</p>
+    } @else {
+      <div class="tabla-envoltura">
+        <table class="tabla-olimpo">
+          <thead>
+            <tr>
+              <th class="col-center">{{ 'Foto' | translate }}</th>
+              <th>{{ 'ID' | translate }}</th>
+              <th>{{ 'Pieza' | translate }}</th>
+              <th>{{ 'Metal' | translate }}</th>
+              <th>{{ 'Kilataje' | translate }}</th>
+              <th class="col-num">{{ 'Peso (g)' | translate }}</th>
+              <th class="col-num">{{ 'P. compra' | translate }}</th>
+              <th class="col-num">{{ 'P. venta' | translate }}</th>
+              <th class="col-center">{{ 'Acciones' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of listaProductos; track item.id) {
+              <tr [class.fila-activa]="item.id === productoEditandoId">
+                <td class="col-center">
+                  @if (item.imagen_base64) {
+                    <img class="miniatura" [src]="'data:image/jpeg;base64,' + item.imagen_base64" [alt]="'Joya' | translate" />
+                  } @else {
+                    <span class="sin-foto">{{ 'Sin foto' | translate }}</span>
+                  }
+                </td>
+                <td class="celda-id">#{{ item.id }}</td>
+                <td>
+                  <span class="celda-joya">{{ productName(item) }}</span>
+                  @if (item.descripcion) {
+                    <span class="celda-descripcion">{{ item.descripcion }}</span>
+                  }
+                </td>
+                <td>{{ languageService.catalogPhrase(item.tipo_metal) }}</td>
+                <td>{{ item.kilataje || '—' }}</td>
+                <td class="col-num">{{ item.peso_gramos }}</td>
+                <td class="col-num">{{ item.precio_compra | currency:'USD':'symbol':'1.0-2' }}</td>
+                <td class="col-num celda-precio">{{ item.precio_venta | currency:'USD':'symbol':'1.0-2' }}</td>
+                <td class="col-center celda-acciones">
+                  <button type="button" class="btn-editar-item" (click)="editarProducto(item)">{{ 'Editar' | translate }}</button>
+                  <button type="button" class="btn-eliminar-item" (click)="borrarProducto(item.id, item.nombre)">{{ 'Eliminar' | translate }}</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="9" class="mensaje-vacio">{{ 'No hay productos registrados todavía.' | translate }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
-  </tbody>
-</table>
-  }
+  </section>
 </div>

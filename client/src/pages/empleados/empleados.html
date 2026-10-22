@@ -1,24 +1,27 @@
-<div class="rejilla rejilla--4">
+<div class="rejilla rejilla--3">
   <article class="kpi">
     <div class="etiqueta">Total Personal</div>
     <div class="kpi__valor">{{ listaEmpleados.length }}</div>
-    <div class="kpi__nota">Usuarios en base de datos</div>
+    <div class="kpi__nota">{{ esAdmin ? 'Usuarios en base de datos' : 'Empleados de tu sucursal' }}</div>
   </article>
   <article class="kpi">
-    <div class="etiqueta">Administradores</div>
-    <div class="kpi__valor">1</div>
-    <div class="kpi__nota">Acceso Global</div>
+    <div class="etiqueta">Personal activo</div>
+    <div class="kpi__valor">{{ totalActivos }}</div>
+    <div class="kpi__nota kpi__nota--sube">Con acceso al sistema</div>
   </article>
-  <article class="kpi">
-    <div class="etiqueta">Sucursales</div>
-    <div class="kpi__valor">{{ listaSucursales.length }}</div>
-    <div class="kpi__nota">Tiendas operativas</div>
-  </article>
-  <article class="kpi">
-    <div class="etiqueta">Seguridad</div>
-    <div class="kpi__valor">JWT</div>
-    <div class="kpi__nota kpi__nota--sube">Bcrypt Hash</div>
-  </article>
+  @if (esAdmin) {
+    <article class="kpi">
+      <div class="etiqueta">Sucursales</div>
+      <div class="kpi__valor">{{ listaSucursales.length }}</div>
+      <div class="kpi__nota">Tiendas operativas</div>
+    </article>
+  } @else {
+    <article class="kpi">
+      <div class="etiqueta">Mi sucursal</div>
+      <div class="kpi__valor kpi__valor--texto">{{ usuarioActual?.nombre_sucursal }}</div>
+      <div class="kpi__nota">Solo ves y gestionas a tu equipo</div>
+    </article>
+  }
 </div>
 
 <div class="rejilla rejilla--2-1">
@@ -64,17 +67,21 @@
                 </span>
               </td>
               <td class="celda-acciones">
-                <button type="button" class="btn-accion-tabla btn-accion-tabla--editar" (click)="seleccionarParaEditar(emp)">
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  class="btn-accion-tabla"
-                  [class.btn-accion-tabla--desactivar]="emp.activo"
-                  [class.btn-accion-tabla--activar]="!emp.activo"
-                  (click)="alternarEstado(emp)">
-                  {{ emp.activo ? 'Desactivar' : 'Activar' }}
-                </button>
+                @if (puedeGestionar(emp)) {
+                  <button type="button" class="btn-accion-tabla btn-accion-tabla--editar" (click)="seleccionarParaEditar(emp)">
+                    Editar
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn-accion-tabla" 
+                    [class.btn-accion-tabla--desactivar]="emp.activo"
+                    [class.btn-accion-tabla--activar]="!emp.activo"
+                    (click)="alternarEstado(emp)">
+                    {{ emp.activo ? 'Desactivar' : 'Activar' }}
+                  </button>
+                } @else {
+                  <span class="celda-id">—</span>
+                }
               </td>
             </tr>
           } @empty {
@@ -133,27 +140,36 @@
 
       <div class="campo">
         <label class="etiqueta">Rol *</label>
-        <select [(ngModel)]="formulario.rol" name="rol" (change)="alCambiarRol()">
-          <option value="Cajero">Cajero</option>
-          <option value="Gerente">Gerente</option>
-          <option value="Administrador">Administrador</option>
+        <select [(ngModel)]="formulario.rol" name="rol" (change)="alCambiarRol()" [disabled]="esGerente">
+          @for (r of rolesDisponibles; track r) {
+            <option [value]="r">{{ r }}</option>
+          }
         </select>
       </div>
 
       @if (formulario.rol !== 'Administrador') {
         <div class="campo">
           <label class="etiqueta">Sucursal asignada *</label>
-          <select [(ngModel)]="formulario.id_sucursal" name="id_sucursal" required>
-            @for (suc of listaSucursales; track suc.id) {
-              <option [ngValue]="suc.id">{{ suc.nombre }}</option>
-            }
-          </select>
+          @if (esGerente) {
+            <input type="text" [value]="usuarioActual?.nombre_sucursal || ''" disabled />
+          } @else {
+            <select [(ngModel)]="formulario.id_sucursal" name="id_sucursal" required>
+              @for (suc of listaSucursales; track suc.id) {
+                <option [ngValue]="suc.id">{{ suc.nombre }}</option>
+              }
+            </select>
+          }
         </div>
       }
 
       <button type="submit" [disabled]="guardando" class="boton boton--primario boton--bloque">
         {{ guardando ? 'Guardando en pos_olimpo...' : (editandoId ? 'Guardar Cambios' : 'Crear usuario') }}
       </button>
+      <p class="campo__ayuda">
+        {{ esAdmin
+          ? 'Como Administrador puedes dar de alta Administradores y Gerentes.'
+          : 'Como Gerente solo puedes dar de alta Cajeros, y únicamente en tu sucursal.' }}
+      </p>
     </form>
   </article>
 </div>

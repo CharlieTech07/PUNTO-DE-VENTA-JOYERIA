@@ -1,36 +1,12 @@
 // server/src/routes/auth.ts
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router, Request, Response } from 'express';
 import { db } from '../db.js';
 import { hashPassword, comparePassword } from '../utils/security';
 import jwt from 'jsonwebtoken';
+import { verificarToken, permitirRoles, RequestConUsuario } from '../middleware/verificarToken';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'olimpo_secret_jwt_2026';
-
-// Middleware de verificación de sesión y permisos
-interface RequestConUsuario extends Request {
-  usuarioToken?: {
-    id: number;
-    rol: 'Administrador' | 'Gerente' | 'Cajero';
-    id_sucursal: number | null;
-  };
-}
-
-const verificarToken = (req: RequestConUsuario, res: Response, next: NextFunction) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ error: 'No autorizado: Falta token de sesión' });
-  }
-
-  const token = authHeader.split(' ')[1];
-  try {
-    const decodificado = jwt.verify(token, JWT_SECRET) as any;
-    req.usuarioToken = decodificado;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: 'Token inválido o expirado' });
-  }
-};
 
 // ==========================================
 // 1. INICIAR SESIÓN (POST /api/auth/login)
@@ -100,25 +76,37 @@ router.post('/login', async (req: Request, res: Response) => {
 
 // ==========================================
 // 2. LISTAR EMPLEADOS (GET /api/auth/usuarios)
+// - Administrador: todos los empleados.
+// - Gerente: solo los de su sucursal.
+// - Cajero: sin acceso.
 // ==========================================
-router.get('/usuarios', async (_req: Request, res: Response) => {
+router.get('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente'), async (req: RequestConUsuario, res: Response) => {
   try {
-    const query = `
-      SELECT
-        u.id,
-        u.nombres,
-        u.apellido_paterno,
-        u.apellido_materno,
-        u.correo,
-        u.rol,
-        u.id_sucursal,
+    const solicitante = req.usuarioToken!;
+
+    let query = `
+      SELECT 
+        u.id, 
+        u.nombres, 
+        u.apellido_paterno, 
+        u.apellido_materno, 
+        u.correo, 
+        u.rol, 
+        u.id_sucursal, 
         u.activo,
         s.nombre AS nombre_sucursal
       FROM usuarios u
       LEFT JOIN sucursales s ON u.id_sucursal = s.id
-      ORDER BY u.id ASC;
     `;
-    const { rows } = await db.query(query);
+    const values: any[] = [];
+
+    if (solicitante.rol === 'Gerente') {
+      query += ` WHERE u.id_sucursal = $1`;
+      values.push(solicitante.id_sucursal);
+    }
+    query += ` ORDER BY u.id ASC;`;
+
+    const { rows } = await db.query(query, values);
     res.json(rows);
   } catch (error) {
     console.error('Error al listar usuarios:', error);
@@ -128,19 +116,44 @@ router.get('/usuarios', async (_req: Request, res: Response) => {
 
 // ==========================================
 // 3. REGISTRAR EMPLEADO (POST /api/auth/usuarios)
+// - Administrador: puede dar de alta Administradores y Gerentes.
+// - Gerente: solo puede dar de alta Cajeros, y únicamente en su sucursal.
+// - Cajero: sin acceso.
 // ==========================================
-router.post('/usuarios', async (req: Request, res: Response) => {
+router.post('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente'), async (req: RequestConUsuario, res: Response) => {
   try {
+    const solicitante = req.usuarioToken!;
     const { nombres, apellido_paterno, apellido_materno, correo, contrasena, rol, id_sucursal } = req.body;
 
     if (!nombres || !apellido_paterno || !correo || !contrasena || !rol) {
       return res.status(400).json({ error: 'Todos los campos obligatorios deben ser completados.' });
     }
 
+    const rolesQuePuedeCrear = solicitante.rol === 'Administrador'
+      ? ['Administrador', 'Gerente']
+      : ['Cajero'];
+
+    if (!rolesQuePuedeCrear.includes(rol)) {
+      return res.status(403).json({
+        error: solicitante.rol === 'Administrador'
+          ? 'Un Administrador solo puede dar de alta Administradores y Gerentes.'
+          : 'Un Gerente solo puede dar de alta Cajeros.'
+      });
+    }
+
     let sucursalAsignada: number | null = null;
-    if (rol === 'Gerente' || rol === 'Cajero') {
+    if (solicitante.rol === 'Gerente') {
+      // La sucursal del nuevo cajero siempre es la del gerente que lo registra
+      if (!solicitante.id_sucursal) {
+        return res.status(403).json({ error: 'Tu usuario no tiene una sucursal asignada.' });
+      }
+      if (id_sucursal && Number(id_sucursal) !== Number(solicitante.id_sucursal)) {
+        return res.status(403).json({ error: 'Solo puedes dar de alta cajeros en tu propia sucursal.' });
+      }
+      sucursalAsignada = Number(solicitante.id_sucursal);
+    } else if (rol === 'Gerente') {
       if (!id_sucursal) {
-        return res.status(400).json({ error: `El rol ${rol} requiere tener una sucursal asignada.` });
+        return res.status(400).json({ error: 'El rol Gerente requiere tener una sucursal asignada.' });
       }
       sucursalAsignada = Number(id_sucursal);
     }
@@ -172,7 +185,7 @@ router.post('/usuarios', async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error('Error al registrar usuario:', error);
     if (error.code === '23505') {
-      return res.status(409).json({ error: 'Ya existe un usuario con este correo o rol reservado.' });
+      return res.status(409).json({ error: 'Ya existe un usuario con este correo, o ya hay un Administrador / un Gerente para esa sucursal.' });
     }
     if (error.code === '23514') {
       return res.status(400).json({ error: 'Inconsistencia de sucursal para el rol asignado.' });
@@ -196,22 +209,28 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
     }
     const usuarioActual = checkUser.rows[0];
 
+    let rolFinal = rol;
+    let sucursalFinal = id_sucursal ? Number(id_sucursal) : null;
+
     if (solicitante.rol === 'Gerente') {
-      if (usuarioActual.rol === 'Administrador' || (usuarioActual.rol === 'Gerente' && usuarioActual.id !== solicitante.id)) {
+      const esElMismo = usuarioActual.id === solicitante.id;
+
+      if (usuarioActual.rol === 'Administrador' || (usuarioActual.rol === 'Gerente' && !esElMismo)) {
         return res.status(403).json({ error: 'No tienes permisos para modificar a este usuario' });
       }
       if (Number(usuarioActual.id_sucursal) !== Number(solicitante.id_sucursal)) {
         return res.status(403).json({ error: 'Solo puedes administrar empleados de tu propia sucursal' });
       }
-      if (rol === 'Administrador') {
-        return res.status(403).json({ error: 'Un Gerente no puede asignar el rol de Administrador' });
-      }
+
+      // Un Gerente no puede cambiar roles ni mover a nadie de sucursal:
+      // el rol se queda como estaba y la sucursal es siempre la suya.
+      rolFinal = usuarioActual.rol;
+      sucursalFinal = Number(solicitante.id_sucursal);
     } else if (solicitante.rol !== 'Administrador') {
       return res.status(403).json({ error: 'Acceso denegado' });
     }
 
-    let sucursalFinal = id_sucursal ? Number(id_sucursal) : null;
-    if (rol === 'Administrador') {
+    if (rolFinal === 'Administrador') {
       sucursalFinal = null;
     }
 
@@ -238,7 +257,7 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
       apellido_paterno.trim(),
       apellido_materno ? apellido_materno.trim() : null,
       correo.trim().toLowerCase(),
-      rol,
+      rolFinal,
       sucursalFinal,
       nuevoHash,
       idUsuarioDestino

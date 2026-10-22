@@ -313,3 +313,16 @@
   color: var(--texto-3, #a89887);
   font-size: 14.5px;
 }
+
+/* Campo bloqueado (sucursal del gerente) */
+.input-olimpo:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* Aviso para usuarios sin permiso de agregar existencias */
+.nota-permiso {
+  margin: 0;
+  font-size: 14px;
+  color: var(--texto-2, #d6c7b2);
+}

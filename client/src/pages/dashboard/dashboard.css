@@ -238,6 +238,23 @@ html[data-tema="claro"] .cabecera__fecha {
   color: var(--rojo);
 }
 
+/* KPI que filtra la tabla al hacer clic (Stock bajo) */
+.kpi--accion {
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.kpi--accion:hover,
+.kpi--accion:focus-visible {
+  border-color: var(--oro-medio);
+  outline: none;
+}
+
+.kpi--activo {
+  border-color: var(--oro);
+  background: var(--superficie-2);
+}
+
 /* ---------- 8. Cotización del metal ---------- */
 
 .metal {
@@ -758,4 +775,10 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
   .cabecera__titulo {
     font-size: 32px;
   }
+}
+
+/* Botones deshabilitados (por ejemplo "Actualizar" mientras consulta) */
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
