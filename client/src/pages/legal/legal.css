@@ -1,0 +1,182 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Cinzel:wght@500;600&display=swap');
+
+/* Aviso de privacidad y términos y condiciones.
+   Todos los colores salen de styles/tema.css, así que responde al modo claro. */
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: var(--fondo);
+  color: var(--texto);
+  font-family: var(--sans);
+}
+
+/* ---------- Barra de arriba ---------- */
+
+.barra {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  /* A la derecha deja libre el botón de idioma, que va fijo (app.component) */
+  padding: 0 112px 0 48px;
+  border-bottom: 1px solid var(--oro-borde);
+  background-color: var(--fondo-barra);
+}
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  letter-spacing: 5px;
+  color: var(--oro);
+}
+
+.marca__logo {
+  width: 34px;
+  height: auto;
+}
+
+.volver {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--oro-borde);
+  font-size: 0.8rem;
+  color: var(--texto-2);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.volver:hover {
+  color: var(--oro);
+  border-color: var(--oro);
+}
+
+/* ---------- Pestañas ---------- */
+
+.hoja {
+  width: min(calc(100% - 32px), 760px);
+  margin: 24px auto 0;
+  padding-bottom: 64px;
+}
+
+.pestanas {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--oro-borde);
+}
+
+.pestanas a {
+  padding: 10px 16px;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--texto-3);
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.pestanas a:hover {
+  color: var(--texto);
+}
+
+.pestanas a.activa {
+  color: var(--oro);
+  border-bottom-color: var(--oro);
+}
+
+/* ---------- Documento ---------- */
+
+.documento {
+  padding-top: 26px;
+}
+
+.documento h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 2.2rem;
+  line-height: 1.15;
+  color: var(--texto);
+}
+
+.documento h2 {
+  margin: 28px 0 0;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--oro-medio);
+}
+
+.documento p,
+.documento li {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--texto-2);
+}
+
+.documento p {
+  margin: 8px 0 0;
+}
+
+.documento .intro {
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+.documento ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+.documento li + li {
+  margin-top: 4px;
+}
+
+.documento li::marker {
+  color: var(--oro-medio);
+}
+
+.documento .fecha {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--oro-borde);
+  font-size: 0.8rem;
+  color: var(--texto-3);
+}
+
+.volver:focus-visible,
+.pestanas a:focus-visible {
+  outline: 2px solid var(--oro);
+  outline-offset: 2px;
+}
+
+/* ---------- Pantalla angosta ---------- */
+
+@media (max-width: 600px) {
+  /* El botón de idioma baja a 10px de la orilla en celular */
+  .barra {
+    min-height: 52px;
+    padding: 0 96px 0 16px;
+  }
+
+  .marca span {
+    display: none;
+  }
+
+  .documento h1 {
+    font-size: 1.8rem;
+  }
+
+  .pestanas a {
+    padding: 10px 8px;
+    letter-spacing: 1px;
+  }
+}

@@ -2,6 +2,7 @@
 import { Component, ElementRef, afterNextRender, inject, output, signal, viewChild } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { CarritoService, sinIva } from '../../../services/carrito.service';
 import { AuthService } from '../../../services/auth.service';
 import { TranslatePipe } from '../../../services/translate.pipe';
@@ -38,7 +39,7 @@ export const USOS_CFDI = [
 @Component({
   selector: 'app-resumen-venta',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, ReactiveFormsModule, TranslatePipe],
+  imports: [CurrencyPipe, DatePipe, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './resumen.html',
   styleUrls: ['./resumen.css']
 })
