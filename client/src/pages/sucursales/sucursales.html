@@ -1,91 +1,123 @@
 <!-- client/src/pages/sucursales/sucursales.html -->
-<div class="sucursales-container">
-  <h2 class="sucursales-title">{{ 'Gestión de Sucursales — Joyería Olimpo' | translate }}</h2>
-
-  <!-- Tarjeta del Formulario -->
-  <div class="form-card">
-    <h3>{{ 'Registrar Nueva Tienda' | translate }}</h3>
-    <form (ngSubmit)="guardarSucursal()" class="form-grid">
-      <div class="form-group">
-        <label class="form-label">{{ 'Nombre de la Sucursal:' | translate }}</label>
-        <input
-          type="text"
-          [(ngModel)]="nuevaSucursal.nombre"
-          name="nombre"
-          [placeholder]="'ej. Sucursal Polanco' | translate"
-          required
-          class="form-input" />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">{{ 'Dirección:' | translate }}</label>
-        <input
-          type="text"
-          [(ngModel)]="nuevaSucursal.direccion"
-          name="direccion"
-          [placeholder]="'ej. Av. Presidente Masaryk #120' | translate"
-          class="form-input" />
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">{{ 'Teléfono:' | translate }}</label>
-        <input
-          type="text"
-          [(ngModel)]="nuevaSucursal.telefono"
-          name="telefono"
-          [placeholder]="'ej. 55 1234 5678' | translate"
-          class="form-input" />
-      </div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn-primary">
-          {{ '+ Guardar Sucursal' | translate }}
-        </button>
-      </div>
-    </form>
+@if (aviso) {
+  <div class="aviso" [class.aviso--ok]="aviso.tipo === 'ok'" [class.aviso--error]="aviso.tipo === 'error'">
+    {{ aviso.texto }}
   </div>
+}
 
-  <!-- Estado de carga y mensajes -->
-  @if (cargando) {
-    <p class="estado-mensaje">{{ '⏳ Consultando sucursales en pos_olimpo...' | translate }}</p>
-  } @else if (errorCarga) {
-    <p class="estado-error">❌ {{ errorCarga | translate }}</p>
-  } @else if (listaSucursales.length === 0) {
-    <p class="estado-mensaje">{{ 'No hay sucursales registradas en el sistema.' | translate }}</p>
-  } @else {
-    <!-- Tabla de Sucursales -->
-    <table class="tabla-sucursales">
-      <thead class="tabla-header">
-        <tr>
-          <th class="col-id">{{ 'ID' | translate }}</th>
-          <th>{{ 'Nombre' | translate }}</th>
-          <th>{{ 'Dirección' | translate }}</th>
-          <th>{{ 'Teléfono' | translate }}</th>
-          <th class="col-center">{{ 'Estado' | translate }}</th>
-          <th class="col-center">{{ 'Acciones' | translate }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (s of listaSucursales; track s.id) {
-          <tr>
-            <td class="col-id">{{ s.id }}</td>
-            <td><strong>{{ s.nombre }}</strong></td>
-            <td>{{ (s.direccion || 'Sin dirección asignada') | translate }}</td>
-            <td>{{ (s.telefono || 'Sin teléfono') | translate }}</td>
-            <td class="col-center">
-              <span class="badge badge-success">{{ 'Activa' | translate }}</span>
-            </td>
-            <td class="col-center">
-              <button
-                type="button"
-                (click)="eliminarSucursal(s.id, s.nombre)"
-                class="btn-danger">
-                {{ 'Eliminar' | translate }}
-              </button>
-            </td>
-          </tr>
-        }
-      </tbody>
-    </table>
+<div class="rejilla rejilla--3">
+  <article class="kpi">
+    <div class="etiqueta">{{ 'Sucursales' | translate }}</div>
+    <div class="kpi__valor">{{ listaSucursales.length }}</div>
+    <div class="kpi__nota">{{ 'Puntos de venta registrados' | translate }}</div>
+  </article>
+  <article class="kpi">
+    <div class="etiqueta">{{ 'Activas' | translate }}</div>
+    <div class="kpi__valor">{{ totalActivas }}</div>
+    <div class="kpi__nota kpi__nota--sube">{{ 'Operando actualmente' | translate }}</div>
+  </article>
+  <article class="kpi">
+    <div class="etiqueta">{{ 'Más reciente' | translate }}</div>
+    <div class="kpi__valor kpi__valor--texto">{{ masReciente }}</div>
+    <div class="kpi__nota">{{ 'Última sucursal dada de alta' | translate }}</div>
+  </article>
+</div>
+
+<div class="rejilla" [class.rejilla--2-1]="esAdmin">
+  <!-- TABLA DE SUCURSALES -->
+  <article class="tarjeta">
+    <div class="tarjeta__cabecera">
+      <svg viewBox="0 0 24 24"><path d="M3 21h18" /><path d="M5 21V8l7-5 7 5v13" /><path d="M10 21v-6h4v6" /></svg>
+      <h2 class="tarjeta__titulo">{{ 'Sucursales registradas' | translate }}</h2>
+    </div>
+
+    @if (cargando) {
+      <p class="vacio">{{ 'Consultando sucursales...' | translate }}</p>
+    } @else if (errorCarga) {
+      <p class="vacio vacio--error">{{ errorCarga | translate }}</p>
+    } @else {
+      <div class="tabla-envoltura">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>{{ 'ID' | translate }}</th>
+              <th>{{ 'Sucursal' | translate }}</th>
+              <th>{{ 'Dirección' | translate }}</th>
+              <th>{{ 'Teléfono' | translate }}</th>
+              <th>{{ 'Estado' | translate }}</th>
+              @if (esAdmin) {
+                <th class="celda-acciones">{{ 'Acciones' | translate }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of listaSucursales; track s.id) {
+              <tr>
+                <td class="celda-id">#{{ s.id }}</td>
+                <td class="celda-pieza">{{ s.nombre }}</td>
+                <td>{{ s.direccion || ('Sin dirección' | translate) }}</td>
+                <td>{{ s.telefono || 'N/A' }}</td>
+                <td>
+                  @if (s.activa === false) {
+                    <span class="insignia insignia--neutra">{{ 'Inactiva' | translate }}</span>
+                  } @else {
+                    <span class="insignia insignia--ok">{{ 'Activa' | translate }}</span>
+                  }
+                </td>
+                @if (esAdmin) {
+                  <td class="celda-acciones">
+                    <button
+                      type="button"
+                      class="btn-accion-tabla btn-accion-tabla--desactivar"
+                      (click)="eliminarSucursal(s.id, s.nombre)">
+                      {{ 'Eliminar' | translate }}
+                    </button>
+                  </td>
+                }
+              </tr>
+            } @empty {
+              <tr>
+                <td [attr.colspan]="esAdmin ? 6 : 5" class="vacio">{{ 'No hay sucursales registradas.' | translate }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </article>
+
+  <!-- FORMULARIO DE ALTA: solo Administrador -->
+  @if (esAdmin) {
+    <article class="tarjeta">
+      <div class="tarjeta__cabecera">
+        <svg viewBox="0 0 24 24"><path d="M3 21h18" /><path d="M5 21V8l7-5 7 5v13" /><path d="M12 11v5M9.5 13.5h5" /></svg>
+        <h2 class="tarjeta__titulo">{{ 'Dar de alta' | translate }}</h2>
+      </div>
+
+      <form (ngSubmit)="guardarSucursal()">
+        <div class="campo">
+          <label class="etiqueta">{{ 'Nombre de la sucursal *' | translate }}</label>
+          <input type="text" [(ngModel)]="nuevaSucursal.nombre" name="nombre"
+                 [placeholder]="'Ej. Sucursal Polanco' | translate" required />
+        </div>
+
+        <div class="campo">
+          <label class="etiqueta">{{ 'Dirección *' | translate }}</label>
+          <input type="text" [(ngModel)]="nuevaSucursal.direccion" name="direccion"
+                 [placeholder]="'Ej. Av. Presidente Masaryk 120' | translate" required />
+        </div>
+
+        <div class="campo">
+          <label class="etiqueta">{{ 'Teléfono' | translate }}</label>
+          <input type="text" [(ngModel)]="nuevaSucursal.telefono" name="telefono"
+                 [placeholder]="'Ej. 55 1234 5678' | translate" />
+        </div>
+
+        <button type="submit" [disabled]="guardando" class="boton boton--primario boton--bloque">
+          {{ (guardando ? 'Guardando sucursal...' : 'Registrar sucursal') | translate }}
+        </button>
+        <p class="campo__ayuda">{{ 'Solo el Administrador puede dar de alta o eliminar sucursales.' | translate }}</p>
+      </form>
+    </article>
   }
 </div>

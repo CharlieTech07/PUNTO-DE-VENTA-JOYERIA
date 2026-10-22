@@ -1,5 +1,6 @@
 // client/src/pages/routes.ts
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Routes, Router, CanActivateFn } from '@angular/router';
 import { authGuard, roleGuard } from '../guards/auth.guard';
 import { LoginComponent } from './login/login';
 import { InicioComponent } from './inicio/inicio';
@@ -8,6 +9,10 @@ import { ProductosComponent } from './productos/productos';
 import { SucursalesComponent } from './sucursales/sucursales';
 import { InventarioComponent } from './inventario/inventario';
 import { LegalComponent } from './legal/legal';
+
+// Las sucursales ahora viven dentro del dashboard: esta ruta solo redirige hacia allá
+const irASucursalesEnDashboard: CanActivateFn = () =>
+  inject(Router).createUrlTree(['/dashboard'], { fragment: 'sucursales' });
 
 export const routes: Routes = [
   // Ruta raíz va al login
@@ -20,33 +25,36 @@ export const routes: Routes = [
   { path: 'privacidad', component: LegalComponent, data: { documento: 'privacidad' } },
   { path: 'terminos', component: LegalComponent, data: { documento: 'terminos' } },
 
-  // Rutas protegidas por autenticación
+  // Todas las demás rutas exigen sesión iniciada
   {
     path: 'inicio',
     component: InicioComponent,
     canActivate: [authGuard]
   },
+  // El dashboard lo usan los tres roles; cada rol solo ve sus módulos dentro de él
   {
     path: 'dashboard',
     component: DashboardComponent,
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Administrador', 'Gerente'] } // Cajero no tiene acceso total
+    canActivate: [authGuard]
   },
+  // Productos: solo Administrador
   {
     path: 'productos',
     component: ProductosComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Administrador'] }
   },
+  // Inventario: solo Gerente
   {
     path: 'inventario',
     component: InventarioComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Gerente'] }
   },
   {
     path: 'sucursales',
     component: SucursalesComponent,
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['Administrador'] } // Solo el Administrador Global
+    canActivate: [authGuard, irASucursalesEnDashboard]
   },
   // Redirección si la URL no existe
   { path: '**', redirectTo: 'login' }

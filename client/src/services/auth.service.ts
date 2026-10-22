@@ -88,7 +88,24 @@ crearUsuario(datosUsuario: {
     localStorage.removeItem(this.USER_KEY);
   }
 
+  // Hay sesión solo si existe un token y todavía no vence
   estaAutenticado(): boolean {
-    return !!this.obtenerToken();
+    const token = this.obtenerToken();
+    if (!token) return false;
+
+    if (!this.tokenVigente(token)) {
+      this.cerrarSesion();
+      return false;
+    }
+    return true;
+  }
+
+  private tokenVigente(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+      return !payload.exp || payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
   }
 }
