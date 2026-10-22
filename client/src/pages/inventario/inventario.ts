@@ -8,7 +8,7 @@ import { LanguageService } from '../../services/lenguage.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { DeepLTranslationService } from '../../services/deepl-translation.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { SucursalesService, Sucursal } from '../../services/sucursales.services';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-inventario',
@@ -21,7 +21,7 @@ export class InventarioComponent implements OnInit {
   private router = inject(Router);
   private inventarioService = inject(InventarioService);
   private productosService = inject(ProductosService);
-  private sucursalesService = inject(SucursalesService);
+  private authService = inject(AuthService);
   private cd = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly deepL = inject(DeepLTranslationService);
@@ -30,14 +30,14 @@ export class InventarioComponent implements OnInit {
 
   public listaInventario: (InventarioItem & { seleccionado?: boolean })[] = [];
   public catalogoProductos: any[] = [];
-  public catalogoSucursales: Sucursal[] = [];
+  public usuario = this.authService.obtenerUsuario();
   public cargando: boolean = true;
   public guardando: boolean = false;
   public seleccionarTodos: boolean = false;
   public inventarioEditandoId: number | null = null;
 
   public nuevoRegistro = {
-    id_sucursal: null as number | null,
+    id_sucursal: (this.usuario?.id_sucursal ?? null) as number | null, // siempre la del gerente
     id_producto: null as number | null,
     stock: 1,
     stock_minimo: 1,
@@ -54,6 +54,17 @@ export class InventarioComponent implements OnInit {
         }
       });
     this.cargarDatos();
+  }
+
+  // Solo el Gerente puede agregar o modificar existencias, y únicamente en su sucursal
+  public get esGerente(): boolean {
+    return this.usuario?.rol === 'Gerente' && !!this.usuario?.id_sucursal;
+  }
+
+  public get tituloTabla(): string {
+    return this.usuario?.rol === 'Administrador'
+      ? 'Existencias en Red de Sucursales'
+      : 'Existencias de tu sucursal';
   }
 
   public productName(name: string): string {
@@ -103,20 +114,6 @@ export class InventarioComponent implements OnInit {
       },
       error: (err) => console.error('Error al cargar catálogo de productos:', err)
     });
-
-    this.sucursalesService.getSucursales().subscribe({
-      next: (sucs) => {
-        this.catalogoSucursales = sucs.map(sucursal => ({
-          ...sucursal,
-          id: Number(sucursal.id)
-        }));
-        if (sucs.length > 0 && this.nuevoRegistro.id_sucursal === null) {
-          this.nuevoRegistro.id_sucursal = Number(sucs[0].id);
-        }
-        this.cd.detectChanges();
-      },
-      error: (err) => console.error('Error al cargar catálogo de sucursales:', err)
-    });
   }
 
   private translateProductNames(): void {
@@ -148,14 +145,18 @@ export class InventarioComponent implements OnInit {
   }
 
   public guardarStock(): void {
-    if (!this.nuevoRegistro.id_sucursal || !this.nuevoRegistro.id_producto) {
+    if (!this.esGerente) {
+      alert(this.language.t('Solo el Gerente de la sucursal puede agregar productos al inventario.'));
+      return;
+    }
+    if (!this.nuevoRegistro.id_producto) {
       alert(this.language.t('Debes seleccionar una sucursal y una joya válidas.'));
       return;
     }
 
     this.guardando = true;
     const payload = {
-      id_sucursal: Number(this.nuevoRegistro.id_sucursal),
+      id_sucursal: Number(this.usuario?.id_sucursal), // el servidor igual la valida contra el token
       id_producto: Number(this.nuevoRegistro.id_producto),
       stock: Number(this.nuevoRegistro.stock),
       stock_minimo: Number(this.nuevoRegistro.stock_minimo),
@@ -194,7 +195,7 @@ export class InventarioComponent implements OnInit {
   public cancelarEdicionStock(): void {
     this.inventarioEditandoId = null;
     this.nuevoRegistro = {
-      id_sucursal: this.catalogoSucursales[0] ? Number(this.catalogoSucursales[0].id) : null,
+      id_sucursal: this.usuario?.id_sucursal ?? null,
       id_producto: this.catalogoProductos[0] ? Number(this.catalogoProductos[0].id) : null,
       stock: 1,
       stock_minimo: 1,

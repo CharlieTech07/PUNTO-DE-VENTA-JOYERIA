@@ -1,11 +1,15 @@
-// server/src/routes/sucursales.routes.ts
+// server/src/routes/sucursales.ts
 import { Router, Request, Response } from 'express';
 import { pool } from '../db';
+import { verificarToken, permitirRoles } from '../middleware/verificarToken';
 
 const router = Router();
 
+// Seguridad: cualquier usuario con sesión puede consultar las sucursales;
+// solo el Administrador puede darlas de alta o eliminarlas.
+
 // GET: Obtener todas las sucursales
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', verificarToken, async (_req: Request, res: Response) => {
   try {
     const result = await pool.query('SELECT * FROM sucursales ORDER BY id ASC');
     res.json(result.rows);
@@ -15,8 +19,8 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
-// POST: Registrar sucursal
-router.post('/', async (req: Request, res: Response) => {
+// POST: Registrar sucursal (solo Administrador)
+router.post('/', verificarToken, permitirRoles('Administrador'), async (req: Request, res: Response) => {
   try {
     const { nombre, direccion, telefono } = req.body;
 
@@ -24,27 +28,35 @@ router.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'El nombre de la sucursal es obligatorio' });
     }
 
+    // La columna direccion es NOT NULL en la base de datos
+    if (!direccion || !direccion.trim()) {
+      return res.status(400).json({ error: 'La dirección de la sucursal es obligatoria' });
+    }
+
     const query = `
       INSERT INTO sucursales (nombre, direccion, telefono)
       VALUES ($1, $2, $3)
       RETURNING *;
     `;
-    const values = [nombre.trim(), direccion || null, telefono || null];
+    const values = [nombre.trim(), direccion.trim(), telefono && telefono.trim() ? telefono.trim() : null];
 
     const result = await pool.query(query, values);
     res.status(201).json(result.rows[0]);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error al crear sucursal:', error);
-    res.status(500).json({ error: 'Error al registrar sucursal en PostgreSQL', detalle: error });
+    if (error.code === '23505') {
+      return res.status(409).json({ error: 'Ya existe una sucursal con ese nombre' });
+    }
+    res.status(500).json({ error: 'Error al registrar sucursal en PostgreSQL' });
   }
 });
 
-// DELETE: Eliminar sucursal
-router.delete('/:id', async (req: Request, res: Response) => {
+// DELETE: Eliminar sucursal (solo Administrador)
+router.delete('/:id', verificarToken, permitirRoles('Administrador'), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Validación: si tiene inventario asociado en inventario_sucursal, Postgres bloqueará por FK
+    // Si tiene inventario, usuarios o ventas asociadas, Postgres lo bloquea por llave foránea
     const result = await pool.query('DELETE FROM sucursales WHERE id = $1 RETURNING id, nombre;', [id]);
 
     if (result.rowCount === 0) {
@@ -56,7 +68,7 @@ router.delete('/:id', async (req: Request, res: Response) => {
     console.error('Error al eliminar sucursal:', error);
     if (error.code === '23503') {
       return res.status(409).json({
-        error: 'No se puede eliminar la sucursal porque tiene piezas de inventario o ventas asociadas.'
+        error: 'No se puede eliminar la sucursal porque tiene empleados, inventario o ventas asociadas.'
       });
     }
     res.status(500).json({ error: 'Error al eliminar sucursal' });
