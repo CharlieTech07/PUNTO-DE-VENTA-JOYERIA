@@ -27,3 +27,12 @@ export const verificarToken = (req: RequestConUsuario, res: Response, next: Next
     return res.status(401).json({ error: 'Token inválido o expirado' });
   }
 };
+
+// Deja pasar solo a los roles indicados. Se usa después de verificarToken.
+export const permitirRoles = (...roles: Array<'Administrador' | 'Gerente' | 'Cajero'>) =>
+  (req: RequestConUsuario, res: Response, next: NextFunction) => {
+    if (!req.usuarioToken || !roles.includes(req.usuarioToken.rol)) {
+      return res.status(403).json({ error: 'No tienes permisos para realizar esta acción' });
+    }
+    next();
+  };

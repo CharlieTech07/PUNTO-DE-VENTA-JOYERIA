@@ -44,9 +44,16 @@ export class InventarioService {
   private authService = inject(AuthService);
   private apiUrl = 'http://localhost:3000/api/inventario';
 
+  private headersConToken(): HttpHeaders {
+    return new HttpHeaders({
+      Authorization: `Bearer ${this.authService.obtenerToken() || ''}`
+    });
+  }
+
+  // El servidor limita el resultado según el usuario: Gerente/Cajero reciben solo su sucursal
   getInventario(sucursalId?: number): Observable<InventarioItem[]> {
     const url = sucursalId ? `${this.apiUrl}?sucursalId=${sucursalId}` : this.apiUrl;
-    return this.http.get<InventarioItem[]>(url);
+    return this.http.get<InventarioItem[]>(url, { headers: this.headersConToken() });
   }
 
   // Inventario para el inicio: Gerente/Cajero reciben el de su sucursal,
@@ -61,8 +68,9 @@ export class InventarioService {
     return this.http.get<ProductoSucursal[]>(url, { headers });
   }
 
+  // Solo el Gerente puede asignar stock, y únicamente en su sucursal
   asignarStock(datos: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, datos);
+    return this.http.post<any>(this.apiUrl, datos, { headers: this.headersConToken() });
   }
 
   // Eliminar un solo registro

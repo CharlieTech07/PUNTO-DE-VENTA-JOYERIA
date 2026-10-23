@@ -36,8 +36,16 @@
   margin-bottom: 20px;
 }
 
-.rejilla--4 {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.rejilla--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.kpi__valor--texto {
+  font-size: 24px;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rejilla--2-1 {
@@ -215,6 +223,12 @@
   font-size: 14px;
 }
 
+.campo input:disabled,
+.campo select:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
 .campo input:focus,
 .campo select:focus {
   outline: none;
@@ -270,7 +284,7 @@
 }
 
 @media (max-width: 1180px) {
-  .rejilla--4 {
+  .rejilla--3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

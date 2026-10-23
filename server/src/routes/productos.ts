@@ -2,6 +2,7 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import { pool } from '../db';
+import { verificarToken, permitirRoles } from '../middleware/verificarToken';
 
 const router = Router();
 
@@ -12,8 +13,11 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
+// Seguridad: cualquier usuario con sesión puede consultar el catálogo;
+// solo el Administrador puede registrar, editar o eliminar productos.
+
 // GET: Obtener productos convirtiendo el bytea en imagen base64 para el navegador
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', verificarToken, async (_req: Request, res: Response) => {
   try {
     const query = `
       SELECT 
@@ -42,7 +46,7 @@ router.get('/', async (_req: Request, res: Response) => {
 });
 
 // POST: Registrar joya recibiendo el archivo binario ('imagen')
-router.post('/', upload.single('imagen'), async (req: Request, res: Response) => {
+router.post('/', verificarToken, permitirRoles('Administrador'), upload.single('imagen'), async (req: Request, res: Response) => {
   try {
     const { 
       nombre, 
@@ -104,51 +108,112 @@ router.post('/', upload.single('imagen'), async (req: Request, res: Response) =>
   }
 });
 
-// PUT: Actualizar los datos de una pieza y conservar la imagen si no se envía otra.
-router.put('/:id', upload.single('imagen'), async (req: Request, res: Response) => {
-  try {
-    const id = Number(req.params.id);
-    const {
-      nombre, descripcion, tipo_metal, kilataje, peso_gramos,
-      precio_compra, precio_venta, id_categoria
-    } = req.body;
-    const peso = Number(peso_gramos);
-    const compra = Number(precio_compra);
-    const venta = Number(precio_venta);
-    const categoria = Number(id_categoria);
+// PUT: Editar una joya existente (la imagen es opcional: si no se manda, se conserva la actual)
+router.put(
+  '/:id',
+  verificarToken,
+  permitirRoles('Administrador'),
+  (req: Request, res: Response, next) => {
+    // Se atrapa el error de Multer (por ejemplo, imagen mayor a 5 MB) para responder algo claro
+    upload.single('imagen')(req, res, (err: any) => {
+      if (err) {
+        const mensaje = err.code === 'LIMIT_FILE_SIZE'
+          ? 'La imagen no debe pasar de 5 MB'
+          : 'No se pudo procesar la imagen';
+        return res.status(400).json({ error: mensaje });
+      }
+      next();
+    });
+  },
+  async (req: Request, res: Response) => {
+    try {
+      const id = Number(req.params.id);
+      if (!Number.isInteger(id) || id <= 0) {
+        return res.status(400).json({ error: 'ID de producto inválido' });
+      }
 
-    if (!Number.isSafeInteger(id) || id <= 0 || !nombre?.trim()) {
-      return res.status(400).json({ error: 'El ID y el nombre del producto son obligatorios' });
-    }
-    if (!Number.isFinite(peso) || peso < 0 || !Number.isFinite(compra) || compra < 0 ||
-        !Number.isFinite(venta) || venta < 0 || !Number.isSafeInteger(categoria) || categoria <= 0) {
-      return res.status(400).json({ error: 'Revisa el peso, los precios y la categoría del producto' });
-    }
+      const {
+        nombre,
+        descripcion,
+        tipo_metal,
+        kilataje,
+        peso_gramos,
+        precio_compra,
+        precio_venta,
+        id_categoria
+      } = req.body;
 
-    const result = await pool.query(
-      `UPDATE productos
-       SET nombre = $1, descripcion = $2, tipo_metal = $3, kilataje = $4,
-           peso_gramos = $5, precio_compra = $6, precio_venta = $7,
-           id_categoria = $8, imagen = COALESCE($9, imagen)
-       WHERE id = $10
-       RETURNING id, nombre, descripcion, tipo_metal, kilataje, peso_gramos,
-                 precio_compra, precio_venta, id_categoria,
-                 CASE WHEN imagen IS NOT NULL THEN encode(imagen, 'base64') ELSE NULL END AS imagen_base64`,
-      [nombre.trim(), descripcion || null, tipo_metal || 'Oro', kilataje || null,
-        peso, compra, venta, categoria, req.file?.buffer ?? null, id]
-    );
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'El producto no existe' });
+      if (!nombre || !nombre.trim()) {
+        return res.status(400).json({ error: 'El nombre es obligatorio' });
+      }
+      if (!tipo_metal || !tipo_metal.trim()) {
+        return res.status(400).json({ error: 'El tipo de metal es obligatorio' });
+      }
+
+      const peso = Number(peso_gramos || 0);
+      const compra = Number(precio_compra || 0);
+      const venta = Number(precio_venta || 0);
+      if ([peso, compra, venta].some(n => !Number.isFinite(n) || n < 0)) {
+        return res.status(400).json({ error: 'Peso y precios deben ser números mayores o iguales a 0' });
+      }
+
+      // Si no llega archivo nuevo, queda null y COALESCE conserva la imagen guardada
+      const imagenNueva = req.file ? req.file.buffer : null;
+      const categoria = id_categoria ? Number(id_categoria) : null;
+
+      const query = `
+        UPDATE productos SET
+          nombre = $1,
+          descripcion = $2,
+          tipo_metal = $3,
+          kilataje = $4,
+          peso_gramos = $5,
+          precio_compra = $6,
+          precio_venta = $7,
+          id_categoria = COALESCE($8, id_categoria),
+          imagen = COALESCE($9, imagen)
+        WHERE id = $10
+        RETURNING
+          id, nombre, descripcion, tipo_metal, kilataje, peso_gramos,
+          precio_compra, precio_venta, id_categoria,
+          CASE
+            WHEN imagen IS NOT NULL THEN encode(imagen, 'base64')
+            ELSE NULL
+          END AS imagen_base64;
+      `;
+
+      const values = [
+        nombre.trim(),
+        descripcion || null,
+        tipo_metal.trim(),
+        kilataje || null,
+        peso,
+        compra,
+        venta,
+        categoria,
+        imagenNueva,
+        id
+      ];
+
+      const result = await pool.query(query, values);
+
+      if (result.rowCount === 0) {
+        return res.status(404).json({ error: 'El producto no existe en la base de datos' });
+      }
+
+      res.json(result.rows[0]);
+    } catch (error: any) {
+      console.error('Error al actualizar producto:', error);
+      if (error.code === '23503') {
+        return res.status(400).json({ error: 'La categoría indicada no existe' });
+      }
+      res.status(500).json({ error: 'Error al actualizar la joya en PostgreSQL' });
     }
-    res.json(result.rows[0]);
-  } catch (error) {
-    console.error('Error al actualizar producto:', error);
-    res.status(500).json({ error: 'No se pudo actualizar el producto' });
   }
-});
+);
 
 // DELETE: Eliminar una joya por ID
-router.delete('/:id', async (req: Request, res: Response) => {
+router.delete('/:id', verificarToken, permitirRoles('Administrador'), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UsuariosService, Empleado, NuevoEmpleadoPayload } from '../../services/usuarios.services';
 import { SucursalesService, Sucursal } from '../../services/sucursales.services';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-empleados',
@@ -14,7 +15,10 @@ import { SucursalesService, Sucursal } from '../../services/sucursales.services'
 export class EmpleadosComponent implements OnInit {
   private usuariosService = inject(UsuariosService);
   private sucursalesService = inject(SucursalesService);
+  private authService = inject(AuthService);
   private cd = inject(ChangeDetectorRef);
+
+  public usuarioActual = this.authService.obtenerUsuario();
 
   public listaEmpleados: Empleado[] = [];
   public listaSucursales: Sucursal[] = [];
@@ -22,15 +26,49 @@ export class EmpleadosComponent implements OnInit {
   public guardando: boolean = false;
   public editandoId: number | null = null;
 
-  public formulario: NuevoEmpleadoPayload = {
-    nombres: '',
-    apellido_paterno: '',
-    apellido_materno: '',
-    correo: '',
-    contrasena: '',
-    rol: 'Cajero',
-    id_sucursal: null
-  };
+  public formulario: NuevoEmpleadoPayload = this.formularioInicial();
+
+  // Reglas de alta: el Administrador da de alta Administradores y Gerentes;
+  // el Gerente solo da de alta Cajeros, y únicamente en su propia sucursal.
+  public get esAdmin(): boolean {
+    return this.usuarioActual?.rol === 'Administrador';
+  }
+
+  public get esGerente(): boolean {
+    return this.usuarioActual?.rol === 'Gerente';
+  }
+
+  public get rolesDisponibles(): Array<'Administrador' | 'Gerente' | 'Cajero'> {
+    if (this.esAdmin) {
+      // Al editar se permite cualquier rol para poder corregir también a los cajeros existentes
+      return this.editandoId ? ['Administrador', 'Gerente', 'Cajero'] : ['Administrador', 'Gerente'];
+    }
+    // Gerente: el rol no se puede cambiar; al crear solo existe Cajero
+    return this.editandoId ? [this.formulario.rol] : ['Cajero'];
+  }
+
+  public get totalActivos(): number {
+    return this.listaEmpleados.filter(e => e.activo).length;
+  }
+
+  // Un Gerente solo puede gestionar a los cajeros de su sucursal
+  public puedeGestionar(emp: Empleado): boolean {
+    if (this.esAdmin) return true;
+    return this.esGerente && emp.rol === 'Cajero';
+  }
+
+  private formularioInicial(): NuevoEmpleadoPayload {
+    const esAdmin = this.usuarioActual?.rol === 'Administrador';
+    return {
+      nombres: '',
+      apellido_paterno: '',
+      apellido_materno: '',
+      correo: '',
+      contrasena: '',
+      rol: esAdmin ? 'Gerente' : 'Cajero',
+      id_sucursal: esAdmin ? null : (this.usuarioActual?.id_sucursal ?? null)
+    };
+  }
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -86,15 +124,10 @@ export class EmpleadosComponent implements OnInit {
 
   public cancelarEdicion(): void {
     this.editandoId = null;
-    this.formulario = {
-      nombres: '',
-      apellido_paterno: '',
-      apellido_materno: '',
-      correo: '',
-      contrasena: '',
-      rol: 'Cajero',
-      id_sucursal: this.listaSucursales.length > 0 ? Number(this.listaSucursales[0].id) : null
-    };
+    this.formulario = this.formularioInicial();
+    if (this.esAdmin && this.listaSucursales.length > 0) {
+      this.formulario.id_sucursal = Number(this.listaSucursales[0].id);
+    }
   }
 
   public guardar(): void {
@@ -108,9 +141,13 @@ export class EmpleadosComponent implements OnInit {
       return;
     }
 
+    const sucursalDelFormulario = this.esGerente
+      ? Number(this.usuarioActual?.id_sucursal)   // el servidor igual la valida contra el token
+      : Number(this.formulario.id_sucursal);
+
     const payload = {
       ...this.formulario,
-      id_sucursal: this.formulario.rol === 'Administrador' ? null : Number(this.formulario.id_sucursal)
+      id_sucursal: this.formulario.rol === 'Administrador' ? null : sucursalDelFormulario
     };
 
     this.guardando = true;

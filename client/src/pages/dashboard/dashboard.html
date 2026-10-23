@@ -287,386 +287,83 @@
       </div>
     </section>
 
-    <!-- ==================== VISTA: VENTAS ==================== -->
-    <section class="vista" [class.activa]="vistaActiva === 'ventas'" id="vista-ventas">
-      <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Hoy' | translate }}</div>
-          <div class="kpi__valor">{{ '$12,450' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+12% vs. ayer' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Semana' | translate }}</div>
-          <div class="kpi__valor">{{ '$68,400' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+5%' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Mes' | translate }}</div>
-          <div class="kpi__valor">{{ '$248,000' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+8.4%' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Ticket promedio' | translate }}</div>
-          <div class="kpi__valor">{{ '$3,180' | translate }}</div>
-          <div class="kpi__nota">{{ '248 transacciones' | translate }}</div>
-        </article>
-      </div>
-      <article class="tarjeta" style="margin-bottom: 20px">
+    <!-- ==================== VISTA: PRODUCTOS ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'productos'" id="vista-productos">
+      <article class="tarjeta">
         <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 2 L3 7 v13 a1 1 0 001 1h16a1 1 0 001-1V7l-3-5z" />
-            <path d="M3 7h18" />
-          </svg>
-          <h2 class="tarjeta__titulo">{{ 'Últimas ventas' | translate }}</h2>
-          <div class="tarjeta__accion segmentos">
-            <button class="activo">{{ 'Todas' | translate }}</button>
-            <button>{{ 'Santa Fe' | translate }}</button>
-            <button>{{ 'Polanco' | translate }}</button>
-            <button>{{ 'Querétaro' | translate }}</button>
-          </div>
+          <svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z" /><path d="M3 8l9 5 9-5" /><path d="M12 13v8" /></svg>
+          <h2 class="tarjeta__titulo">{{ 'Catálogo de productos' | translate }}</h2>
+
+          <button
+            type="button"
+            class="tarjeta__accion boton boton--fantasma"
+            routerLink="/productos">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            {{ 'Administrar en módulo' | translate }}
+          </button>
         </div>
+        <p class="sub">{{ listaProductos.length }} {{ 'piezas registradas en el catálogo.' | translate }}</p>
 
         <div class="tabla-envoltura">
-          <table class="tabla">
+          <table class="tabla tabla--amplia">
             <thead>
               <tr>
-                <th>{{ 'Folio' | translate }}</th>
+                <th>{{ 'ID' | translate }}</th>
                 <th>{{ 'Pieza' | translate }}</th>
-                <th>{{ 'Sucursal' | translate }}</th>
-                <th>{{ 'Atendió' | translate }}</th>
-                <th>{{ 'Pago' | translate }}</th>
-                <th style="text-align: right">{{ 'Monto' | translate }}</th>
-                <th>{{ 'Hora' | translate }}</th>
+                <th>{{ 'Metal' | translate }}</th>
+                <th>{{ 'Kilataje' | translate }}</th>
+                <th class="celda-num">{{ 'Peso (g)' | translate }}</th>
+                <th class="celda-num">{{ 'Precio compra' | translate }}</th>
+                <th class="celda-num">{{ 'Precio venta' | translate }}</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td class="celda-id">{{ 'V-8842' | translate }}</td>
-                <td class="celda-pieza">{{ 'Anillo de Oro' | translate }}</td>
-                <td>{{ 'Santa Fe' | translate }}</td>
-                <td>{{ 'Camila Torres' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Efectivo' | translate }}</span></td>
-                <td class="celda-monto">{{ '$1,200' | translate }}</td>
-                <td>{{ 'Hoy, 10:42' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ 'V-8841' | translate }}</td>
-                <td class="celda-pieza">{{ 'Collar Diamantes' | translate }}</td>
-                <td>{{ 'Polanco' | translate }}</td>
-                <td>{{ 'Diego Molina' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Tarjeta' | translate }}</span></td>
-                <td class="celda-monto">{{ '$4,850' | translate }}</td>
-                <td>{{ 'Hoy, 09:15' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ 'V-8840' | translate }}</td>
-                <td class="celda-pieza">{{ 'Reloj Vintage' | translate }}</td>
-                <td>{{ 'Querétaro' | translate }}</td>
-                <td>{{ 'Santiago Vega' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Transferencia' | translate }}</span></td>
-                <td class="celda-monto">{{ '$3,200' | translate }}</td>
-                <td>{{ 'Ayer, 18:30' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ 'V-8839' | translate }}</td>
-                <td class="celda-pieza">{{ 'Pendientes Perla' | translate }}</td>
-                <td>{{ 'Santa Fe' | translate }}</td>
-                <td>{{ 'Camila Torres' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Efectivo' | translate }}</span></td>
-                <td class="celda-monto">{{ '$950' | translate }}</td>
-                <td>{{ 'Ayer, 16:20' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ 'V-8838' | translate }}</td>
-                <td class="celda-pieza">{{ 'Esclava Oro 18k' | translate }}</td>
-                <td>{{ 'Polanco' | translate }}</td>
-                <td>{{ 'Isabela Cruz' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Mixto' | translate }}</span></td>
-                <td class="celda-monto">{{ '$7,640' | translate }}</td>
-                <td>{{ 'Ayer, 14:05' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ 'V-8837' | translate }}</td>
-                <td class="celda-pieza">{{ 'Dije Zafiro' | translate }}</td>
-                <td>{{ 'Querétaro' | translate }}</td>
-                <td>{{ 'Santiago Vega' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Tarjeta' | translate }}</span></td>
-                <td class="celda-monto">{{ '$2,310' | translate }}</td>
-                <td>{{ 'Ayer, 12:40' | translate }}</td>
-              </tr>
+              @for (producto of listaProductos; track producto.id) {
+                <tr>
+                  <td class="celda-id">#{{ producto.id }}</td>
+                  <td class="celda-pieza">{{ languageService.catalogPhrase(producto.nombre) }}</td>
+                  <td>{{ languageService.catalogPhrase(producto.tipo_metal) }}</td>
+                  <td>{{ producto.kilataje || '—' }}</td>
+                  <td class="celda-num">{{ producto.peso_gramos }}</td>
+                  <td class="celda-monto">{{ producto.precio_compra | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td class="celda-monto">{{ producto.precio_venta | currency:'USD':'symbol':'1.0-0' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="7" class="vacio">{{ 'No hay productos registrados en el catálogo.' | translate }}</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
-      </article>
-
-      <article class="tarjeta">
-        <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <circle cx="9" cy="8" r="3.4" />
-            <path d="M2.5 20a6.5 6.5 0 0113 0" />
-            <path d="M16 5.5a3.4 3.4 0 010 5.6" />
-          </svg>
-          <h2 class="tarjeta__titulo">{{ 'Desempeño por vendedor' | translate }}</h2>
-          <div class="tarjeta__accion segmentos">
-            <button>{{ 'Semana' | translate }}</button>
-            <button class="activo">{{ 'Mes' | translate }}</button>
-          </div>
-        </div>
-        <p class="sub">{{ 'Piezas vendidas y monto acumulado en el mes en curso' | translate }}</p>
-
-        <div class="lista">
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Camila Torres' | translate }}</div>
-                <div class="lista__secundario">{{ 'Santa Fe · Vendedora' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$254,300' | translate }}</div>
-                <div class="lista__secundario">{{ '58 piezas' | translate }}</div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno" style="width: 100%"></div>
-            </div>
-          </div>
-
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Isabela Cruz' | translate }}</div>
-                <div class="lista__secundario">{{ 'Querétaro · Vendedora' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$201,700' | translate }}</div>
-                <div class="lista__secundario">{{ '44 piezas' | translate }}</div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno" style="width: 79%"></div>
-            </div>
-          </div>
-
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Diego Molina' | translate }}</div>
-                <div class="lista__secundario">{{ 'Polanco · Cajero' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$168,900' | translate }}</div>
-                <div class="lista__secundario">{{ '37 piezas' | translate }}</div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno" style="width: 66%"></div>
-            </div>
-          </div>
-
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Santiago Vega' | translate }}</div>
-                <div class="lista__secundario">{{ 'Santa Fe · Gerente' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$119,400' | translate }}</div>
-                <div class="lista__secundario">{{ '26 piezas' | translate }}</div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno" style="width: 47%"></div>
-            </div>
-          </div>
-        </div>
-      </article>
-    </section>
-
-    <!-- ==================== VISTA: INGRESOS ==================== -->
-    <section class="vista" [class.activa]="vistaActiva === 'ingresos'" id="vista-ingresos">
-      <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Total anual' | translate }}</div>
-          <div class="kpi__valor">{{ '$1,428,500' | translate }}</div>
-          <div class="kpi__nota">{{ 'Meta cumplida al 92%' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Trimestre (Q4)' | translate }}</div>
-          <div class="kpi__valor">{{ '$342,000' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+4.2%' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Margen bruto' | translate }}</div>
-          <div class="kpi__valor">{{ '41.6%' | translate }}</div>
-          <div class="kpi__nota">{{ 'Sobre costo de adquisición' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Cobrado en apartados' | translate }}</div>
-          <div class="kpi__valor">{{ '$96,300' | translate }}</div>
-          <div class="kpi__nota">{{ '14 planes activos' | translate }}</div>
-        </article>
-      </div>
-
-      <div class="rejilla rejilla--2">
-        <article class="tarjeta">
-          <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 21h18" />
-              <path d="M5 21V8l7-5 7 5v13" />
-            </svg>
-            <h2 class="tarjeta__titulo">{{ 'Distribución por sucursal' | translate }}</h2>
-          </div>
-          <p class="sub">{{ 'Últimos 30 días' | translate }}</p>
-
-          <div style="margin-bottom: 20px">
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Santa Fe' | translate }}</span>
-              <span class="lista__monto">{{ '$685,000' | translate }} <span class="lista__secundario" style="display: inline">{{ '(48%)' | translate }}</span></span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 48%"></div></div>
-          </div>
-
-          <div style="margin-bottom: 20px">
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Polanco' | translate }}</span>
-              <span class="lista__monto">{{ '$492,000' | translate }} <span class="lista__secundario" style="display: inline">{{ '(34%)' | translate }}</span></span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 34%"></div></div>
-          </div>
-
-          <div>
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Querétaro' | translate }}</span>
-              <span class="lista__monto">{{ '$252,500' | translate }} <span class="lista__secundario" style="display: inline">{{ '(18%)' | translate }}</span></span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
-          </div>
-        </article>
-
-        <article class="tarjeta">
-          <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <path d="M6 3h12l3 6-9 12L3 9z" />
-              <path d="M3 9h18" />
-            </svg>
-            <h2 class="tarjeta__titulo">{{ 'Ingresos por categoría' | translate }}</h2>
-          </div>
-          <p class="sub">{{ 'Participación en el monto vendido del mes' | translate }}</p>
-
-          <div style="margin-bottom: 18px">
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Anillos' | translate }}</span>
-              <span class="lista__monto">{{ '$92,400' | translate }}</span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 37%"></div></div>
-          </div>
-          <div style="margin-bottom: 18px">
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Collares y gargantillas' | translate }}</span>
-              <span class="lista__monto">{{ '$66,700' | translate }}</span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 27%"></div></div>
-          </div>
-          <div style="margin-bottom: 18px">
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Pendientes' | translate }}</span>
-              <span class="lista__monto">{{ '$44,300' | translate }}</span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
-          </div>
-          <div>
-            <div style="display: flex; justify-content: space-between">
-              <span>{{ 'Relojería y otros' | translate }}</span>
-              <span class="lista__monto">{{ '$44,600' | translate }}</span>
-            </div>
-            <div class="progreso"><div class="progreso__relleno" style="width: 18%"></div></div>
-          </div>
-        </article>
-      </div>
-
-      <article class="tarjeta">
-        <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <path d="M3 17l6-6 4 4 7-7" />
-            <path d="M14 8h6v6" />
-          </svg>
-          <h2 class="tarjeta__titulo">{{ 'Evolución mensual' | translate }}</h2>
-        </div>
-
-          <svg class="grafica" viewBox="0 0 900 260" role="img" [attr.aria-label]="'Ingresos por mes del año' | translate">
-          <g class="grafica__rejilla">
-            <line x1="60" y1="30" x2="880" y2="30" />
-            <line x1="60" y1="85" x2="880" y2="85" />
-            <line x1="60" y1="140" x2="880" y2="140" />
-            <line x1="60" y1="195" x2="880" y2="195" />
-            <line x1="60" y1="220" x2="880" y2="220" />
-          </g>
-          <g class="grafica__eje" text-anchor="end">
-            <text x="50" y="34">{{ '200k' | translate }}</text>
-            <text x="50" y="89">{{ '150k' | translate }}</text>
-            <text x="50" y="144">{{ '100k' | translate }}</text>
-            <text x="50" y="199">{{ '50k' | translate }}</text>
-            <text x="50" y="224">{{ '0' | translate }}</text>
-          </g>
-          <polyline
-            class="grafica__linea"
-            stroke="#e0c289"
-            points="90,170 162,152 234,158 306,130 378,142 450,112 522,120 594,96 666,104 738,72 810,84 866,56"
-          />
-          <g fill="#ebd5a6" class="grafica__punto" stroke="#3a2e22">
-            <circle cx="90" cy="170" r="4" />
-            <circle cx="162" cy="152" r="4" />
-            <circle cx="234" cy="158" r="4" />
-            <circle cx="306" cy="130" r="4" />
-            <circle cx="378" cy="142" r="4" />
-            <circle cx="450" cy="112" r="4" />
-            <circle cx="522" cy="120" r="4" />
-            <circle cx="594" cy="96" r="4" />
-            <circle cx="666" cy="104" r="4" />
-            <circle cx="738" cy="72" r="4" />
-            <circle cx="810" cy="84" r="4" />
-            <circle cx="866" cy="56" r="4" />
-          </g>
-          <g class="grafica__eje" text-anchor="middle">
-            <text x="90" y="242">{{ 'Ene' | translate }}</text>
-            <text x="162" y="242">{{ 'Feb' | translate }}</text>
-            <text x="234" y="242">{{ 'Mar' | translate }}</text>
-            <text x="306" y="242">{{ 'Abr' | translate }}</text>
-            <text x="378" y="242">{{ 'May' | translate }}</text>
-            <text x="450" y="242">{{ 'Jun' | translate }}</text>
-            <text x="522" y="242">{{ 'Jul' | translate }}</text>
-            <text x="594" y="242">{{ 'Ago' | translate }}</text>
-            <text x="666" y="242">{{ 'Sep' | translate }}</text>
-            <text x="738" y="242">{{ 'Oct' | translate }}</text>
-            <text x="810" y="242">{{ 'Nov' | translate }}</text>
-            <text x="866" y="242">{{ 'Dic' | translate }}</text>
-          </g>
-        </svg>
       </article>
     </section>
 
     <!-- ==================== VISTA: INVENTARIO REAL ==================== -->
 <section class="vista" [class.activa]="vistaActiva === 'inventario'" id="vista-inventario">
-  <div class="rejilla rejilla--4">
+  <div class="rejilla rejilla--3">
     <article class="kpi">
       <div class="etiqueta">{{ 'Piezas en existencia' | translate }}</div>
       <div class="kpi__valor">{{ totalPiezasStock }}</div>
-      <div class="kpi__nota">En {{ listaSucursales.length }} sucursales</div>
+      <div class="kpi__nota">{{ notaPiezas }}</div>
     </article>
     <article class="kpi">
       <div class="etiqueta">{{ 'Valor del inventario' | translate }}</div>
       <div class="kpi__valor">{{ valorTotalInventario | currency:'USD':'symbol':'1.0-0' }}</div>
       <div class="kpi__nota">{{ 'A precio de venta vigente' | translate }}</div>
     </article>
-    <article class="kpi">
+    <article
+      class="kpi kpi--accion"
+      [class.kpi--activo]="soloStockBajo"
+      role="button"
+      tabindex="0"
+      (click)="alternarStockBajo()"
+      (keydown.enter)="alternarStockBajo()">
       <div class="etiqueta">{{ 'Stock bajo' | translate }}</div>
       <div class="kpi__valor">{{ cantidadStockBajo }}</div>
-      <div class="kpi__nota kpi__nota--baja">{{ 'Requieren reposición' | translate }}</div>
-    </article>
-    <article class="kpi">
-      <div class="etiqueta">{{ 'Sucursales activas' | translate }}</div>
-      <div class="kpi__valor">{{ listaSucursales.length }}</div>
-      <div class="kpi__nota">{{ 'Puntos de venta en red' | translate }}</div>
+      <div class="kpi__nota kpi__nota--baja">
+        {{ (soloStockBajo ? 'Filtro activo · clic para ver todo' : 'Requieren reposición · clic para filtrar') | translate }}
+      </div>
     </article>
   </div>
 
@@ -709,7 +406,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (item of listaInventario; track item.id) {
+          @for (item of inventarioVisible; track item.id) {
             <tr>
               <td class="celda-id">#{{ item.id_producto }}</td>
               <td class="celda-pieza">{{ item.nombre_producto }}</td>
@@ -729,7 +426,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="9" class="vacio">{{ 'No hay joyas en el inventario de las sucursales.' | translate }}</td>
+              <td colspan="9" class="vacio">{{ (soloStockBajo ? 'No hay piezas con stock bajo.' : 'No hay joyas en el inventario de las sucursales.') | translate }}</td>
             </tr>
           }
         </tbody>
@@ -737,6 +434,13 @@
     </div>
   </article>
 </section>
+
+    <!-- ==================== VISTA: SUCURSALES ==================== -->
+    <section class="vista" [class.activa]="vistaActiva === 'sucursales'" id="vista-sucursales">
+      @if (puedeVer('sucursales')) {
+        <app-sucursales (cambio)="cargarDatosBackend()"></app-sucursales>
+      }
+    </section>
 
     <!-- ==================== VISTA: APARTADOS ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'apartados'" id="vista-apartados">
@@ -848,282 +552,94 @@
 
     <!-- ==================== VISTA: EMPLEADOS ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'empleados'" id="vista-empleados">
-      <app-empleados></app-empleados>
+      @if (puedeVer('empleados')) {
+        <app-empleados></app-empleados>
+      }
     </section>
 
     <!-- ==================== VISTA: PRECIO DEL METAL ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'metal'" id="vista-metal">
-      <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Oro 24k' | translate }}</div>
-          <div class="kpi__valor">{{ '$2,145.00' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+0.8% vs. ayer' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Oro 18k' | translate }}</div>
-          <div class="kpi__valor">{{ '$1,608.75' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+0.8% vs. ayer' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Oro 14k' | translate }}</div>
-          <div class="kpi__valor">{{ '$1,251.25' | translate }}</div>
-          <div class="kpi__nota kpi__nota--sube">{{ '+0.8% vs. ayer' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Plata .925' | translate }}</div>
-          <div class="kpi__valor">{{ '$26.40' | translate }}</div>
-          <div class="kpi__nota kpi__nota--baja">{{ '−1.2% vs. ayer' | translate }}</div>
-        </article>
-      </div>
-      <div class="rejilla rejilla--2-1">
+      @if (cargandoMetales && !preciosMetales) {
+        <p class="vacio">{{ 'Consultando precios del mercado...' | translate }}</p>
+      } @else if (errorMetales && !preciosMetales) {
         <article class="tarjeta">
           <div class="tarjeta__cabecera">
-            <svg viewBox="0 0 24 24">
-              <path d="M3 17l6-6 4 4 7-7" />
-              <path d="M14 8h6v6" />
-            </svg>
-            <h2 class="tarjeta__titulo">{{ 'Oro 24k · últimos 12 días' | translate }}</h2>
+            <svg viewBox="0 0 24 24"><path d="M12 3l9.5 17h-19z" /><path d="M12 10v4M12 17.2v.1" /></svg>
+            <h2 class="tarjeta__titulo">{{ 'No se pudo obtener el precio' | translate }}</h2>
+            <button type="button" class="tarjeta__accion boton boton--fantasma" (click)="cargarMetales()">
+              {{ 'Reintentar' | translate }}
+            </button>
           </div>
-          <p class="sub">{{ 'Precio por gramo en pesos mexicanos' | translate }}</p>
-
-            <svg class="grafica" viewBox="0 0 700 230" role="img" [attr.aria-label]="'Evolución del precio del oro' | translate">
-            <g class="grafica__rejilla">
-              <line x1="66" y1="26" x2="684" y2="26" />
-              <line x1="66" y1="76" x2="684" y2="76" />
-              <line x1="66" y1="126" x2="684" y2="126" />
-              <line x1="66" y1="176" x2="684" y2="176" />
-            </g>
-            <g class="grafica__eje" text-anchor="end">
-              <text x="56" y="30">{{ '2,200' | translate }}</text>
-              <text x="56" y="80">{{ '2,120' | translate }}</text>
-              <text x="56" y="130">{{ '2,040' | translate }}</text>
-              <text x="56" y="180">{{ '1,960' | translate }}</text>
-            </g>
-            <polyline
-              class="grafica__linea"
-              stroke="#e0c289"
-              points="86,150 140,142 194,156 248,128 302,134 356,110 410,118 464,96 518,104 572,78 626,86 676,60"
-            />
-            <g fill="#ebd5a6" stroke="#3a2e22" class="grafica__punto">
-              <circle cx="86" cy="150" r="4" />
-              <circle cx="194" cy="156" r="4" />
-              <circle cx="302" cy="134" r="4" />
-              <circle cx="410" cy="118" r="4" />
-              <circle cx="518" cy="104" r="4" />
-              <circle cx="626" cy="86" r="4" />
-              <circle cx="676" cy="60" r="4" />
-            </g>
-            <g class="grafica__eje" text-anchor="middle">
-              <text x="86" y="200">{{ '3 sep' | translate }}</text>
-              <text x="194" y="200">{{ '5 sep' | translate }}</text>
-              <text x="302" y="200">{{ '7 sep' | translate }}</text>
-              <text x="410" y="200">{{ '9 sep' | translate }}</text>
-              <text x="518" y="200">{{ '11 sep' | translate }}</text>
-              <text x="626" y="200">{{ '13 sep' | translate }}</text>
-              <text x="676" y="200">{{ 'Hoy' | translate }}</text>
-            </g>
-          </svg>
+          <p class="sub">{{ errorMetales }}</p>
         </article>
+      } @else if (preciosMetales) {
+        <div class="rejilla rejilla--4">
+          @for (tarjeta of tarjetasMetal; track tarjeta.etiqueta) {
+            <article class="kpi">
+              <div class="etiqueta">{{ tarjeta.etiqueta | translate }} · {{ 'por gramo' | translate }}</div>
+              <div class="kpi__valor">{{ tarjeta.mxn_gramo | currency:'MXN':'symbol-narrow':'1.2-2' }}</div>
+              <div class="kpi__nota">{{ tarjeta.usd_gramo | currency:'USD':'symbol-narrow':'1.2-2' }} USD</div>
+            </article>
+          }
+        </div>
 
         <article class="tarjeta">
           <div class="tarjeta__cabecera">
             <svg viewBox="0 0 24 24">
-              <path d="M12 3v18" />
-              <path d="M5 7h14" />
-              <path d="M5 7l-2.5 6a3.2 3.2 0 005 0z" />
-              <path d="M19 7l-2.5 6a3.2 3.2 0 005 0z" />
+              <path d="M12 3v18" /><path d="M5 7h14" />
+              <path d="M5 7l-2.5 6a3.2 3.2 0 005 0z" /><path d="M19 7l-2.5 6a3.2 3.2 0 005 0z" />
+              <path d="M8 21h8" />
             </svg>
-            <h2 class="tarjeta__titulo">{{ 'Actualizar cotización' | translate }}</h2>
+            <h2 class="tarjeta__titulo">{{ 'Mercado de metales preciosos' | translate }}</h2>
+            <button
+              type="button"
+              class="tarjeta__accion boton boton--fantasma"
+              [disabled]="cargandoMetales"
+              (click)="cargarMetales()">
+              {{ (cargandoMetales ? 'Actualizando...' : 'Actualizar') | translate }}
+            </button>
           </div>
           <p class="sub">
-            {{ 'Al guardar, todas las piezas vendidas por peso recalculan su precio automáticamente.' | translate }}
+            {{ 'Precio spot real' | translate }} · 1 USD = {{ preciosMetales.tipo_cambio_mxn | number:'1.2-2' }} MXN
+            @if (preciosMetales.actualizado) {
+              · {{ 'Actualizado' | translate }} {{ preciosMetales.actualizado | date:'dd/MM/yyyy HH:mm' }}
+            }
+            · {{ 'Fuente:' | translate }} {{ preciosMetales.fuente }}
           </p>
+          @if (preciosMetales.desactualizado) {
+            <p class="sub kpi__nota--baja">
+              {{ 'No se pudo actualizar desde el mercado; se muestra el último precio disponible.' | translate }}
+            </p>
+          }
 
-          <div class="campo">
-            <label class="etiqueta">{{ 'Oro 24k · precio por gramo' | translate }}</label>
-            <input type="text" value="2145.00" />
+          <div class="tabla-envoltura">
+            <table class="tabla tabla--amplia">
+              <thead>
+                <tr>
+                  <th>{{ 'Metal' | translate }}</th>
+                  <th class="celda-num">{{ 'USD / onza troy' | translate }}</th>
+                  <th class="celda-num">{{ 'MXN / onza troy' | translate }}</th>
+                  <th class="celda-num">{{ 'USD / gramo' | translate }}</th>
+                  <th class="celda-num">{{ 'MXN / gramo' | translate }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (metal of preciosMetales.metales; track metal.symbol) {
+                  <tr>
+                    <td class="celda-pieza">{{ metal.nombre | translate }} <span class="celda-id">{{ metal.symbol }}</span></td>
+                    <td class="celda-num">{{ metal.usd_onza | currency:'USD':'symbol-narrow':'1.2-2' }}</td>
+                    <td class="celda-num">{{ metal.mxn_onza | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
+                    <td class="celda-num">{{ metal.usd_gramo | currency:'USD':'symbol-narrow':'1.2-2' }}</td>
+                    <td class="celda-monto">{{ metal.mxn_gramo | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
-          <div class="campo">
-            <label class="etiqueta">{{ 'Plata .925 · precio por gramo' | translate }}</label>
-            <input type="text" value="26.40" />
-            <p class="campo__ayuda">{{ 'Oro 18k y 14k se derivan del 24k según su ley.' | translate }}</p>
-          </div>
-
-          <button class="boton boton--primario boton--bloque">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 12l5 5L19 7" />
-            </svg>
-            {{ 'Guardar cotización' | translate }}
-          </button>
-
-          <p class="campo__ayuda" style="text-align: center; margin-top: 14px">
-            {{ 'Solo el administrador puede modificar la cotización. El cambio queda registrado en la bitácora.' | translate }}
-          </p>
         </article>
-      </div>
-
-      <article class="tarjeta">
-        <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 7.5v5l3 2" />
-          </svg>
-          <h2 class="tarjeta__titulo">{{ 'Ejemplo de cálculo' | translate }}</h2>
-        </div>
-        <p class="sub">
-          {{ 'Así queda el precio de una pieza vendida por peso con la cotización de hoy' | translate }}
-        </p>
-
-        <div class="tabla-envoltura">
-          <table class="tabla">
-            <thead>
-              <tr>
-                <th>{{ 'Concepto' | translate }}</th>
-                <th>{{ 'Detalle' | translate }}</th>
-                <th style="text-align: right">{{ 'Importe' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="celda-pieza">{{ 'Metal' | translate }}</td>
-                <td>{{ '18.6 g × $2,145.00 (oro 24k)' | translate }}</td>
-                <td class="celda-monto">{{ '$39,897.00' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-pieza">{{ 'Mano de obra' | translate }}</td>
-                <td>{{ 'Trabajo de orfebrería' | translate }}</td>
-                <td class="celda-monto">{{ '$3,200.00' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-pieza">{{ 'Piedras' | translate }}</td>
-                <td>{{ 'Sin piedras engastadas' | translate }}</td>
-                <td class="celda-monto">{{ '$0.00' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-pieza">{{ 'Margen' | translate }}</td>
-                <td>{{ '22% sobre el costo' | translate }}</td>
-                <td class="celda-monto">{{ '$9,481.34' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-pieza" style="color: var(--oro)">{{ 'Precio de venta' | translate }}</td>
-                <td>{{ 'AUR-GO-042 · Gargantilla Oro Vintage' | translate }}</td>
-                <td class="celda-monto" style="font-size: 18px">{{ '$52,578.34' | translate }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
+      }
     </section>
 
-    <!-- ==================== VISTA: AUDITORÍA ==================== -->
-    <section class="vista" [class.activa]="vistaActiva === 'auditoria'" id="vista-auditoria">
-      <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Movimientos hoy' | translate }}</div>
-          <div class="kpi__valor">{{ '27' | translate }}</div>
-          <div class="kpi__nota">{{ 'Registrados automáticamente' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Cancelaciones' | translate }}</div>
-          <div class="kpi__valor">{{ '2' | translate }}</div>
-          <div class="kpi__nota kpi__nota--baja">{{ 'Ambas autorizadas' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Descuentos aplicados' | translate }}</div>
-          <div class="kpi__valor">{{ '6' | translate }}</div>
-          <div class="kpi__nota">{{ 'Promedio 9.4%' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Sin autorizar' | translate }}</div>
-          <div class="kpi__valor">{{ '1' | translate }}</div>
-          <div class="kpi__nota kpi__nota--baja">{{ 'Requiere revisión' | translate }}</div>
-        </article>
-      </div>
-
-      <article class="tarjeta">
-        <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2.5l8 3.2v6.1c0 4.7-3.3 8.4-8 9.7-4.7-1.3-8-5-8-9.7V5.7z" />
-            <path d="M9 12l2 2 4-4.5" />
-          </svg>
-          <h2 class="tarjeta__titulo">{{ 'Bitácora de acciones sensibles' | translate }}</h2>
-          <div class="tarjeta__accion segmentos">
-            <button class="activo">{{ 'Todo' | translate }}</button>
-            <button>{{ 'Cancelaciones' | translate }}</button>
-            <button>{{ 'Precios' | translate }}</button>
-            <button>{{ 'Descuentos' | translate }}</button>
-          </div>
-        </div>
-        <p class="sub">
-          {{ 'Registro inalterable de toda operación que afecta dinero o inventario.' | translate }}
-        </p>
-
-        <div class="tabla-envoltura">
-          <table class="tabla tabla--amplia">
-            <thead>
-              <tr>
-                <th>{{ 'Fecha y hora' | translate }}</th>
-                <th>{{ 'Usuario' | translate }}</th>
-                <th>{{ 'Rol' | translate }}</th>
-                <th>{{ 'Acción' | translate }}</th>
-                <th>{{ 'Detalle' | translate }}</th>
-                <th>{{ 'Autorizó' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="celda-id">{{ '14 sep, 11:20' | translate }}</td>
-                <td>{{ 'Diego Molina' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Cajero' | translate }}</span></td>
-                <td><span class="insignia insignia--riesgo">{{ 'Descuento' | translate }}</span></td>
-                <td>{{ '18% sobre V-8843 · Collar Perla' | translate }}</td>
-                <td class="celda-id">{{ 'Pendiente' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ '14 sep, 08:00' | translate }}</td>
-                <td>{{ 'Valentina Ruiz' | translate }}</td>
-                <td><span class="insignia insignia--riesgo">{{ 'Administrador' | translate }}</span></td>
-                <td><span class="insignia insignia--aviso">{{ 'Cotización' | translate }}</span></td>
-                <td>{{ 'Oro 24k: $2,128.00 → $2,145.00' | translate }}</td>
-                <td class="celda-id">{{ '—' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ '13 sep, 19:42' | translate }}</td>
-                <td>{{ 'Camila Torres' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Cajero' | translate }}</span></td>
-                <td><span class="insignia insignia--riesgo">{{ 'Cancelación' | translate }}</span></td>
-                <td>{{ 'V-8836 · $2,750 · cliente desistió' | translate }}</td>
-                <td>{{ 'Santiago Vega' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ '13 sep, 17:05' | translate }}</td>
-                <td>{{ 'Santiago Vega' | translate }}</td>
-                <td><span class="insignia insignia--aviso">{{ 'Gerente' | translate }}</span></td>
-                <td><span class="insignia insignia--aviso">{{ 'Edición de precio' | translate }}</span></td>
-                <td>{{ 'AUR-RE-008 · $17,900 → $18,500' | translate }}</td>
-                <td class="celda-id">{{ '—' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ '13 sep, 16:30' | translate }}</td>
-                <td>{{ 'Isabela Cruz' | translate }}</td>
-                <td><span class="insignia insignia--neutra">{{ 'Cajero' | translate }}</span></td>
-                <td><span class="insignia insignia--neutra">{{ 'Baja de inventario' | translate }}</span></td>
-                <td>{{ 'AUR-SA-015 · 1 pieza · daño en engaste' | translate }}</td>
-                <td>{{ 'Santiago Vega' | translate }}</td>
-              </tr>
-              <tr>
-                <td class="celda-id">{{ '13 sep, 14:12' | translate }}</td>
-                <td>{{ 'Valentina Ruiz' | translate }}</td>
-                <td><span class="insignia insignia--riesgo">{{ 'Administrador' | translate }}</span></td>
-                <td><span class="insignia insignia--neutra">{{ 'Alta de usuario' | translate }}</span></td>
-                <td>{{ 'E-005 · rol cajero · Querétaro' | translate }}</td>
-                <td class="celda-id">{{ '—' | translate }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </section>
   </main>
 </div>
 

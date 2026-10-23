@@ -13,78 +13,85 @@
     </button>
   </header>
 
-  <!-- Tarjeta de Asignación / Modificación de Stock -->
-  <section class="tarjeta">
-    <div class="tarjeta-cabecera">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 3l-3 6 3 12 3-12-3-6z" />
-        <path d="M6 3h12l3 6-9 12L3 9z" />
-      </svg>
-      <h2>{{ 'Asignar o Modificar Stock en Tienda' | translate }}</h2>
-    </div>
+  <!-- Formulario: solo visible para el Gerente, y solo afecta a su sucursal -->
+  @if (esGerente) {
+    <!-- Tarjeta de Asignación / Modificación de Stock -->
+    <section class="tarjeta">
+      <div class="tarjeta-cabecera">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3l-3 6 3 12 3-12-3-6z" />
+          <path d="M6 3h12l3 6-9 12L3 9z" />
+        </svg>
+        <h2>{{ 'Asignar o Modificar Stock en Tienda' | translate }}</h2>
+      </div>
 
-    <form (ngSubmit)="guardarStock()" class="formulario-grid">
-      <div class="campo">
-        <label class="etiqueta">{{ 'Sucursal asignada' | translate }} *</label>
-        <select [(ngModel)]="nuevoRegistro.id_sucursal" name="id_sucursal" class="input-olimpo" required>
-          @for (s of catalogoSucursales; track s.id) {
-            <option [ngValue]="s.id">{{ s.nombre }}</option>
+      <form (ngSubmit)="guardarStock()" class="formulario-grid">
+        <div class="campo">
+          <label class="etiqueta">{{ 'Sucursal asignada' | translate }}</label>
+          <input
+            type="text"
+            class="input-olimpo"
+            [value]="usuario?.nombre_sucursal || ''"
+            disabled />
+        </div>
+
+        <div class="campo">
+          <label class="etiqueta">{{ 'Pieza / Joya' | translate }} *</label>
+          <select [(ngModel)]="nuevoRegistro.id_producto" name="id_producto" class="input-olimpo" required>
+            @for (p of catalogoProductos; track p.id) {
+              <option [ngValue]="p.id">{{ productName(p.nombre) }} ({{ language.catalogPhrase(p.tipo_metal) }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="campo">
+          <label class="etiqueta">{{ 'Stock Físico' | translate }}</label>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="nuevoRegistro.stock"
+            name="stock"
+            required
+            class="input-olimpo" />
+        </div>
+
+        <div class="campo">
+          <label class="etiqueta">{{ 'Stock Mínimo (Alerta)' | translate }}</label>
+          <input
+            type="number"
+            min="0"
+            [(ngModel)]="nuevoRegistro.stock_minimo"
+            name="stock_minimo"
+            required
+            class="input-olimpo" />
+        </div>
+
+        <div class="campo campo-completo">
+          <label class="etiqueta">{{ 'Ubicación en Vitrina / Caja de Seguridad' | translate }}</label>
+          <input
+            type="text"
+            [(ngModel)]="nuevoRegistro.ubicacion_vitrina"
+            name="ubicacion_vitrina"
+            [placeholder]="'Ej. Vitrina Central - Charola Oro 14k' | translate"
+            class="input-olimpo" />
+        </div>
+
+        <div class="acciones-form">
+          <button type="submit" [disabled]="guardando" class="btn-oro">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
+            {{ (guardando ? 'Guardando existencias...' : (inventarioEditandoId !== null ? 'Actualizar existencias' : 'Guardar Existencias')) | translate }}
+          </button>
+          @if (inventarioEditandoId !== null) {
+            <button type="button" class="btn-volver" (click)="cancelarEdicionStock()">{{ 'Cancelar' | translate }}</button>
           }
-        </select>
-      </div>
-
-      <div class="campo">
-        <label class="etiqueta">{{ 'Pieza / Joya' | translate }} *</label>
-        <select [(ngModel)]="nuevoRegistro.id_producto" name="id_producto" class="input-olimpo" required>
-          @for (p of catalogoProductos; track p.id) {
-            <option [ngValue]="p.id">{{ productName(p.nombre) }} ({{ language.catalogPhrase(p.tipo_metal) }})</option>
-          }
-        </select>
-      </div>
-
-      <div class="campo">
-        <label class="etiqueta">{{ 'Stock Físico' | translate }}</label>
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="nuevoRegistro.stock"
-          name="stock"
-          required
-          class="input-olimpo" />
-      </div>
-
-      <div class="campo">
-        <label class="etiqueta">{{ 'Stock Mínimo (Alerta)' | translate }}</label>
-        <input
-          type="number"
-          min="0"
-          [(ngModel)]="nuevoRegistro.stock_minimo"
-          name="stock_minimo"
-          required
-          class="input-olimpo" />
-      </div>
-
-      <div class="campo campo-completo">
-        <label class="etiqueta">{{ 'Ubicación en Vitrina / Caja de Seguridad' | translate }}</label>
-        <input
-          type="text"
-          [(ngModel)]="nuevoRegistro.ubicacion_vitrina"
-          name="ubicacion_vitrina"
-          [placeholder]="'Ej. Vitrina Central - Charola Oro 14k' | translate"
-          class="input-olimpo" />
-      </div>
-
-      <div class="acciones-form">
-        <button type="submit" [disabled]="guardando" class="btn-oro">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-          {{ (guardando ? 'Guardando existencias...' : (inventarioEditandoId !== null ? 'Actualizar existencias' : 'Guardar Existencias')) | translate }}
-        </button>
-        @if (inventarioEditandoId !== null) {
-          <button type="button" class="btn-volver" (click)="cancelarEdicionStock()">{{ 'Cancelar' | translate }}</button>
-        }
-      </div>
-    </form>
-  </section>
+        </div>
+      </form>
+    </section>
+  } @else {
+    <section class="tarjeta">
+      <p class="nota-permiso">{{ 'Solo el Gerente de cada sucursal puede agregar o modificar existencias en el inventario.' | translate }}</p>
+    </section>
+  }
 
   <!-- Barra de acciones masivas -->
   @if (itemsSeleccionados.length > 0) {
@@ -102,7 +109,7 @@
       <svg viewBox="0 0 24 24">
         <path d="M3 21h18M5 21V8l7-5 7 5v13M10 21v-6h4v6" />
       </svg>
-      <h2>{{ 'Existencias en Red de Sucursales' | translate }}</h2>
+      <h2>{{ tituloTabla | translate }}</h2>
     </div>
 
     @if (cargando) {
