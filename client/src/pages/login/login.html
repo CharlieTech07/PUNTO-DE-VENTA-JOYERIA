@@ -28,21 +28,20 @@
       <p class="sub">{{ 'Acceda a su vitrina privada' | translate }}</p>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
-        <div class="field" [class.con-error]="submitted && email?.invalid">
-          <label for="email">{{ 'Correo electrónico' | translate }}</label>
+        <div class="field" [class.con-error]="submitted && usuario?.invalid">
+          <label for="usuario">{{ 'Nombre de usuario' | translate }}</label>
           <input
-            id="email"
-            type="email"
-            #correo
-            formControlName="email"
-            [placeholder]="'Ej: olimpo@gmail.com' | translate"
-            autocomplete="username">
+            id="usuario"
+            type="text"
+            #campoUsuario
+            formControlName="usuario"
+            [placeholder]="'Ej: camila.torres' | translate"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false">
 
-          <p class="error" *ngIf="submitted && email?.errors?.['required']">
-            {{ 'El correo es obligatorio.' | translate }}
-          </p>
-          <p class="error" *ngIf="submitted && email?.errors?.['email']">
-            {{ 'Ingresa un formato de correo válido.' | translate }}
+          <p class="error" *ngIf="submitted && usuario?.errors?.['required']">
+            {{ 'El usuario es obligatorio.' | translate }}
           </p>
         </div>
 
@@ -84,35 +83,13 @@
           </p>
         </div>
 
-        <!-- Términos: sin marcar la casilla no se puede ingresar.
-             Los enlaces abren otra pestaña para no perder lo escrito. -->
-        <div class="field" [class.con-error]="submitted && aceptaTerminos?.invalid">
-          <div class="casilla">
-            <input id="acepta-terminos" type="checkbox" formControlName="aceptaTerminos" aria-describedby="pista-casilla">
-            <label for="acepta-terminos">
-              {{ 'He leído y acepto los' | translate }}
-              <a routerLink="/terminos" target="_blank" rel="noopener">{{ 'términos y condiciones' | translate }}</a>
-              {{ 'y el' | translate }}
-              <a routerLink="/privacidad" target="_blank" rel="noopener">{{ 'aviso de privacidad' | translate }}</a>
-            </label>
-          </div>
-        </div>
-
-        <p class="error-servidor" *ngIf="errorMessage" role="alert">
-          {{ errorMessage }}
+        <p class="error-servidor" *ngIf="errorMessage()" role="alert">
+          {{ errorMessage() }}
         </p>
 
-        <button type="submit" class="primary" [disabled]="loading"
-                [class.bloqueado]="!aceptaTerminos?.value"
-                [attr.aria-disabled]="!aceptaTerminos?.value">
-          {{ (loading ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA') | translate }}
+        <button type="submit" class="primary" [disabled]="loading()">
+          {{ (loading() ? 'INGRESANDO...' : 'INGRESAR A LA VITRINA') | translate }}
         </button>
-
-        <p id="pista-casilla" class="pista-casilla"
-           [class.oculta]="aceptaTerminos?.value"
-           [class.pista-casilla--error]="submitted">
-          {{ 'Marque la casilla para poder ingresar' | translate }}
-        </p>
       </form>
     </div>
   </div>

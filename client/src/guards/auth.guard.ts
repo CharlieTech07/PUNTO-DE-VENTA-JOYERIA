@@ -9,6 +9,10 @@ export const authGuard: CanActivateFn = () => {
   const router = inject(Router);
 
   if (authService.estaAutenticado()) {
+    // Mientras no confirme que leyó los términos y el aviso de privacidad, no pasa de ahí
+    if (authService.terminosPendientes()) {
+      return router.createUrlTree(['/confirmar-lectura']);
+    }
     return true;
   }
 

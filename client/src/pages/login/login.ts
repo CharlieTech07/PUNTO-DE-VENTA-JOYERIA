@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { AuthService } from '../../services/auth.service';
@@ -25,7 +25,7 @@ function tocaIntro(): boolean {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
   templateUrl: './login.html',
   styleUrls: ['./login.css', './login-intro.css'],
   host: { '[class.con-intro]': 'introActiva()' }
@@ -36,19 +36,20 @@ export class LoginComponent implements OnInit, OnDestroy {
   private authService = inject(AuthService);
 
   readonly introActiva = signal(tocaIntro());
-  private correo = viewChild<ElementRef<HTMLInputElement>>('correo');
+  private campoUsuario = viewChild<ElementRef<HTMLInputElement>>('campoUsuario');
   private finIntro?: ReturnType<typeof setTimeout>;
 
   loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
-    // Casilla de términos y aviso de privacidad (opción B que votó el equipo).
-    // Nace sin marcar a propósito: una casilla ya marcada no cuenta como aceptación.
-    aceptaTerminos: [false, Validators.requiredTrue]
+    // Se entra con el nombre de usuario. Los términos y el aviso de privacidad ya no se
+    // aceptan aquí: le llegan a cada empleado por correo cuando lo dan de alta.
+    usuario: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(8)]]
   });
   submitted = false;
-  loading = false;
-  errorMessage = '';
+  // Signals: sin zone.js, la respuesta del servidor no redibuja la pantalla por sí sola
+  // (con variables normales el botón se quedaba en "INGRESANDO..." y el error no salía)
+  readonly loading = signal(false);
+  readonly errorMessage = signal('');
   isModoClaro = false;
   showPassword = false;
 
@@ -57,12 +58,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.isModoClaro = temaGuardado === 'claro';
     this.aplicarTema();
 
-    // Al terminar la intro (o de una vez si no hubo) el cursor queda en el correo.
+    // Al terminar la intro (o de una vez si no hubo) el cursor queda en el usuario.
     // En pantallas táctiles no, para que no salte el teclado encima del login.
     this.finIntro = setTimeout(() => {
       this.introActiva.set(false);
       if (matchMedia('(pointer: fine)').matches) {
-        this.correo()?.nativeElement.focus({ preventScroll: true });
+        this.campoUsuario()?.nativeElement.focus({ preventScroll: true });
       }
     }, this.introActiva() ? DURACION_INTRO_MS : 0);
   }
@@ -86,42 +87,38 @@ export class LoginComponent implements OnInit, OnDestroy {
     localStorage.setItem('olimpo:tema', tema);
   }
 
-  get email() {
-    return this.loginForm.get('email');
+  get usuario() {
+    return this.loginForm.get('usuario');
   }
 
   get password() {
     return this.loginForm.get('password');
   }
 
-  get aceptaTerminos() {
-    return this.loginForm.get('aceptaTerminos');
-  }
-
   onSubmit(): void {
     this.submitted = true;
-    this.errorMessage = '';
+    this.errorMessage.set('');
 
     if (this.loginForm.invalid) {
       return;
     }
 
-    this.loading = true;
+    this.loading.set(true);
 
     const credenciales = {
-      correo: this.loginForm.value.email.trim(),
+      usuario: this.loginForm.value.usuario.trim(),
       contrasena: this.loginForm.value.password.trim()
     };
 
     this.authService.iniciarSesion(credenciales).subscribe({
       next: (_resp) => {
-        this.loading = false;
+        this.loading.set(false);
         this.router.navigate(['/inicio']);
       },
       error: (err) => {
-        this.loading = false;
+        this.loading.set(false);
         console.error('Error al iniciar sesión:', err);
-        this.errorMessage = err.error?.error || 'Credenciales inválidas o error de conexión.';
+        this.errorMessage.set(err.error?.error || 'Credenciales inválidas o error de conexión.');
       }
     });
   }

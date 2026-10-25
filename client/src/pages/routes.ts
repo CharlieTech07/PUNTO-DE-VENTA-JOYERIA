@@ -9,6 +9,7 @@ import { ProductosComponent } from './productos/productos';
 import { SucursalesComponent } from './sucursales/sucursales';
 import { InventarioComponent } from './inventario/inventario';
 import { LegalComponent } from './legal/legal';
+import { ConfirmarLecturaComponent } from './confirmar-lectura/confirmar-lectura';
 
 // Las sucursales ahora viven dentro del dashboard: esta ruta solo redirige hacia allá
 const irASucursalesEnDashboard: CanActivateFn = () =>
@@ -24,6 +25,10 @@ export const routes: Routes = [
   // Avisos legales: también públicos, se abren desde los enlaces del login
   { path: 'privacidad', component: LegalComponent, data: { documento: 'privacidad' } },
   { path: 'terminos', component: LegalComponent, data: { documento: 'terminos' } },
+
+  // Confirmación de lectura de los términos: se abre desde el correo de bienvenida (con
+  // ?clave=) o al entrar sin haberlos aceptado (el authGuard manda aquí)
+  { path: 'confirmar-lectura', component: ConfirmarLecturaComponent },
 
   // Todas las demás rutas exigen sesión iniciada
   {
