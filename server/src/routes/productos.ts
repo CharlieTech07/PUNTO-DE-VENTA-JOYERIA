@@ -104,7 +104,7 @@ router.post('/', verificarToken, permitirRoles('Administrador'), upload.single('
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Error al insertar producto con imagen:', error);
-    res.status(500).json({ error: 'Error al guardar joya en PostgreSQL', detalle: error });
+    res.status(500).json({ error: 'Error al guardar joya en PostgreSQL' });
   }
 });
 
@@ -232,14 +232,15 @@ router.delete('/:id', verificarToken, permitirRoles('Administrador'), async (req
   } catch (error: any) {
     console.error('Error al eliminar producto:', error);
 
-    // Código 23503 en Postgres = restricción de clave foránea (por ejemplo si ya se vendió)
-    if (error.code === '23503') {
+    // Código 23503 en Postgres = restricción de clave foránea (por ejemplo si ya se vendió).
+    // Con ON DELETE RESTRICT (como en DB_v3) Postgres responde 23001 en su lugar.
+    if (error.code === '23503' || error.code === '23001') {
       return res.status(409).json({
         error: 'No se puede eliminar la joya porque ya está ligada a un inventario o venta.'
       });
     }
 
-    res.status(500).json({ error: 'Error al eliminar de PostgreSQL', detalle: error });
+    res.status(500).json({ error: 'Error al eliminar de PostgreSQL' });
   }
 });
 
