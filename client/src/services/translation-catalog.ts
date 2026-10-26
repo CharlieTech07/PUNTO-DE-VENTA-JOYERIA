@@ -80,7 +80,7 @@ export const translationCatalog: Record<string, Translation> = {
   'INGRESAR A LA VITRINA': { es: 'INGRESAR A LA VITRINA', en: 'ENTER THE SHOWCASE' },
   'piezas disponibles': { es: 'piezas disponibles', en: 'pieces available' },
   '+12% vs. ayer': { es: '+12% vs. ayer', en: '+12% vs. yesterday' },
-  'Home': { es: 'Inicio', en: 'Home' },
+  'Inicio': { es: 'Inicio', en: 'Home' },
   'Olimpo · Home': { es: 'Olimpo · Inicio', en: 'Olimpo · Home' },
   'Olimpo · Panel de administración': { es: 'Olimpo · Panel de administración', en: 'Olimpo · Admin Panel' },
   'VITRINA DE MERCANCÍA': { es: 'VITRINA DE MERCANCÍA', en: 'JEWELRY SHOWCASE' },
