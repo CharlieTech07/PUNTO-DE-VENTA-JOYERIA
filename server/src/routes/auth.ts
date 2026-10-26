@@ -238,7 +238,9 @@ router.post('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente
         correo: usuario.correo,
         rol: usuario.rol,
         nombre_sucursal: nombreSucursal,
-        enlace_terminos: enlaceTerminos(await crearClaveTerminos(usuario.id))
+        enlace_terminos: enlaceTerminos(await crearClaveTerminos(usuario.id)),
+        // Temporal (decisión de Cristian, oct 2026): la contraseña inicial va en el correo
+        contrasena_temporal: contrasenaLimpia
       });
     } catch (errorCorreo) {
       correoEnviado = false;

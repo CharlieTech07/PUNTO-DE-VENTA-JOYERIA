@@ -16,6 +16,10 @@ export interface DatosBienvenida {
   rol: 'Administrador' | 'Gerente' | 'Cajero';
   nombre_sucursal: string | null;
   enlace_terminos: string; // enlace personal a /confirmar-lectura
+  // Decisión temporal de Cristian (oct 2026): mientras no exista "cambiar la contraseña al
+  // primer ingreso", la contraseña inicial también va en el correo. Para quitarla basta con
+  // dejar de mandar este dato desde auth.ts.
+  contrasena_temporal?: string;
 }
 
 const LO_QUE_HACE: Record<DatosBienvenida['rol'], string> = {
@@ -76,12 +80,22 @@ export function correoBienvenida(d: DatosBienvenida) {
   const asunto = `Le damos la bienvenida a Olimpo, ${d.nombres}`;
   const datosCuenta: [string, string][] = [
     ['Usuario', d.nombre_usuario],
+    ...(d.contrasena_temporal ? [['Contraseña temporal', d.contrasena_temporal] as [string, string]] : []),
     ['Puesto', d.rol],
     ['Sucursal', d.rol === 'Administrador' || !d.nombre_sucursal ? 'Todas' : d.nombre_sucursal],
     ['Correo registrado', d.correo]
   ];
   const parrafo = (t: string, extra = '') =>
     `<p style="margin:0 0 14px;font-family:${SANS};font-size:15px;line-height:1.65;color:${C.texto};${extra}">${t}</p>`;
+  const comoEntrar = d.contrasena_temporal
+    ? 'Para entrar al sistema, escriba su usuario y su contraseña temporal en la pantalla de acceso. Por seguridad, no reenvíe este correo y pida a su administrador que le cambie la contraseña después de entrar.'
+    : 'Para entrar al sistema, escriba su usuario y su contraseña en la pantalla de acceso. La contraseña inicial se la entrega en persona quien creó su cuenta: por seguridad, nunca la enviamos por correo.';
+  // La contraseña en letra de máquina, para no confundir l con 1 ni O con 0
+  const estiloValor = (k: string) => {
+    if (k === 'Usuario') return `font-family:${SERIF};font-size:20px;color:${C.oroClaro};letter-spacing:1px;`;
+    if (k === 'Contraseña temporal') return `font-family:Consolas,'Courier New',monospace;font-size:17px;color:${C.oroClaro};letter-spacing:1px;`;
+    return `font-family:${SANS};font-size:15px;color:${C.claro};`;
+  };
 
   const html = `<!doctype html>
 <html lang="es">
@@ -126,17 +140,14 @@ export function correoBienvenida(d: DatosBienvenida) {
               <tr><td style="padding:20px 24px 6px;">
                 <div style="font-family:${SERIF};font-size:12px;letter-spacing:4px;color:${C.oro};">&#9670;&nbsp;&nbsp;SU CUENTA</div>
               </td></tr>
-              ${datosCuenta.map(([k, v], i) => {
-                const usuario = k === 'Usuario';
-                return `
+              ${datosCuenta.map(([k, v], i) => `
               <tr><td style="padding:${i === 0 ? 10 : 6}px 24px 0;">
-                <span style="display:inline-block;width:140px;font-family:${SANS};font-size:13px;color:${C.arena3};">${k}</span><span style="font-family:${usuario ? SERIF : SANS};font-size:${usuario ? 20 : 15}px;color:${usuario ? C.oroClaro : C.claro};${usuario ? 'letter-spacing:1px;' : ''}">${esc(v)}</span>
-              </td></tr>`;
-              }).join('')}
+                <span style="display:inline-block;width:150px;font-family:${SANS};font-size:13px;color:${C.arena3};">${k}</span><span style="${estiloValor(k)}">${esc(v)}</span>
+              </td></tr>`).join('')}
               <tr><td style="padding:0 0 20px;"></td></tr>
             </table>
 
-            ${parrafo('Para entrar al sistema, escriba su usuario y su contraseña en la pantalla de acceso. La contraseña inicial se la entrega en persona quien creó su cuenta: por seguridad, nunca la enviamos por correo.')}
+            ${parrafo(comoEntrar)}
 
             <div style="margin:30px 0 10px;">${divisor()}</div>
             <div style="text-align:center;padding:14px 0 30px;">
@@ -183,7 +194,7 @@ export function correoBienvenida(d: DatosBienvenida) {
     'SU CUENTA',
     ...datosCuenta.map(([k, v]) => `${k}: ${v}`),
     '',
-    'Para entrar al sistema, escriba su usuario y su contraseña en la pantalla de acceso. La contraseña inicial se la entrega en persona quien creó su cuenta: por seguridad, nunca la enviamos por correo.',
+    comoEntrar,
     '',
     'UN PASO ANTES DE EMPEZAR',
     'Lea los términos de uso y el aviso de privacidad, y confirme que los acepta, en este enlace personal (no lo reenvíe):',
