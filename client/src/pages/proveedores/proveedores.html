@@ -1,0 +1,53 @@
+<div class="proveedores-layout">
+  <header class="proveedores-header">
+    <div>
+      <span class="etiqueta">{{ 'Inventario y compras' | translate }}</span>
+      <h1 class="titulo-pantalla">{{ 'Proveedores' | translate }}</h1>
+      <p class="subtitulo">{{ 'Registra y mantén actualizados los datos de tus proveedores.' | translate }}</p>
+    </div>
+    <button type="button" class="btn-secundario" (click)="volverAlDashboard()">← {{ 'Volver a módulos' | translate }}</button>
+  </header>
+
+  @if (aviso) { <div class="aviso aviso-ok" role="status">{{ aviso | translate }}</div> }
+  @if (error) { <div class="aviso aviso-error" role="alert">{{ error | translate }}</div> }
+
+  <section class="tarjeta formulario-tarjeta">
+    <div class="tarjeta-cabecera">
+      <div>
+        <span class="etiqueta">{{ (enEdicion ? 'Actualizar registro' : 'Nuevo registro') | translate }}</span>
+        <h2>{{ (enEdicion ? 'Editar proveedor' : 'Dar de alta proveedor') | translate }}</h2>
+      </div>
+      @if (enEdicion) { <button type="button" class="btn-secundario" (click)="cancelarEdicion()">{{ 'Cancelar edición' | translate }}</button> }
+    </div>
+    <form (ngSubmit)="guardar()" class="formulario-grid">
+      <div class="campo"><label for="nombre">{{ 'Nombre comercial' | translate }} *</label><input id="nombre" name="nombre" [(ngModel)]="formulario.nombre" required maxlength="150" [placeholder]="'Ej. Joyería del Centro' | translate" /></div>
+      <div class="campo"><label for="contacto">{{ 'Persona de contacto' | translate }}</label><input id="contacto" name="contacto" [(ngModel)]="formulario.contacto" maxlength="150" /></div>
+      <div class="campo"><label for="telefono">{{ 'Teléfono' | translate }}</label><input id="telefono" name="telefono" [(ngModel)]="formulario.telefono" maxlength="20" /></div>
+      <div class="campo"><label for="correo">{{ 'Correo electrónico' | translate }}</label><input id="correo" name="correo" [(ngModel)]="formulario.correo" type="email" maxlength="150" /></div>
+      <div class="campo"><label for="rfc">{{ 'RFC / Identificación fiscal' | translate }}</label><input id="rfc" name="rfc_identificacion" [(ngModel)]="formulario.rfc_identificacion" maxlength="20" /></div>
+      <div class="campo campo-completo"><label for="direccion">{{ 'Dirección' | translate }}</label><input id="direccion" name="direccion" [(ngModel)]="formulario.direccion" maxlength="250" /></div>
+      <div class="acciones"><button class="btn-principal" type="submit" [disabled]="guardando">{{ (guardando ? 'Guardando…' : (enEdicion ? 'Guardar cambios' : 'Registrar proveedor')) | translate }}</button></div>
+    </form>
+  </section>
+
+  <section class="tarjeta">
+    <div class="tarjeta-cabecera"><div><span class="etiqueta">{{ 'Directorio' | translate }}</span><h2>{{ 'Proveedores registrados' | translate }}</h2></div><span class="contador">{{ proveedores.length }} {{ 'registros' | translate }}</span></div>
+    @if (cargando) { <p class="estado">{{ 'Cargando proveedores…' | translate }}</p> }
+    @else {
+      <div class="tabla-envoltura">
+        <table>
+        <thead><tr><th>{{ 'Proveedor' | translate }}</th><th>{{ 'Contacto' | translate }}</th><th>{{ 'Teléfono' | translate }}</th><th>{{ 'Correo' | translate }}</th><th>{{ 'Dirección' | translate }}</th><th></th></tr></thead>
+          <tbody>
+            @for (proveedor of proveedores; track proveedor.id) {
+              <tr>
+                <td><strong>{{ proveedor.nombre }}</strong>@if (proveedor.rfc_identificacion) { <small>{{ 'RFC:' | translate }} {{ proveedor.rfc_identificacion }}</small> }</td>
+                <td>{{ proveedor.contacto || '—' }}</td><td>{{ proveedor.telefono || '—' }}</td><td>{{ proveedor.correo || '—' }}</td><td>{{ proveedor.direccion || '—' }}</td>
+                <td><button type="button" class="btn-editar" (click)="editar(proveedor)">{{ 'Editar' | translate }}</button></td>
+              </tr>
+            } @empty { <tr><td colspan="6" class="estado">{{ 'Aún no hay proveedores registrados.' | translate }}</td></tr> }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

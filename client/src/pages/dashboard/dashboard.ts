@@ -148,7 +148,7 @@ export class DashboardComponent implements OnInit {
     sucursales: 'Sucursales',
     empleados: 'Empleados',
     metal: 'Precio del Metal',
-    apartados: 'Apartados'
+    apartados: 'Módulos'
   };
 
   ngOnInit(): void {

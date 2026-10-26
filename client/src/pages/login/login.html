@@ -1,10 +1,6 @@
 <!-- Intro "Luz de vitrina": solo existe mientras corre (ver login-intro.css) -->
 <div class="intro-penumbra" *ngIf="introActiva()" aria-hidden="true"></div>
 
-<button class="theme-toggle" (click)="toggleTema()" type="button">
-  <span>{{ isModoClaro ? ('MODO OSCURO' | translate) : ('MODO CLARO' | translate) }}</span>
-</button>
-
 <div class="wrap">
   <div class="brand">
     <div class="crest-marco">
