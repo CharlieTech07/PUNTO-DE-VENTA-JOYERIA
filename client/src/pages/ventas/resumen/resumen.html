@@ -109,6 +109,9 @@
           <div class="factura__cabeza">
             <div>
               <p class="factura__titulo">{{ 'Factura' | translate }}</p>
+              @if (facturaEmitida(); as f) {
+                <p class="factura__folio">{{ 'Folio' | translate }}: {{ f.folio_texto }}</p>
+              }
               <p class="factura__aviso">{{ 'Sin timbrar: no tiene validez fiscal hasta que se timbre con un PAC.' | translate }}</p>
             </div>
             <span class="factura__fecha">{{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
@@ -157,7 +160,9 @@
             <div class="factura__total"><dt>{{ 'Total' | translate }}</dt><dd>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }} MXN</dd></div>
           </dl>
         </div>
-        <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>
+        @if (!facturaEmitida()) {
+          <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>
+        }
       } @else {
         <form class="formulario" [formGroup]="formulario" (ngSubmit)="generarFactura()" novalidate>
           <p class="formulario__titulo">{{ 'Datos de facturación' | translate }}</p>
@@ -214,7 +219,12 @@
             <a routerLink="/privacidad" target="_blank" rel="noopener">{{ 'Consulte el aviso de privacidad' | translate }}</a>
           </p>
 
-          <button type="submit" class="btn btn--claro">{{ 'Ver factura' | translate }}</button>
+          @if (errorFactura()) {
+            <p role="alert">{{ errorFactura() | translate }}</p>
+          }
+          <button type="submit" class="btn btn--claro" [disabled]="emitiendo()">
+            {{ (emitiendo() ? 'Generando...' : 'Ver factura') | translate }}
+          </button>
         </form>
       }
     </aside>
