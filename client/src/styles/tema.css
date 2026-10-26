@@ -16,6 +16,10 @@ html {
   font-size: 17px;
 }
 
+html[data-tamano-tipografia="pequena"] { font-size: 15px; }
+html[data-tamano-tipografia="normal"] { font-size: 17px; }
+html[data-tamano-tipografia="grande"] { font-size: 19px; }
+
 *, *::before, *::after {
   box-sizing: inherit;
 }
