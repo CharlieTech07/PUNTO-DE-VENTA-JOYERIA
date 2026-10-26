@@ -49,12 +49,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   submitted = false;
   loading = false;
   errorMessage = '';
-  isModoClaro = false;
   showPassword = false;
 
   ngOnInit(): void {
-    const temaGuardado = localStorage.getItem('olimpo:tema');
-    this.isModoClaro = temaGuardado === 'claro';
     this.aplicarTema();
 
     // Al terminar la intro (o de una vez si no hubo) el cursor queda en el correo.
@@ -71,17 +68,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     clearTimeout(this.finIntro);
   }
 
-  toggleTema(): void {
-    this.isModoClaro = !this.isModoClaro;
-    this.aplicarTema();
-  }
-
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
   private aplicarTema(): void {
-    const tema = this.isModoClaro ? 'claro' : 'oscuro';
+    const temaGuardado = localStorage.getItem('olimpo:tema');
+    const tema = temaGuardado === 'claro' ? 'claro' : 'oscuro';
     document.documentElement.setAttribute('data-tema', tema);
     localStorage.setItem('olimpo:tema', tema);
   }

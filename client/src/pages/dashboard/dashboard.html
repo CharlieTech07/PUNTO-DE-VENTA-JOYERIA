@@ -442,112 +442,65 @@
       }
     </section>
 
-    <!-- ==================== VISTA: APARTADOS ==================== -->
+    <!-- ==================== VISTA: MÓDULOS ==================== -->
     <section class="vista" [class.activa]="vistaActiva === 'apartados'" id="vista-apartados">
       <div class="rejilla rejilla--4">
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Apartados activos' | translate }}</div>
-          <div class="kpi__valor">{{ '14' | translate }}</div>
-          <div class="kpi__nota">{{ 'Piezas fuera de venta' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Anticipos cobrados' | translate }}</div>
-          <div class="kpi__valor">{{ '$96,300' | translate }}</div>
-          <div class="kpi__nota">{{ 'De $214,800 comprometidos' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Por vencer' | translate }}</div>
-          <div class="kpi__valor">{{ '3' | translate }}</div>
-          <div class="kpi__nota kpi__nota--baja">{{ 'En los próximos 7 días' | translate }}</div>
-        </article>
-        <article class="kpi">
-          <div class="etiqueta">{{ 'Vencidos' | translate }}</div>
-          <div class="kpi__valor">{{ '1' | translate }}</div>
-          <div class="kpi__nota kpi__nota--baja">{{ 'Pendiente de liberar' | translate }}</div>
-        </article>
+        <a class="kpi modulo-acceso" routerLink="/proveedores" aria-label="Abrir módulo de proveedores">
+          <div class="modulo-acceso__ilustracion" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <path d="M10 25 32 13l22 12v26H10V25Z" />
+              <path d="M6 27 32 12l26 15M17 31h30M17 38h30M17 45h17" />
+              <circle cx="45" cy="45" r="11" />
+              <path d="M45 40v10m-4-7h5a2 2 0 0 1 0 4h-5" />
+            </svg>
+          </div>
+          <div class="modulo-acceso__contenido">
+            <div class="etiqueta">{{ 'Inventario y compras' | translate }}</div>
+            <div class="kpi__valor">{{ 'Proveedores' | translate }}</div>
+            <div class="kpi__nota">{{ 'Administrar contactos y datos comerciales' | translate }} →</div>
+          </div>
+        </a>
+        <a class="kpi modulo-acceso" routerLink="/opciones" aria-label="Opciones">
+          <div class="modulo-acceso__ilustracion" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <path d="M12 18h40M12 32h40M12 46h40" />
+              <circle cx="25" cy="18" r="5" /><circle cx="42" cy="32" r="5" /><circle cx="29" cy="46" r="5" />
+            </svg>
+          </div>
+          <div class="modulo-acceso__contenido">
+            <div class="etiqueta">{{ 'Configuración' | translate }}</div>
+            <div class="kpi__valor">{{ 'Opciones' | translate }}</div>
+            <div class="kpi__nota">{{ 'Preferencias del sistema' | translate }}</div>
+          </div>
+        </a>
+        <div class="kpi modulo-acceso modulo-acceso--estatico" aria-label="Datos bancarios">
+          <div class="modulo-acceso__ilustracion" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <path d="m8 24 24-13 24 13H8ZM12 28h40M10 51h44M15 29v20m11-20v20m12-20v20m11-20v20" />
+              <path d="M6 55h52" />
+            </svg>
+          </div>
+          <div class="modulo-acceso__contenido">
+            <div class="etiqueta">{{ 'Finanzas' | translate }}</div>
+            <div class="kpi__valor">{{ 'Datos bancarios' | translate }}</div>
+            <div class="kpi__nota">{{ 'Cuentas y formas de pago' | translate }}</div>
+          </div>
+        </div>
+        <div class="kpi modulo-acceso modulo-acceso--estatico" aria-label="Datos de facturación">
+          <div class="modulo-acceso__ilustracion" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none">
+              <path d="M17 8h22l10 10v38H17V8Z" />
+              <path d="M39 9v11h10M24 30h18M24 38h18M24 46h12" />
+              <path d="M12 14v43h31" />
+            </svg>
+          </div>
+          <div class="modulo-acceso__contenido">
+            <div class="etiqueta">{{ 'Administración' | translate }}</div>
+            <div class="kpi__valor">{{ 'Datos de facturación' | translate }}</div>
+            <div class="kpi__nota">{{ 'Información fiscal del negocio' | translate }}</div>
+          </div>
+        </div>
       </div>
-
-      <article class="tarjeta">
-        <div class="tarjeta__cabecera">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z" />
-          </svg>
-          <h2 class="tarjeta__titulo">{{ 'Planes de apartado' | translate }}</h2>
-          <button class="tarjeta__accion boton boton--fantasma">
-            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></svg>
-            {{ 'Nuevo apartado' | translate }}
-          </button>
-        </div>
-        <p class="sub">
-          {{ 'La pieza queda bloqueada del inventario disponible hasta liquidar o vencer el plazo.' | translate }}
-        </p>
-
-        <div class="lista">
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Colgante Larme Dorée' | translate }}</div>
-                <div class="lista__secundario">{{ 'A-0231 · Sra. Mariana López · Santa Fe · vence 30 sep' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$18,500' | translate }} <span class="lista__secundario" style="display: inline">{{ 'de $32,900' | translate }}</span></div>
-                <div class="lista__secundario"><span class="insignia insignia--ok">{{ 'Al corriente' | translate }}</span></div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno" style="width: 56%"></div>
-            </div>
-          </div>
-
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Anillo Diamante «Eterna»' | translate }}</div>
-                <div class="lista__secundario">{{ 'A-0228 · Sr. Ricardo Peña · Polanco · vence 22 sep' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$31,800' | translate }} <span class="lista__secundario" style="display: inline">{{ 'de $48,200' | translate }}</span></div>
-                <div class="lista__secundario"><span class="insignia insignia--ok">{{ 'Al corriente' | translate }}</span></div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno" style="width: 66%"></div>
-            </div>
-          </div>
-
-          <div class="lista__fila" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Pendientes Aurore' | translate }}</div>
-                <div class="lista__secundario">{{ 'A-0225 · Sra. Lucía Fernández · Santa Fe · vence 18 sep' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$6,400' | translate }} <span class="lista__secundario" style="display: inline">{{ 'de $21,400' | translate }}</span></div>
-                <div class="lista__secundario"><span class="insignia insignia--aviso">{{ 'Por vencer' | translate }}</span></div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno progreso__relleno--aviso" style="width: 30%"></div>
-            </div>
-          </div>
-
-          <div class="lista__fila alerta alerta--critica" style="display: block">
-            <div style="display: flex; align-items: baseline">
-              <div>
-                <div class="lista__principal">{{ 'Gargantilla Oro Vintage' | translate }}</div>
-                <div class="lista__secundario">{{ 'A-0219 · Sra. Herrera · Polanco · venció 13 sep' | translate }}</div>
-              </div>
-              <div class="lista__derecha">
-                <div class="lista__monto">{{ '$2,200' | translate }} <span class="lista__secundario" style="display: inline">{{ 'de $8,850' | translate }}</span></div>
-                <div class="lista__secundario"><span class="insignia insignia--riesgo">{{ 'Vencido' | translate }}</span></div>
-              </div>
-            </div>
-            <div class="progreso progreso--fina">
-              <div class="progreso__relleno progreso__relleno--riesgo" style="width: 25%"></div>
-            </div>
-          </div>
-        </div>
-      </article>
     </section>
 
     <!-- ==================== VISTA: EMPLEADOS ==================== -->

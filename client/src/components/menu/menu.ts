@@ -6,8 +6,6 @@ import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { puedeVer } from '../../models/permisos';
 
-export type TemaOlimpo = 'oscuro' | 'claro';
-
 export interface UsuarioSesionLocal {
   id: number | string;
   nombreCompleto: string;
@@ -39,10 +37,9 @@ export class MenuComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  public temaActual: TemaOlimpo = 'oscuro';
   public usuarioActual: UsuarioSesionLocal | null = null;
 
-  // Orden del menú: Home, Productos, Inventario, Sucursales, Empleados, Precio del metal, Apartados.
+  // Orden del menú: Home, Productos, Inventario, Sucursales, Empleados, Precio del metal, Módulos.
   // Qué ve cada rol se define en models/permisos.ts
   public readonly todosLosItems: MenuItem[] = [
     {
@@ -114,7 +111,7 @@ export class MenuComponent implements OnInit {
     },
     {
       vista: 'apartados',
-      titulo: 'Apartados',
+      titulo: 'Módulos',
       ruta: '/dashboard',
       fragmento: 'apartados',
       svgPath: ['M6 3h12a1 1 0 011 1v17l-7-4-7 4V4a1 1 0 011-1z']
@@ -137,30 +134,13 @@ export class MenuComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  public alternarTema(): void {
-    const nuevoTema: TemaOlimpo = this.temaActual === 'oscuro' ? 'claro' : 'oscuro';
-    this.aplicarTema(nuevoTema);
-  }
-
   private inicializarTema(): void {
-    const temaGuardado = this.leerTemaGuardado();
-    this.aplicarTema(temaGuardado ?? 'oscuro');
-  }
-
-  private leerTemaGuardado(): TemaOlimpo | null {
     try {
       const valor = localStorage.getItem(this.CLAVE_TEMA);
-      return valor === 'claro' || valor === 'oscuro' ? valor : null;
+      const tema = valor === 'claro' || valor === 'oscuro' ? valor : 'oscuro';
+      document.documentElement.dataset['tema'] = tema;
     } catch {
-      return null;
+      document.documentElement.dataset['tema'] = 'oscuro';
     }
-  }
-
-  private aplicarTema(tema: TemaOlimpo): void {
-    this.temaActual = tema;
-    document.documentElement.dataset['tema'] = tema;
-    try {
-      localStorage.setItem(this.CLAVE_TEMA, tema);
-    } catch {}
   }
 }
