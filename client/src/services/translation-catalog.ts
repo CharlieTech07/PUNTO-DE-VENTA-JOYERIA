@@ -467,5 +467,7 @@ export const translationCatalog: Record<string, Translation> = {
   'tu sucursal': { es: 'tu sucursal', en: 'your branch' },
   '¿Estás seguro de eliminar "{item}" de la base de datos?': { es: '¿Estás seguro de eliminar "{item}" de la base de datos?', en: 'Are you sure you want to delete "{item}" from the database?' },
   '¿Seguro que deseas eliminar la sucursal "{item}"?': { es: '¿Seguro que deseas eliminar la sucursal "{item}"?', en: 'Are you sure you want to delete the branch "{item}"?' },
-  'Última sucursal dada de alta': { es: 'Última sucursal dada de alta', en: 'Last branch added' }
+  'Última sucursal dada de alta': { es: 'Última sucursal dada de alta', en: 'Last branch added' },
+    'Generando...': { es: 'Generando...', en: 'Generating...' }
+
 };
