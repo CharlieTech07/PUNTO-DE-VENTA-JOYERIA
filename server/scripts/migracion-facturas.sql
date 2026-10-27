@@ -1,15 +1,24 @@
-﻿-- server/scripts/migracion-facturas.sql
+-- server/scripts/migracion-facturas.sql
 -- Facturas de venta. Se puede correr mas de una vez sin romper nada.
 
--- Candado: si ya existe una tabla facturas con otra estructura (sin id_venta), se detiene.
+-- Candado: si ya existe una tabla facturas con otra estructura (sin id_venta), como la que
+-- trae DB_v3.sql: si esta vacia (nunca se uso) se quita para crear la nueva; si tiene datos,
+-- se detiene para no perder nada.
 DO $$
+DECLARE
+    hay_datos boolean;
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables
                WHERE table_schema = 'public' AND table_name = 'facturas')
        AND NOT EXISTS (SELECT 1 FROM information_schema.columns
                        WHERE table_schema = 'public' AND table_name = 'facturas'
                          AND column_name = 'id_venta') THEN
-        RAISE EXCEPTION 'Ya existe public.facturas con otra estructura (sin id_venta).';
+        EXECUTE 'SELECT EXISTS (SELECT 1 FROM public.facturas)' INTO hay_datos;
+        IF hay_datos THEN
+            RAISE EXCEPTION 'Ya existe public.facturas con otra estructura (sin id_venta) y tiene datos.';
+        END IF;
+        DROP TABLE public.facturas;
+        RAISE NOTICE 'Se quito la tabla facturas anterior (estaba vacia) para crear la nueva.';
     END IF;
 END $$;
 

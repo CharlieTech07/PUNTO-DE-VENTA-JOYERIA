@@ -12,10 +12,11 @@ const RESPONSABLE = '[Nombre legal de la joyería]';
 const DOMICILIO = '[domicilio]';
 const CORREO_PRIVACIDAD = '[correo de privacidad]';
 
-// Fecha de esta versión. Si cambian los textos, se actualiza.
+// Fecha de esta versión. Si cambian los textos, se actualiza aquí y también
+// VERSION_TERMINOS en server/src/services/terminos.service.ts, para que se vuelvan a aceptar.
 export const ACTUALIZADO: Record<Lang, string> = {
-  es: '19 de octubre de 2026',
-  en: 'October 19, 2026'
+  es: '22 de octubre de 2026',
+  en: 'October 22, 2026'
 };
 
 export type Documento = 'privacidad' | 'terminos';
@@ -44,7 +45,7 @@ export const TEXTOS_LEGALES: Record<Lang, Record<Documento, TextoLegal>> = {
           titulo: 'Qué datos pedimos',
           lista: [
             'Si pide factura: nombre o razón social, RFC, código postal, régimen fiscal, uso del CFDI y correo electrónico.',
-            'Si trabaja con nosotros: nombre, apellidos, correo, puesto y sucursal. Su contraseña se guarda cifrada; nadie puede leerla, ni siquiera el administrador.'
+            'Si trabaja con nosotros: nombre, apellidos, nombre de usuario, correo, puesto y sucursal. Usamos su correo para enviarle la bienvenida y el enlace para leer estos documentos, y guardamos la fecha en que confirmó que los acepta. Su contraseña se guarda cifrada; nadie puede leerla, ni siquiera el administrador.'
           ],
           parrafos: ['No pedimos datos sensibles y no guardamos números de tarjeta.']
         },
@@ -77,7 +78,7 @@ export const TEXTOS_LEGALES: Record<Lang, Record<Documento, TextoLegal>> = {
     },
     terminos: {
       titulo: 'Términos y condiciones de uso del sistema',
-      intro: ['Estos términos aplican a todo el personal que usa el punto de venta de Olimpo. Para iniciar sesión hay que aceptarlos, marcando la casilla de la pantalla de acceso.'],
+      intro: ['Estos términos aplican a todo el personal que usa el punto de venta de Olimpo. Cuando se le crea su cuenta, cada persona recibe por correo un enlace para leerlos, junto con el aviso de privacidad, y confirmar que los acepta. Si no lo hace desde el correo, el sistema se los muestra la primera vez que entra.'],
       secciones: [
         {
           titulo: '1. Quién puede usarlo',
@@ -123,7 +124,7 @@ export const TEXTOS_LEGALES: Record<Lang, Record<Documento, TextoLegal>> = {
         },
         {
           titulo: '9. Cambios',
-          parrafos: ['Podemos actualizar estos términos. Le avisaremos dentro del sistema, y la versión vigente siempre estará disponible aquí.']
+          parrafos: ['Podemos actualizar estos términos. Le avisaremos dentro del sistema, y la versión vigente siempre estará disponible en el sistema.']
         }
       ]
     }
@@ -141,7 +142,7 @@ export const TEXTOS_LEGALES: Record<Lang, Record<Documento, TextoLegal>> = {
           titulo: 'What data we ask for',
           lista: [
             'If you request an invoice: name or company name, RFC (tax ID), ZIP code, tax regime, CFDI use, and email address.',
-            'If you work with us: first name, last names, email, position, and store. Your password is stored encrypted; no one can read it, not even the administrator.'
+            'If you work with us: first name, last names, username, email, position, and store. We use your email to send you the welcome message and the link to read these documents, and we record the date you confirmed that you accept them. Your password is stored encrypted; no one can read it, not even the administrator.'
           ],
           parrafos: ['We do not ask for sensitive data and we do not store card numbers.']
         },
@@ -175,7 +176,7 @@ export const TEXTOS_LEGALES: Record<Lang, Record<Documento, TextoLegal>> = {
     terminos: {
       titulo: 'Terms and conditions of use of the system',
       intro: [
-        'These terms apply to all staff who use the Olimpo point of sale. To sign in, you must accept them by checking the box on the sign-in screen.',
+        'These terms apply to all staff who use the Olimpo point of sale. When their account is created, each person receives an email link to read them, together with the privacy notice, and confirm that they accept them. If they do not do it from the email, the system shows them the first time they sign in.',
         'This translation is provided for convenience. If it differs from the Spanish version, the Spanish version prevails.'
       ],
       secciones: [
@@ -223,7 +224,7 @@ export const TEXTOS_LEGALES: Record<Lang, Record<Documento, TextoLegal>> = {
         },
         {
           titulo: '9. Changes',
-          parrafos: ['We may update these terms. We will let you know within the system, and the current version will always be available here.']
+          parrafos: ['We may update these terms. We will let you know within the system, and the current version will always be available in the system.']
         }
       ]
     }

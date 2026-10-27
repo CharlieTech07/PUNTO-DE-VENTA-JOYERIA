@@ -95,9 +95,16 @@
         <div class="ticket__corte"></div>
         <p class="ticket__gracias">{{ 'Gracias por su compra' | translate }}</p>
         <p class="ticket__privacidad">{{ 'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.' | translate }}</p>
-        <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
+        <!-- La venta ya registrada trae su folio (ventas.ts la pasa al resumen) -->
+        @if (venta()?.folio; as folio) {
+          <p class="ticket__aviso">{{ 'Folio' | translate }}: {{ folio }}</p>
+        } @else {
+          <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
+        }
       </div>
-      <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
+      @if (!venta()?.folio) {
+        <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
+      }
     </aside>
   }
 

@@ -2,21 +2,29 @@
 import { Router, Request, Response } from 'express';
 import { db } from '../db.js';
 import { hashPassword, comparePassword } from '../utils/security';
+import { enviarBienvenida } from '../services/correo.service.js';
+import { VERSION_TERMINOS, crearClaveTerminos, enlaceTerminos, fechaDeAceptacion } from '../services/terminos.service.js';
 import jwt from 'jsonwebtoken';
 import { verificarToken, permitirRoles, RequestConUsuario } from '../middleware/verificarToken';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'olimpo_secret_jwt_2026';
 
+// Con el nombre de usuario se entra al sistema. Mismo formato que la restricción de la base
+// (server/scripts/migracion-nombre-usuario.sql)
+const FORMATO_USUARIO = /^[a-z0-9._]{3,30}$/;
+const FORMATO_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const ERROR_FORMATO_USUARIO = 'El nombre de usuario debe tener de 3 a 30 caracteres: letras minúsculas, números, punto o guion bajo.';
+
 // ==========================================
 // 1. INICIAR SESIÓN (POST /api/auth/login)
 // ==========================================
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { correo, contrasena } = req.body;
+    const { usuario: nombreUsuario, contrasena } = req.body;
 
-    if (!correo || !contrasena) {
-      return res.status(400).json({ error: 'Debes proporcionar correo y contraseña' });
+    if (!nombreUsuario || !contrasena) {
+      return res.status(400).json({ error: 'Debes proporcionar usuario y contraseña' });
     }
 
     const query = `
@@ -24,6 +32,7 @@ router.post('/login', async (req: Request, res: Response) => {
         u.id,
         u.nombres,
         u.apellido_paterno,
+        u.nombre_usuario,
         u.correo,
         u.contrasena_hash,
         u.rol,
@@ -32,10 +41,10 @@ router.post('/login', async (req: Request, res: Response) => {
         s.nombre AS nombre_sucursal
       FROM usuarios u
       LEFT JOIN sucursales s ON u.id_sucursal = s.id
-      WHERE LOWER(u.correo) = LOWER($1);
+      WHERE u.nombre_usuario = LOWER($1);
     `;
 
-    const { rows } = await db.query(query, [correo.trim()]);
+    const { rows } = await db.query(query, [String(nombreUsuario).trim()]);
 
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
@@ -55,6 +64,7 @@ router.post('/login', async (req: Request, res: Response) => {
     const payload = {
       id: usuario.id,
       nombreCompleto: `${usuario.nombres} ${usuario.apellido_paterno}`,
+      nombre_usuario: usuario.nombre_usuario,
       correo: usuario.correo,
       rol: usuario.rol,
       id_sucursal: usuario.id_sucursal,
@@ -63,10 +73,21 @@ router.post('/login', async (req: Request, res: Response) => {
 
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '8h' });
 
+    // Si todavía no acepta los términos vigentes, el sistema se los muestra antes de seguir.
+    // Si falla la consulta (p. ej. aún no corren migracion-aceptacion-terminos.sql), no se
+    // bloquea el acceso: se deja pasar y queda el aviso en la consola.
+    let terminosAceptados: Date | null = new Date();
+    try {
+      terminosAceptados = await fechaDeAceptacion(usuario.id);
+    } catch (errorTerminos) {
+      console.error('No se pudo revisar la aceptación de términos (¿falta la migración?):', errorTerminos);
+    }
+
     res.json({
       mensaje: 'Acceso autorizado',
       token,
-      usuario: payload
+      usuario: payload,
+      terminos_pendientes: !terminosAceptados
     });
   } catch (error) {
     console.error('Error en login:', error);
@@ -85,23 +106,26 @@ router.get('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente'
     const solicitante = req.usuarioToken!;
 
     let query = `
-      SELECT 
-        u.id, 
-        u.nombres, 
-        u.apellido_paterno, 
-        u.apellido_materno, 
-        u.correo, 
-        u.rol, 
-        u.id_sucursal, 
+      SELECT
+        u.id,
+        u.nombres,
+        u.apellido_paterno,
+        u.apellido_materno,
+        u.nombre_usuario,
+        u.correo,
+        u.rol,
+        u.id_sucursal,
         u.activo,
-        s.nombre AS nombre_sucursal
+        s.nombre AS nombre_sucursal,
+        a.aceptado_en AS terminos_aceptados_en
       FROM usuarios u
       LEFT JOIN sucursales s ON u.id_sucursal = s.id
+      LEFT JOIN aceptaciones_terminos a ON a.id_usuario = u.id AND a.version = $1
     `;
-    const values: any[] = [];
+    const values: any[] = [VERSION_TERMINOS];
 
     if (solicitante.rol === 'Gerente') {
-      query += ` WHERE u.id_sucursal = $1`;
+      query += ` WHERE u.id_sucursal = $2`;
       values.push(solicitante.id_sucursal);
     }
     query += ` ORDER BY u.id ASC;`;
@@ -123,9 +147,9 @@ router.get('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente'
 router.post('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente'), async (req: RequestConUsuario, res: Response) => {
   try {
     const solicitante = req.usuarioToken!;
-    const { nombres, apellido_paterno, apellido_materno, correo, contrasena, rol, id_sucursal } = req.body;
+    const { nombres, apellido_paterno, apellido_materno, nombre_usuario, correo, contrasena, rol, id_sucursal } = req.body;
 
-    if (!nombres || !apellido_paterno || !correo || !contrasena || !rol) {
+    if (!nombres || !apellido_paterno || !nombre_usuario || !correo || !contrasena || !rol) {
       return res.status(400).json({ error: 'Todos los campos obligatorios deben ser completados.' });
     }
 
@@ -139,6 +163,16 @@ router.post('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente
           ? 'Un Administrador solo puede dar de alta Administradores y Gerentes.'
           : 'Un Gerente solo puede dar de alta Cajeros.'
       });
+    }
+
+    const usuarioNuevo = String(nombre_usuario).trim().toLowerCase();
+    if (!FORMATO_USUARIO.test(usuarioNuevo)) {
+      return res.status(400).json({ error: ERROR_FORMATO_USUARIO });
+    }
+
+    const correoNuevo = String(correo).trim().toLowerCase();
+    if (!FORMATO_CORREO.test(correoNuevo)) {
+      return res.status(400).json({ error: 'El correo no tiene un formato válido.' });
     }
 
     let sucursalAsignada: number | null = null;
@@ -158,13 +192,19 @@ router.post('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente
       sucursalAsignada = Number(id_sucursal);
     }
 
-    const hash = await hashPassword(contrasena);
+    // El login pide al menos 8 y quita espacios de las orillas: aquí igual, o el empleado no podría entrar
+    const contrasenaLimpia = String(contrasena).trim();
+    if (contrasenaLimpia.length < 8) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+    }
+
+    const hash = await hashPassword(contrasenaLimpia);
 
     const query = `
       INSERT INTO usuarios (
-        id_sucursal, nombres, apellido_paterno, apellido_materno, correo, contrasena_hash, rol, activo
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, true)
-      RETURNING id, nombres, apellido_paterno, correo, rol, id_sucursal, activo;
+        id_sucursal, nombres, apellido_paterno, apellido_materno, nombre_usuario, correo, contrasena_hash, rol, activo
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, true)
+      RETURNING id, nombres, apellido_paterno, nombre_usuario, correo, rol, id_sucursal, activo;
     `;
 
     const values = [
@@ -172,18 +212,53 @@ router.post('/usuarios', verificarToken, permitirRoles('Administrador', 'Gerente
       nombres.trim(),
       apellido_paterno.trim(),
       apellido_materno ? apellido_materno.trim() : null,
-      correo.trim().toLowerCase(),
+      usuarioNuevo,
+      correoNuevo,
       hash,
       rol
     ];
 
     const result = await db.query(query, values);
+    const usuario = result.rows[0];
+
+    // Bienvenida con el enlace personal para leer y aceptar los términos y el aviso de
+    // privacidad. Si el correo falla, el alta ya quedó hecha: se avisa en la respuesta, y el
+    // empleado los verá la primera vez que entre al sistema.
+    let correoEnviado = true;
+    try {
+      let nombreSucursal: string | null = null;
+      if (sucursalAsignada) {
+        const sucursal = await db.query('SELECT nombre FROM sucursales WHERE id = $1', [sucursalAsignada]);
+        nombreSucursal = sucursal.rows[0]?.nombre ?? null;
+      }
+      await enviarBienvenida({
+        nombres: usuario.nombres,
+        apellido_paterno: usuario.apellido_paterno,
+        nombre_usuario: usuario.nombre_usuario,
+        correo: usuario.correo,
+        rol: usuario.rol,
+        nombre_sucursal: nombreSucursal,
+        enlace_terminos: enlaceTerminos(await crearClaveTerminos(usuario.id)),
+        // Temporal (decisión de Cristian, oct 2026): la contraseña inicial va en el correo
+        contrasena_temporal: contrasenaLimpia
+      });
+    } catch (errorCorreo) {
+      correoEnviado = false;
+      console.error('No se pudo enviar el correo de bienvenida:', errorCorreo);
+    }
+
     res.status(201).json({
-      mensaje: 'Usuario registrado exitosamente',
-      usuario: result.rows[0]
+      mensaje: correoEnviado
+        ? `Usuario registrado. Se envió la bienvenida a ${usuario.correo}.`
+        : 'Usuario registrado, pero no se pudo enviar el correo de bienvenida.',
+      usuario,
+      correoEnviado
     });
   } catch (error: any) {
     console.error('Error al registrar usuario:', error);
+    if (error.code === '23505' && error.constraint === 'usuarios_nombre_usuario_unico') {
+      return res.status(409).json({ error: 'Ese nombre de usuario ya está ocupado. Elige otro.' });
+    }
     if (error.code === '23505') {
       return res.status(409).json({ error: 'Ya existe un usuario con este correo, o ya hay un Administrador / un Gerente para esa sucursal.' });
     }
@@ -201,7 +276,7 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
   try {
     const idUsuarioDestino = Number(req.params.id);
     const solicitante = req.usuarioToken!;
-    const { nombres, apellido_paterno, apellido_materno, correo, rol, id_sucursal, contrasena } = req.body;
+    const { nombres, apellido_paterno, apellido_materno, nombre_usuario, correo, rol, id_sucursal, contrasena } = req.body;
 
     const checkUser = await db.query('SELECT * FROM usuarios WHERE id = $1', [idUsuarioDestino]);
     if (checkUser.rows.length === 0) {
@@ -236,7 +311,16 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
 
     let nuevoHash = usuarioActual.contrasena_hash;
     if (contrasena && contrasena.trim().length > 0) {
+      if (contrasena.trim().length < 8) {
+        return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
+      }
       nuevoHash = await hashPassword(contrasena.trim());
+    }
+
+    // Si no lo mandan, se queda el que tenía
+    const usuarioFinal = nombre_usuario ? String(nombre_usuario).trim().toLowerCase() : usuarioActual.nombre_usuario;
+    if (!FORMATO_USUARIO.test(usuarioFinal)) {
+      return res.status(400).json({ error: ERROR_FORMATO_USUARIO });
     }
 
     const updateQuery = `
@@ -247,9 +331,10 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
           correo = $4,
           rol = $5,
           id_sucursal = $6,
-          contrasena_hash = $7
-      WHERE id = $8
-      RETURNING id, nombres, apellido_paterno, apellido_materno, correo, rol, id_sucursal, activo;
+          contrasena_hash = $7,
+          nombre_usuario = $8
+      WHERE id = $9
+      RETURNING id, nombres, apellido_paterno, apellido_materno, nombre_usuario, correo, rol, id_sucursal, activo;
     `;
 
     const values = [
@@ -260,6 +345,7 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
       rolFinal,
       sucursalFinal,
       nuevoHash,
+      usuarioFinal,
       idUsuarioDestino
     ];
 
@@ -270,6 +356,9 @@ router.put('/usuarios/:id', verificarToken, async (req: RequestConUsuario, res: 
     });
   } catch (error: any) {
     console.error('Error al editar usuario:', error);
+    if (error.code === '23505' && error.constraint === 'usuarios_nombre_usuario_unico') {
+      return res.status(409).json({ error: 'Ese nombre de usuario ya está ocupado. Elige otro.' });
+    }
     if (error.code === '23505') {
       return res.status(409).json({ error: 'El correo electrónico ya pertenece a otro usuario registrado.' });
     }

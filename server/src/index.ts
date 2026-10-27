@@ -10,6 +10,7 @@ import ventasRoutes from './routes/ventas.js';
 import metalesRoutes from './routes/metales.js';
 import facturasRoutes from './routes/facturas.js';
 import proveedoresRoutes from './routes/proveedores.js';
+import terminosRoutes from './routes/terminos.js';
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use('/api/ventas', ventasRoutes);
 app.use('/api/metales', metalesRoutes);
 app.use('/api/facturas', facturasRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
+app.use('/api/terminos', terminosRoutes);
 
 const PORT = process.env.PORT || 3000;
 

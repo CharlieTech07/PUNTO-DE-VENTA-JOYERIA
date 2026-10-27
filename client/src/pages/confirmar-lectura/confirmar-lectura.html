@@ -1,0 +1,91 @@
+<main class="wrap">
+  <div class="brand">
+    <img src="logonuevo.png" alt="Olimpo Haute Joaillerie" class="crest">
+    <p class="nombre-marca">OLIMPO</p>
+    <div class="divider"><span></span><span class="tagline">HAUTE JOAILLERIE</span><span></span></div>
+  </div>
+
+  <section class="card" aria-live="polite">
+    @switch (estado()) {
+      @case ('cargando') {
+        <p class="cargando">{{ 'Revisando el enlace…' | translate }}</p>
+      }
+
+      @case ('leer') {
+        <h1>{{ 'Confirmación de lectura' | translate }}</h1>
+        <p class="sub">{{ 'Hola' | translate }}, {{ nombre() }}. {{ 'Antes de empezar, confirme que leyó estos documentos.' | translate }}</p>
+
+        <div class="docs" #docs tabindex="0" role="region"
+             [attr.aria-label]="'Términos de uso y aviso de privacidad' | translate"
+             (scroll)="revisarFinal()">
+          @for (doc of documentos(); track doc.titulo) {
+            <article>
+              <h2>{{ doc.titulo }}</h2>
+              @for (parrafo of doc.intro; track $index) { <p>{{ parrafo }}</p> }
+              @for (seccion of doc.secciones; track seccion.titulo) {
+                <h3>{{ seccion.titulo }}</h3>
+                @if (seccion.lista) {
+                  <ul>
+                    @for (punto of seccion.lista; track $index) { <li>{{ punto }}</li> }
+                  </ul>
+                }
+                @for (parrafo of seccion.parrafos ?? []; track $index) { <p>{{ parrafo }}</p> }
+              }
+            </article>
+          }
+          <p class="fecha-doc">{{ 'Última actualización' | translate }}: {{ actualizado() }}</p>
+        </div>
+
+        <p id="pista-final" class="pista" [class.pista--lista]="llegoAlFinal()">
+          {{ (llegoAlFinal() ? 'Ya llegó al final: puede confirmar' : 'Desplácese hasta el final para poder confirmar') | translate }}
+        </p>
+
+        <div class="casilla">
+          <input id="acepto" type="checkbox" [disabled]="!llegoAlFinal()" [checked]="acepto()"
+                 (change)="alMarcar($event)" aria-describedby="pista-final">
+          <label for="acepto">
+            {{ 'He leído y acepto los' | translate }}
+            <a routerLink="/terminos" target="_blank" rel="noopener">{{ 'términos y condiciones' | translate }}</a>
+            {{ 'y el' | translate }}
+            <a routerLink="/privacidad" target="_blank" rel="noopener">{{ 'aviso de privacidad' | translate }}</a>
+          </label>
+        </div>
+
+        @if (error()) {
+          <p class="error" role="alert">{{ error() }}</p>
+        }
+
+        <button type="button" class="primary" [disabled]="!acepto() || enviando()" (click)="confirmar()">
+          {{ (enviando() ? 'CONFIRMANDO...' : 'CONFIRMAR LECTURA') | translate }}
+        </button>
+        <p class="nota">{{ 'Se guardará la fecha, la hora y la versión de los documentos.' | translate }}</p>
+      }
+
+      @case ('listo') {
+        <div class="sello" aria-hidden="true"></div>
+        <h1>{{ 'Listo' | translate }}, {{ nombre() }}</h1>
+        <p class="registro">{{ 'Quedó registrado que leyó y acepta los términos y condiciones y el aviso de privacidad el' | translate }} <strong>{{ fecha() }}</strong>{{ fecha().endsWith('.') ? '' : '.' }}</p>
+        @if (!conSesion) {
+          <p class="registro">{{ 'Ya puede entrar al sistema con su usuario' | translate }} <strong>{{ usuario() }}</strong>.</p>
+        }
+        <button type="button" class="primary" (click)="continuar()">
+          {{ (conSesion ? 'CONTINUAR' : 'IR A LA PANTALLA DE ACCESO') | translate }}
+        </button>
+      }
+
+      @case ('ya') {
+        <div class="sello" aria-hidden="true"></div>
+        <h1>{{ 'Ya había confirmado' | translate }}</h1>
+        <p class="registro">{{ 'Quedó registrado que leyó y acepta los términos y condiciones y el aviso de privacidad el' | translate }} <strong>{{ fecha() }}</strong>{{ fecha().endsWith('.') ? '' : '.' }}</p>
+        <p class="registro">{{ 'Ya puede entrar al sistema con su usuario' | translate }} <strong>{{ usuario() }}</strong>.</p>
+        <button type="button" class="primary" (click)="continuar()">{{ 'IR A LA PANTALLA DE ACCESO' | translate }}</button>
+      }
+
+      @case ('invalido') {
+        <h1>{{ 'Enlace no válido' | translate }}</h1>
+        <p class="registro">{{ error() || ('Para confirmar, entre al sistema con su usuario.' | translate) }}</p>
+        <a class="primary boton-enlace" routerLink="/login">{{ 'IR A LA PANTALLA DE ACCESO' | translate }}</a>
+      }
+    }
+  </section>
+</main>
