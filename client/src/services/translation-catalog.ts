@@ -543,5 +543,9 @@ export const translationCatalog: Record<string, Translation> = {
   'IR A LA PANTALLA DE ACCESO': { es: 'IR A LA PANTALLA DE ACCESO', en: 'GO TO SIGN IN' },
   'Ya había confirmado': { es: 'Ya había confirmado', en: 'You had already confirmed' },
   'Enlace no válido': { es: 'Enlace no válido', en: 'Invalid link' },
-  'Para confirmar, entre al sistema con su usuario.': { es: 'Para confirmar, entre al sistema con su usuario.', en: 'To confirm, sign in with your username.' }
+  'Para confirmar, entre al sistema con su usuario.': { es: 'Para confirmar, entre al sistema con su usuario.', en: 'To confirm, sign in with your username.' },
+  // --- Facturación (Alan) ---
+  'Generando...': { es: 'Generando...', en: 'Generating...' },
+  'No se encontró la venta a facturar.': { es: 'No se encontró la venta a facturar.', en: 'The sale to invoice was not found.' },
+  'No se pudo generar la factura. Intenta de nuevo.': { es: 'No se pudo generar la factura. Intenta de nuevo.', en: 'The invoice could not be generated. Please try again.' }
 };

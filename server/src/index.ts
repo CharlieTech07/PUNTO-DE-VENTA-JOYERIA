@@ -10,6 +10,7 @@ import ventasRoutes from './routes/ventas.js';
 import metalesRoutes from './routes/metales.js';
 import terminosRoutes from './routes/terminos.js';
 import proveedoresRoutes from './routes/proveedores.js';
+import facturasRoutes from './routes/facturas.js';
 
 dotenv.config();
 
@@ -31,10 +32,10 @@ app.use('/api/ventas', ventasRoutes);
 app.use('/api/metales', metalesRoutes);
 app.use('/api/terminos', terminosRoutes);
 app.use('/api/proveedores', proveedoresRoutes);
+app.use('/api/facturas', facturasRoutes);
 
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
 });
-
