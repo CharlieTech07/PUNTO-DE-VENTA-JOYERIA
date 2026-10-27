@@ -1,0 +1,52 @@
+<div class="opciones-layout">
+  <header class="opciones-header">
+    <div>
+      <span class="opciones-eyebrow">{{ 'Personalización del sistema' | translate }}</span>
+      <h1>{{ 'Opciones' | translate }}</h1>
+      <p>{{ 'Ajusta la apariencia y lectura del sistema a tu gusto.' | translate }}</p>
+    </div>
+    <button class="boton-volver" type="button" (click)="volverAlDashboard()">← {{ 'Volver a módulos' | translate }}</button>
+  </header>
+
+  <section class="seccion-opciones">
+    <div class="seccion-titulo">
+      <span class="seccion-icono" aria-hidden="true">✦</span>
+      <div><h2>{{ 'Diseño' | translate }}</h2><p>{{ 'Elige el ambiente visual del sistema.' | translate }}</p></div>
+    </div>
+    <div class="temas-grid">
+      <button type="button" class="tema-opcion" [class.seleccionado]="temaActual === 'claro'" (click)="seleccionarTema('claro')" [attr.aria-pressed]="temaActual === 'claro'">
+        <span class="tema-opcion__titulo"><span class="tema-dot tema-dot--claro"></span>{{ 'Modo claro' | translate }} @if (temaActual === 'claro') { <span class="estado-activo">{{ 'Activo' | translate }}</span> }</span>
+        <span class="vista-tema vista-tema--claro" aria-hidden="true"><span class="vista-tema__barra"><i></i><i></i><i></i></span><span class="vista-tema__cuerpo"><i></i><b></b><i></i></span></span>
+        <span class="tema-opcion__nota">{{ 'Una apariencia luminosa con tonos marfil y oro.' | translate }}</span>
+      </button>
+      <button type="button" class="tema-opcion" [class.seleccionado]="temaActual === 'oscuro'" (click)="seleccionarTema('oscuro')" [attr.aria-pressed]="temaActual === 'oscuro'">
+        <span class="tema-opcion__titulo"><span class="tema-dot tema-dot--oscuro"></span>{{ 'Modo oscuro' | translate }} @if (temaActual === 'oscuro') { <span class="estado-activo">{{ 'Activo' | translate }}</span> }</span>
+        <span class="vista-tema vista-tema--oscuro" aria-hidden="true"><span class="vista-tema__barra"><i></i><i></i><i></i></span><span class="vista-tema__cuerpo"><i></i><b></b><i></i></span></span>
+        <span class="tema-opcion__nota">{{ 'Una apariencia cálida y elegante para trabajar.' | translate }}</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="seccion-opciones seccion-preferencia">
+    <div class="seccion-titulo">
+      <span class="seccion-icono" aria-hidden="true">文</span>
+      <div><h2>{{ 'Idioma' | translate }}</h2><p>{{ 'El idioma se aplica inmediatamente en el sistema.' | translate }}</p></div>
+    </div>
+    <div class="selector-idioma" role="group" [attr.aria-label]="'Idioma' | translate">
+      <button type="button" [class.activo]="idiomaActual === 'es'" [attr.aria-pressed]="idiomaActual === 'es'" (click)="seleccionarIdioma('es')"><span>ES</span>{{ 'Español' | translate }}</button>
+      <button type="button" [class.activo]="idiomaActual === 'en'" [attr.aria-pressed]="idiomaActual === 'en'" (click)="seleccionarIdioma('en')"><span>EN</span>{{ 'Inglés' | translate }}</button>
+    </div>
+  </section>
+
+  <section class="seccion-opciones seccion-preferencia">
+    <div class="seccion-titulo">
+      <span class="seccion-icono seccion-icono--texto" aria-hidden="true">Aa</span>
+      <div><h2>{{ 'Tamaño de tipografía' | translate }}</h2><p>{{ 'Selecciona el tamaño de texto más cómodo para ti.' | translate }}</p></div>
+    </div>
+    <div class="selector-tamano" role="group" [attr.aria-label]="'Tamaño de tipografía' | translate">
+      <button type="button" [class.activo]="tamanoActual === 'pequena'" [attr.aria-pressed]="tamanoActual === 'pequena'" (click)="seleccionarTamano('pequena')"><span class="muestra-texto muestra-texto--pequena">Aa</span>{{ 'Pequeña' | translate }}</button>
+      <button type="button" [class.activo]="tamanoActual === 'normal'" [attr.aria-pressed]="tamanoActual === 'normal'" (click)="seleccionarTamano('normal')"><span class="muestra-texto muestra-texto--normal">Aa</span>{{ 'Normal' | translate }}</button>
+      <button type="button" [class.activo]="tamanoActual === 'grande'" [attr.aria-pressed]="tamanoActual === 'grande'" (click)="seleccionarTamano('grande')"><span class="muestra-texto muestra-texto--grande">Aa</span>{{ 'Grande' | translate }}</button>
+    </div>
+  </section>
+</div>

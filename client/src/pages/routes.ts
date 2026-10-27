@@ -9,6 +9,8 @@ import { ProductosComponent } from './productos/productos';
 import { SucursalesComponent } from './sucursales/sucursales';
 import { InventarioComponent } from './inventario/inventario';
 import { LegalComponent } from './legal/legal';
+import { ProveedoresComponent } from './proveedores/proveedores';
+import { OpcionesComponent } from './opciones/opciones';
 
 // Las sucursales ahora viven dentro del dashboard: esta ruta solo redirige hacia allá
 const irASucursalesEnDashboard: CanActivateFn = () =>
@@ -44,6 +46,13 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Administrador'] }
   },
+  {
+    path: 'proveedores',
+    component: ProveedoresComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Administrador', 'Gerente'] }
+  },
+  { path: 'opciones', component: OpcionesComponent, canActivate: [authGuard] },
   // Inventario: solo Gerente
   {
     path: 'inventario',
