@@ -1,11 +1,14 @@
 // client/src/pages/ventas/resumen/resumen.ts
-import { Component, ElementRef, afterNextRender, inject, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, afterNextRender, inject, input, output, signal, viewChild } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CarritoService, sinIva } from '../../../services/carrito.service';
 import { AuthService } from '../../../services/auth.service';
 import { TranslatePipe } from '../../../services/translate.pipe';
+import { FacturasService } from '../../../services/facturas.service';
+import { Factura, ReceptorFactura } from '../../../models/factura';
+import { Venta } from '../../../models/venta';
 
 type Vista = 'ninguna' | 'ticket' | 'factura';
 
@@ -47,13 +50,18 @@ export class ResumenVentaComponent {
   public readonly carrito = inject(CarritoService);
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
+  private readonly facturasService = inject(FacturasService);
 
+  public readonly venta = input<Venta | null>(null);
   public readonly cerrar = output<void>();
 
   public readonly fecha = new Date();
   public readonly atendio = this.authService.obtenerUsuario()?.nombreCompleto ?? '';
   public readonly vista = signal<Vista>('ninguna');
   public readonly datosFactura = signal<DatosFactura | null>(null);
+  public readonly facturaEmitida = signal<Factura | null>(null);
+  public readonly emitiendo = signal(false);
+  public readonly errorFactura = signal('');
   public readonly enviado = signal(false);
   public readonly regimenes = REGIMENES;
   public readonly usos = USOS_CFDI;
@@ -97,10 +105,33 @@ export class ResumenVentaComponent {
     this.rfcEnMayusculas();
     this.enviado.set(true);
     if (this.formulario.invalid) return;
-    this.datosFactura.set(this.formulario.getRawValue());
+
+    const ventaActual = this.venta();
+    if (!ventaActual?.id) {
+      this.errorFactura.set('No se encontró la venta a facturar.');
+      return;
+    }
+
+    const receptor: ReceptorFactura = this.formulario.getRawValue();
+    this.emitiendo.set(true);
+    this.errorFactura.set('');
+    this.facturasService.emitir(Number(ventaActual.id), receptor).subscribe({
+      next: factura => {
+        this.emitiendo.set(false);
+        this.facturaEmitida.set(factura);
+        this.datosFactura.set(receptor);
+      },
+      error: error => {
+        this.emitiendo.set(false);
+        this.errorFactura.set(error.error?.error ?? 'No se pudo generar la factura. Intenta de nuevo.');
+      }
+    });
   }
 
   public editarFactura(): void {
+    // Si ya se emitió, no se permite editar: otra emisión daría 409.
+    // Para corregir, un gerente la cancela.
+    if (this.facturaEmitida()) return;
     this.datosFactura.set(null);
   }
 

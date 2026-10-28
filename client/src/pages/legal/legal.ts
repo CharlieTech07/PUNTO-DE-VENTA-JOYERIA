@@ -7,9 +7,9 @@ import { TranslatePipe } from '../../services/translate.pipe';
 import { ACTUALIZADO, Documento, TEXTOS_LEGALES } from './textos';
 
 // Aviso de privacidad y términos y condiciones. Son páginas públicas
-// (/privacidad y /terminos) que se abren desde los enlaces de la casilla del
-// login (la opción B que votó el equipo). Las dos rutas usan este mismo
-// componente; cuál documento mostrar viene en el "data" de la ruta.
+// (/privacidad y /terminos) que se abren desde los enlaces de la casilla de
+// /confirmar-lectura. Las dos rutas usan este mismo componente; cuál documento
+// mostrar viene en el "data" de la ruta.
 @Component({
   selector: 'app-legal',
   standalone: true,

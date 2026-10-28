@@ -521,5 +521,31 @@ export const translationCatalog: Record<string, Translation> = {
   'tu sucursal': { es: 'tu sucursal', en: 'your branch' },
   '¿Estás seguro de eliminar "{item}" de la base de datos?': { es: '¿Estás seguro de eliminar "{item}" de la base de datos?', en: 'Are you sure you want to delete "{item}" from the database?' },
   '¿Seguro que deseas eliminar la sucursal "{item}"?': { es: '¿Seguro que deseas eliminar la sucursal "{item}"?', en: 'Are you sure you want to delete the branch "{item}"?' },
-  'Última sucursal dada de alta': { es: 'Última sucursal dada de alta', en: 'Last branch added' }
+  'Última sucursal dada de alta': { es: 'Última sucursal dada de alta', en: 'Last branch added' },
+  // --- Login con nombre de usuario y confirmación de lectura de los términos ---
+  'Nombre de usuario': { es: 'Nombre de usuario', en: 'Username' },
+  'Ej: camila.torres': { es: 'Ej: camila.torres', en: 'e.g. camila.torres' },
+  'El usuario es obligatorio.': { es: 'El usuario es obligatorio.', en: 'Username is required.' },
+  'Revisando el enlace…': { es: 'Revisando el enlace…', en: 'Checking the link…' },
+  'Confirmación de lectura': { es: 'Confirmación de lectura', en: 'Reading confirmation' },
+  'Hola': { es: 'Hola', en: 'Hello' },
+  'Antes de empezar, confirme que leyó estos documentos.': { es: 'Antes de empezar, confirme que leyó estos documentos.', en: 'Before you start, confirm that you have read these documents.' },
+  'Términos de uso y aviso de privacidad': { es: 'Términos de uso y aviso de privacidad', en: 'Terms of use and privacy notice' },
+  'Ya llegó al final: puede confirmar': { es: 'Ya llegó al final: puede confirmar', en: 'You reached the end: you can confirm' },
+  'Desplácese hasta el final para poder confirmar': { es: 'Desplácese hasta el final para poder confirmar', en: 'Scroll to the end to be able to confirm' },
+  'CONFIRMANDO...': { es: 'CONFIRMANDO...', en: 'CONFIRMING...' },
+  'CONFIRMAR LECTURA': { es: 'CONFIRMAR LECTURA', en: 'CONFIRM READING' },
+  'Se guardará la fecha, la hora y la versión de los documentos.': { es: 'Se guardará la fecha, la hora y la versión de los documentos.', en: 'The date, time and version of the documents will be recorded.' },
+  'Listo': { es: 'Listo', en: 'Done' },
+  'Quedó registrado que leyó y acepta los términos y condiciones y el aviso de privacidad el': { es: 'Quedó registrado que leyó y acepta los términos y condiciones y el aviso de privacidad el', en: 'It was recorded that you read and accept the terms and conditions and the privacy notice on' },
+  'Ya puede entrar al sistema con su usuario': { es: 'Ya puede entrar al sistema con su usuario', en: 'You can now sign in with your username' },
+  'CONTINUAR': { es: 'CONTINUAR', en: 'CONTINUE' },
+  'IR A LA PANTALLA DE ACCESO': { es: 'IR A LA PANTALLA DE ACCESO', en: 'GO TO SIGN IN' },
+  'Ya había confirmado': { es: 'Ya había confirmado', en: 'You had already confirmed' },
+  'Enlace no válido': { es: 'Enlace no válido', en: 'Invalid link' },
+  'Para confirmar, entre al sistema con su usuario.': { es: 'Para confirmar, entre al sistema con su usuario.', en: 'To confirm, sign in with your username.' },
+  // --- Facturación (Alan) ---
+  'Generando...': { es: 'Generando...', en: 'Generating...' },
+  'No se encontró la venta a facturar.': { es: 'No se encontró la venta a facturar.', en: 'The sale to invoice was not found.' },
+  'No se pudo generar la factura. Intenta de nuevo.': { es: 'No se pudo generar la factura. Intenta de nuevo.', en: 'The invoice could not be generated. Please try again.' }
 };

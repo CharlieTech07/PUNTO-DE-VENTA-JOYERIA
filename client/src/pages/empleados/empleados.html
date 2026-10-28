@@ -44,6 +44,7 @@
             <th>Rol</th>
             <th>Sucursal</th>
             <th>Estado</th>
+            <th>Términos</th>
             <th class="celda-acciones">Acciones</th>
           </tr>
         </thead>
@@ -51,7 +52,12 @@
           @for (emp of listaEmpleados; track emp.id) {
             <tr>
               <td class="celda-id">#{{ emp.id }}</td>
-              <td class="celda-pieza">{{ emp.nombres }} {{ emp.apellido_paterno }}</td>
+              <td class="celda-pieza">
+                {{ emp.nombres }} {{ emp.apellido_paterno }}
+                @if (emp.nombre_usuario) {
+                  <span class="celda-usuario">{{ emp.nombre_usuario }}</span>
+                }
+              </td>
               <td>
                 <span class="insignia"
                   [class.insignia--riesgo]="emp.rol === 'Administrador'"
@@ -65,6 +71,15 @@
                 <span class="insignia" [class.insignia--ok]="emp.activo" [class.insignia--riesgo]="!emp.activo">
                   {{ emp.activo ? 'Activo' : 'Inactivo' }}
                 </span>
+              </td>
+              <td>
+                @if (emp.terminos_aceptados_en) {
+                  <span class="insignia insignia--ok" [title]="'Confirmó el ' + (emp.terminos_aceptados_en | date: 'd/MM/yyyy, HH:mm')">
+                    Aceptó {{ emp.terminos_aceptados_en | date: 'd/MM/yyyy' }}
+                  </span>
+                } @else {
+                  <span class="insignia insignia--aviso" title="Todavía no confirma que leyó los términos y el aviso de privacidad">Pendiente</span>
+                }
               </td>
               <td class="celda-acciones">
                 @if (puedeGestionar(emp)) {
@@ -86,7 +101,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="vacio">No hay personal registrado en la joyería.</td>
+              <td colspan="7" class="vacio">No hay personal registrado en la joyería.</td>
             </tr>
           }
         </tbody>
@@ -113,12 +128,12 @@
     <form (ngSubmit)="guardar()">
       <div class="campo">
         <label class="etiqueta">Nombres *</label>
-        <input type="text" [(ngModel)]="formulario.nombres" name="nombres" placeholder="Ej. Camila" required />
+        <input type="text" [(ngModel)]="formulario.nombres" (ngModelChange)="sugerirUsuario()" name="nombres" placeholder="Ej. Camila" required />
       </div>
 
       <div class="campo">
         <label class="etiqueta">Apellido Paterno *</label>
-        <input type="text" [(ngModel)]="formulario.apellido_paterno" name="apellido_paterno" placeholder="Ej. Torres" required />
+        <input type="text" [(ngModel)]="formulario.apellido_paterno" (ngModelChange)="sugerirUsuario()" name="apellido_paterno" placeholder="Ej. Torres" required />
       </div>
 
       <div class="campo">
@@ -127,8 +142,29 @@
       </div>
 
       <div class="campo">
-        <label class="etiqueta">Correo electrónico *</label>
-        <input type="email" [(ngModel)]="formulario.correo" name="correo" placeholder="ejemplo@olimpo.mx" required />
+        <label class="etiqueta" for="nombre_usuario">Nombre de usuario *</label>
+        <input
+          #campoUsuario
+          id="nombre_usuario"
+          type="text"
+          [value]="formulario.nombre_usuario"
+          (input)="alEscribirUsuario(campoUsuario)"
+          name="nombre_usuario"
+          placeholder="Ej. camila.torres"
+          maxlength="30"
+          autocomplete="off"
+          autocapitalize="none"
+          spellcheck="false"
+          required />
+        <p class="campo__ayuda">Con este usuario entrará al sistema. Minúsculas, números, punto o guion bajo.</p>
+      </div>
+
+      <div class="campo">
+        <label class="etiqueta" for="correo">Correo electrónico *</label>
+        <input id="correo" type="email" [(ngModel)]="formulario.correo" name="correo" placeholder="ejemplo@olimpo.mx" required />
+        @if (!editandoId) {
+          <p class="campo__ayuda">Aquí le llega la bienvenida, con los términos de uso y el aviso de privacidad.</p>
+        }
       </div>
 
       <div class="campo">
@@ -153,7 +189,7 @@
           @if (esGerente) {
             <input type="text" [value]="usuarioActual?.nombre_sucursal || ''" disabled />
           } @else {
-            <select [(ngModel)]="formulario.id_sucursal" name="id_sucursal" required>
+            <select [(ngModel)]="formulario.id_sucursal" name="id_sucursal" [compareWith]="mismaSucursal" required>
               @for (suc of listaSucursales; track suc.id) {
                 <option [ngValue]="suc.id">{{ suc.nombre }}</option>
               }
@@ -163,7 +199,7 @@
       }
 
       <button type="submit" [disabled]="guardando" class="boton boton--primario boton--bloque">
-        {{ guardando ? 'Guardando en pos_olimpo...' : (editandoId ? 'Guardar Cambios' : 'Crear usuario') }}
+        {{ guardando ? (editandoId ? 'Guardando en pos_olimpo...' : 'Creando y enviando bienvenida...') : (editandoId ? 'Guardar Cambios' : 'Crear usuario') }}
       </button>
       <p class="campo__ayuda">
         {{ esAdmin

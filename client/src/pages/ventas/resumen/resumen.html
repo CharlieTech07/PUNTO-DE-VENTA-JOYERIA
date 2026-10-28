@@ -95,9 +95,16 @@
         <div class="ticket__corte"></div>
         <p class="ticket__gracias">{{ 'Gracias por su compra' | translate }}</p>
         <p class="ticket__privacidad">{{ 'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.' | translate }}</p>
-        <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
+        <!-- La venta ya registrada trae su folio (ventas.ts la pasa al resumen) -->
+        @if (venta()?.folio; as folio) {
+          <p class="ticket__aviso">{{ 'Folio' | translate }}: {{ folio }}</p>
+        } @else {
+          <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
+        }
       </div>
-      <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
+      @if (!venta()?.folio) {
+        <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
+      }
     </aside>
   }
 
@@ -109,6 +116,9 @@
           <div class="factura__cabeza">
             <div>
               <p class="factura__titulo">{{ 'Factura' | translate }}</p>
+              @if (facturaEmitida(); as f) {
+                <p class="factura__folio">{{ 'Folio' | translate }}: {{ f.folio_texto }}</p>
+              }
               <p class="factura__aviso">{{ 'Sin timbrar: no tiene validez fiscal hasta que se timbre con un PAC.' | translate }}</p>
             </div>
             <span class="factura__fecha">{{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
@@ -157,7 +167,9 @@
             <div class="factura__total"><dt>{{ 'Total' | translate }}</dt><dd>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }} MXN</dd></div>
           </dl>
         </div>
-        <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>
+        @if (!facturaEmitida()) {
+          <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>
+        }
       } @else {
         <form class="formulario" [formGroup]="formulario" (ngSubmit)="generarFactura()" novalidate>
           <p class="formulario__titulo">{{ 'Datos de facturación' | translate }}</p>
@@ -214,7 +226,12 @@
             <a routerLink="/privacidad" target="_blank" rel="noopener">{{ 'Consulte el aviso de privacidad' | translate }}</a>
           </p>
 
-          <button type="submit" class="btn btn--claro">{{ 'Ver factura' | translate }}</button>
+          @if (errorFactura()) {
+            <p role="alert">{{ errorFactura() | translate }}</p>
+          }
+          <button type="submit" class="btn btn--claro" [disabled]="emitiendo()">
+            {{ (emitiendo() ? 'Generando...' : 'Ver factura') | translate }}
+          </button>
         </form>
       }
     </aside>

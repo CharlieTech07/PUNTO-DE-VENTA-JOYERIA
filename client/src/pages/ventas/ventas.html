@@ -50,5 +50,5 @@
 </section>
 
 @if (resumenAbierto()) {
-  <app-resumen-venta (cerrar)="cerrarResumen()"></app-resumen-venta>
+  <app-resumen-venta [venta]="ventaActual()" (cerrar)="cerrarResumen()"></app-resumen-venta>
 }
