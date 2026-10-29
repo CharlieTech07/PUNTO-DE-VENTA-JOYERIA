@@ -1,0 +1,43 @@
+/* El ticket va en papel claro con tinta oscura aunque el sistema esté en modo oscuro:
+   así sale impreso. Por eso estos colores van fijos y no salen de styles/tema.css.
+   (Para imprimir se usa ESTILO_IMPRESION de ticket.ts.) */
+
+:host {
+  --papel: #fbf8f2;
+  --tinta: #2e2418;
+  --tinta-suave: #7a6a56;
+  --linea-papel: #d9cdb8;
+
+  display: block;
+  width: min(100%, 300px);
+  margin: 0 auto;
+}
+
+.papel {
+  background: var(--papel);
+  color: var(--tinta);
+  border-radius: 4px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* Angosto, con letra de impresora térmica */
+.ticket {
+  padding: 22px 18px 18px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.ticket p { margin: 0; text-align: center; }
+.ticket__marca { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 6px; font-weight: 600; }
+.ticket__lema { font-size: 0.62rem; letter-spacing: 3px; color: var(--tinta-suave); }
+.ticket__datos { display: grid; gap: 1px; margin-top: 10px; text-align: center; color: var(--tinta-suave); }
+.ticket__corte { margin: 10px 0; border-top: 1px dashed var(--linea-papel); }
+.ticket__renglon { display: flex; justify-content: space-between; gap: 12px; }
+.ticket__renglon span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.ticket__sub { color: var(--tinta-suave); margin-bottom: 4px; }
+.ticket__total { font-weight: 700; font-size: 0.95rem; margin-top: 4px; }
+.ticket .ticket__titulo { margin-bottom: 4px; text-align: left; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.ticket__gracias { font-weight: 700; }
+.ticket .ticket__privacidad { margin-top: 6px; font-size: 0.66rem; color: var(--tinta-suave); }
+.ticket .ticket__aviso { margin-top: 4px; font-size: 0.66rem; letter-spacing: 1px; color: var(--tinta-suave); text-transform: uppercase; }

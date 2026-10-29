@@ -72,36 +72,7 @@
   <!-- ===================== Vista previa del ticket ===================== -->
   @if (vista() === 'ticket') {
     <aside class="lado" [attr.aria-label]="'Vista previa del ticket' | translate">
-      <div class="papel ticket">
-        <p class="ticket__marca">OLIMPO</p>
-        <p class="ticket__lema">HAUTE JOAILLERIE</p>
-        <div class="ticket__datos">
-          @if (carrito.sucursal()) { <span>{{ 'Sucursal' | translate }}: {{ carrito.sucursal() }}</span> }
-          <span>{{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
-          @if (atendio) { <span>{{ 'Atendió' | translate }}: {{ atendio }}</span> }
-        </div>
-        <div class="ticket__corte"></div>
-        @for (item of carrito.items(); track item.id_inventario) {
-          <div class="ticket__renglon">
-            <span>{{ item.nombre }}</span>
-            <span>{{ item.precio_unitario * item.cantidad | currency:'USD':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="ticket__sub">{{ item.cantidad }} x {{ item.precio_unitario | currency:'USD':'symbol':'1.2-2' }}</div>
-        }
-        <div class="ticket__corte"></div>
-        <div class="ticket__renglon"><span>{{ 'Subtotal' | translate }}</span><span>{{ carrito.subtotal() | currency:'USD':'symbol':'1.2-2' }}</span></div>
-        <div class="ticket__renglon"><span>{{ 'IVA 16%' | translate }}</span><span>{{ carrito.iva() | currency:'USD':'symbol':'1.2-2' }}</span></div>
-        <div class="ticket__renglon ticket__total"><span>{{ 'Total' | translate }}</span><span>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }}</span></div>
-        <div class="ticket__corte"></div>
-        <p class="ticket__gracias">{{ 'Gracias por su compra' | translate }}</p>
-        <p class="ticket__privacidad">{{ 'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.' | translate }}</p>
-        <!-- La venta ya registrada trae su folio (ventas.ts la pasa al resumen) -->
-        @if (venta()?.folio; as folio) {
-          <p class="ticket__aviso">{{ 'Folio' | translate }}: {{ folio }}</p>
-        } @else {
-          <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
-        }
-      </div>
+      <app-ticket-venta [fecha]="fecha" [folio]="venta()?.folio ?? null" [pagos]="venta()?.pagos ?? null"></app-ticket-venta>
       @if (!venta()?.folio) {
         <p class="nota">{{ 'El folio se asigna al registrar la venta.' | translate }}</p>
       }
@@ -166,6 +137,12 @@
             <div><dt>{{ 'IVA 16%' | translate }}</dt><dd>{{ carrito.iva() | currency:'USD':'symbol':'1.2-2' }}</dd></div>
             <div class="factura__total"><dt>{{ 'Total' | translate }}</dt><dd>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }} MXN</dd></div>
           </dl>
+          @if (formaPago()) {
+            <!-- PUE: pago en una sola exhibición; los meses sin intereses los financia el banco -->
+            <p class="factura__pago">
+              {{ 'Forma de pago' | translate }}: {{ formaPago() }} · {{ 'Método de pago' | translate }}: PUE · {{ 'Pago en una sola exhibición' | translate }}
+            </p>
+          }
         </div>
         @if (!facturaEmitida()) {
           <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>

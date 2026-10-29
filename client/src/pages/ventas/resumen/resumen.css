@@ -1,4 +1,4 @@
-/* El despliegue de "Finalizar venta".
+/* El despliegue de "Generar factura" en el cobro.
    Colores de styles/tema.css, salvo el papel del ticket y de la factura:
    esos van fijos a propósito, porque un ticket impreso es papel claro con
    tinta oscura aunque el sistema esté en modo oscuro. */
@@ -190,28 +190,7 @@
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
-/* Ticket: angosto, con letra de impresora térmica */
-.ticket {
-  align-self: center;
-  width: min(100%, 300px);
-  padding: 22px 18px 18px;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-
-.ticket p { margin: 0; text-align: center; }
-.ticket__marca { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 6px; font-weight: 600; }
-.ticket__lema { font-size: 0.62rem; letter-spacing: 3px; color: var(--tinta-suave); }
-.ticket__datos { display: grid; gap: 1px; margin-top: 10px; text-align: center; color: var(--tinta-suave); }
-.ticket__corte { margin: 10px 0; border-top: 1px dashed var(--linea-papel); }
-.ticket__renglon { display: flex; justify-content: space-between; gap: 12px; }
-.ticket__renglon span:first-child { min-width: 0; overflow-wrap: anywhere; }
-.ticket__sub { color: var(--tinta-suave); margin-bottom: 4px; }
-.ticket__total { font-weight: 700; font-size: 0.95rem; margin-top: 4px; }
-.ticket__gracias { font-weight: 700; }
-.ticket .ticket__privacidad { margin-top: 6px; font-size: 0.66rem; color: var(--tinta-suave); }
-.ticket__aviso { margin-top: 4px !important; font-size: 0.66rem; letter-spacing: 1px; color: var(--tinta-suave); text-transform: uppercase; }
+/* El ticket tiene su propio componente: ../ticket/ticket.css */
 
 /* Factura */
 .factura { padding: 22px; font-size: 0.78rem; line-height: 1.45; font-variant-numeric: tabular-nums; }
@@ -230,6 +209,7 @@
 .factura__totales div { display: flex; justify-content: space-between; }
 .factura__totales dd { margin: 0; }
 .factura__total { padding-top: 6px; border-top: 2px solid var(--tinta); font-weight: 700; font-size: 0.9rem; }
+.factura__pago { margin-top: 10px !important; padding-top: 8px; border-top: 1px solid var(--linea-papel); font-size: 0.72rem; color: var(--tinta-suave); }
 
 /* Formulario de facturación */
 .formulario { display: grid; gap: 12px; }

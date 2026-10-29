@@ -37,11 +37,8 @@
       </span>
     </div>
 
-    @if (errorVenta()) {
-      <p role="alert">{{ errorVenta() | translate }}</p>
-    }
-    <button type="button" class="venta__finalizar" [disabled]="guardando()" (click)="finalizarVenta()">
-      {{ (guardando() ? 'Registrando venta...' : 'Finalizar venta') | translate }}
+    <button type="button" class="venta__finalizar" (click)="abrirCobro()">
+      {{ 'Cobrar' | translate }}
     </button>
     <button type="button" class="venta__vaciar" (click)="vaciar()">
       {{ 'Vaciar carrito' | translate }}
@@ -49,6 +46,10 @@
   }
 </section>
 
+@if (cobroAbierto()) {
+  <app-cobro (registrada)="alRegistrar($event)" (facturar)="abrirFactura()" (cerrar)="cerrarCobro()"></app-cobro>
+}
+
 @if (resumenAbierto()) {
-  <app-resumen-venta [venta]="ventaActual()" (cerrar)="cerrarResumen()"></app-resumen-venta>
+  <app-resumen-venta [venta]="ventaActual()" vistaInicial="factura" (cerrar)="cerrarResumen()"></app-resumen-venta>
 }
