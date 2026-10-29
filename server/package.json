@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/index.ts"
+    "start": "node scripts/run-tsx.cjs src/index.ts",
+    "dev": "node scripts/run-tsx.cjs watch src/index.ts"
   },
   "keywords": [],
   "type": "commonjs",

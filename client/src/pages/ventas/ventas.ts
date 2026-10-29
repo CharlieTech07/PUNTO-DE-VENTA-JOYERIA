@@ -22,6 +22,7 @@ export class VentasComponent implements OnInit {
   public readonly resumenAbierto = signal(false);
   public readonly guardando = signal(false);
   public readonly errorVenta = signal('');
+  public readonly menuAccionesAbierto = signal<number | null>(null);
   public readonly ventaRegistrada = output<void>();
 
   ngOnInit(): void {
@@ -30,12 +31,35 @@ export class VentasComponent implements OnInit {
 
   public vaciar(): void {
     if (confirm(this.language.t('¿Vaciar el carrito? Se quitarán todas las piezas.'))) {
+      this.cerrarAcciones();
       this.carrito.vaciar();
     }
   }
 
+  public alternarAcciones(idInventario: number): void {
+    this.menuAccionesAbierto.update(actual => actual === idInventario ? null : idInventario);
+  }
+
+  public cerrarAcciones(): void {
+    this.menuAccionesAbierto.set(null);
+  }
+
+  public aumentarPieza(idInventario: number): void {
+    this.carrito.aumentar(idInventario);
+  }
+
+  public disminuirPieza(idInventario: number): void {
+    this.carrito.disminuir(idInventario);
+  }
+
+  public quitarPieza(idInventario: number): void {
+    this.carrito.quitar(idInventario);
+    this.cerrarAcciones();
+  }
+
   public finalizarVenta(): void {
     if (this.carrito.vacio() || this.guardando()) return;
+    this.cerrarAcciones();
     this.guardando.set(true);
     this.errorVenta.set('');
     this.ventasService.create({

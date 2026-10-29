@@ -45,7 +45,7 @@
         </div>
 
         <div class="campo">
-          <label class="etiqueta">{{ 'Stock Físico' | translate }}</label>
+          <label class="etiqueta">{{ (stockActualSeleccionado !== null ? 'Piezas para agregar' : 'Stock inicial') | translate }}</label>
           <input
             type="number"
             min="0"
@@ -53,6 +53,12 @@
             name="stock"
             required
             class="input-olimpo" />
+          @if (stockActualSeleccionado !== null) {
+            <small class="nota-permiso">
+              {{ 'Existencias actuales' | translate }}: {{ stockActualSeleccionado }} ·
+              {{ 'Total después de guardar' | translate }}: {{ stockTotalEstimado }}
+            </small>
+          }
         </div>
 
         <div class="campo">
