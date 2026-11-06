@@ -101,6 +101,8 @@ crearUsuario(datosUsuario: {
   cerrarSesion(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
+    sessionStorage.removeItem(this.TOKEN_KEY);
+    sessionStorage.removeItem(this.USER_KEY);
   }
 
   // Hay sesión solo si existe un token y todavía no vence

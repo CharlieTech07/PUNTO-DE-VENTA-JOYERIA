@@ -16,9 +16,16 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  // Si no tiene token o sesión, lo expulsa al Login
-  router.navigate(['/login']);
-  return false;
+  // Si no tiene token o sesión, lo expulsa al Login (reemplaza la entrada del historial)
+  return router.createUrlTree(['/login']);
+};
+
+// 1b. Guard del login: con una sesión vigente no tiene caso volver a la pantalla de acceso
+export const loginGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  return authService.estaAutenticado() ? router.createUrlTree(['/inicio']) : true;
 };
 
 // 2. Guard por roles: Bloquea según Administrador, Gerente o Cajero
@@ -29,9 +36,8 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const usuario = authService.obtenerUsuario();
   const rolesPermitidos: string[] = route.data?.['roles'] || [];
 
-  if (!usuario) {
-    router.navigate(['/login']);
-    return false;
+  if (!usuario || !authService.estaAutenticado()) {
+    return router.createUrlTree(['/login']);
   }
 
   // Si no se especificaron roles en la ruta o el rol del usuario está permitido
