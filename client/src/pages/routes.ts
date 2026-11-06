@@ -12,6 +12,8 @@ import { LegalComponent } from './legal/legal';
 import { ConfirmarLecturaComponent } from './confirmar-lectura/confirmar-lectura';
 import { ProveedoresComponent } from './proveedores/proveedores';
 import { OpcionesComponent } from './opciones/opciones';
+import { DatosBancariosComponent } from './datos-bancarios/datos-bancarios';
+import { DatosFacturacionComponent } from './datos-facturacion/datos-facturacion';
 
 // Las sucursales ahora viven dentro del dashboard: esta ruta solo redirige hacia allá
 const irASucursalesEnDashboard: CanActivateFn = () =>
@@ -58,6 +60,14 @@ export const routes: Routes = [
     data: { roles: ['Administrador', 'Gerente'] }
   },
   { path: 'opciones', component: OpcionesComponent, canActivate: [authGuard] },
+  {
+    path: 'datos-bancarios', component: DatosBancariosComponent,
+    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador'] }
+  },
+  {
+    path: 'datos-facturacion', component: DatosFacturacionComponent,
+    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador'] }
+  },
   // Inventario: solo Gerente
   {
     path: 'inventario',

@@ -1,0 +1,52 @@
+<div class="datos-layout">
+  <header class="datos-header">
+    <div>
+      <span class="etiqueta">{{ 'Administración' | translate }}</span>
+      <h1 class="titulo-pantalla">{{ 'Datos de facturación' | translate }}</h1>
+      <p class="subtitulo">{{ 'Captura la información fiscal del negocio que aparecerá como emisor.' | translate }}</p>
+    </div>
+    <button type="button" class="btn-secundario" (click)="volverAlDashboard()">← {{ 'Volver a módulos' | translate }}</button>
+  </header>
+
+  @if (aviso) { <div class="aviso aviso-ok" role="status">{{ aviso | translate }}</div> }
+  @if (error) { <div class="aviso aviso-error" role="alert">{{ error | translate }}</div> }
+
+  <section class="tarjeta">
+    <div class="tarjeta-cabecera">
+      <div>
+        <span class="etiqueta">{{ (datosGuardados ? 'Actualizar registro' : 'Nuevo registro') | translate }}</span>
+        <h2>{{ (datosGuardados ? 'Editar datos fiscales' : 'Registrar datos fiscales') | translate }}</h2>
+      </div>
+    </div>
+    @if (cargando) { <p class="estado">{{ 'Cargando datos fiscales…' | translate }}</p> }
+    @else {
+      <form (ngSubmit)="guardar()" class="formulario-grid">
+        <div class="campo"><label for="razon-social">{{ 'Razón social' | translate }} *</label><input id="razon-social" name="razon_social" [(ngModel)]="formulario.razon_social" maxlength="300" required /></div>
+        <div class="campo"><label for="rfc-emisor">RFC *</label><input id="rfc-emisor" name="rfc" [(ngModel)]="formulario.rfc" maxlength="13" required autocomplete="off" /></div>
+        <div class="campo"><label for="regimen-fiscal">{{ 'Régimen fiscal' | translate }} *</label><select id="regimen-fiscal" name="regimen_fiscal" [(ngModel)]="formulario.regimen_fiscal" required><option value="">{{ 'Selecciona un régimen' | translate }}</option><option value="601">601 · {{ 'General de Ley Personas Morales' | translate }}</option><option value="603">603 · {{ 'Personas Morales con Fines no Lucrativos' | translate }}</option><option value="605">605 · {{ 'Sueldos y Salarios' | translate }}</option><option value="606">606 · {{ 'Arrendamiento' | translate }}</option><option value="612">612 · {{ 'Personas Físicas con Actividades Empresariales' | translate }}</option><option value="616">616 · {{ 'Sin obligaciones fiscales' | translate }}</option><option value="626">626 · {{ 'Régimen Simplificado de Confianza' | translate }}</option></select></div>
+        <div class="campo"><label for="cp-emisor">{{ 'Código postal fiscal' | translate }} *</label><input id="cp-emisor" name="codigo_postal" [(ngModel)]="formulario.codigo_postal" inputmode="numeric" maxlength="5" pattern="[0-9]{5}" required /></div>
+        <div class="campo"><label for="calle-emisor">{{ 'Calle' | translate }} *</label><input id="calle-emisor" name="calle" [(ngModel)]="formulario.calle" maxlength="150" required /></div>
+        <div class="campo"><label for="exterior-emisor">{{ 'Número exterior' | translate }} *</label><input id="exterior-emisor" name="numero_exterior" [(ngModel)]="formulario.numero_exterior" maxlength="20" required /></div>
+        <div class="campo"><label for="interior-emisor">{{ 'Número interior' | translate }}</label><input id="interior-emisor" name="numero_interior" [(ngModel)]="formulario.numero_interior" maxlength="20" /></div>
+        <div class="campo"><label for="colonia-emisor">{{ 'Colonia' | translate }}</label><input id="colonia-emisor" name="colonia" [(ngModel)]="formulario.colonia" maxlength="100" /></div>
+        <div class="campo"><label for="municipio-emisor">{{ 'Municipio o alcaldía' | translate }}</label><input id="municipio-emisor" name="municipio" [(ngModel)]="formulario.municipio" maxlength="100" /></div>
+        <div class="campo"><label for="estado-emisor">{{ 'Estado' | translate }}</label><input id="estado-emisor" name="estado" [(ngModel)]="formulario.estado" maxlength="100" /></div>
+        <div class="campo"><label for="correo-emisor">{{ 'Correo electrónico' | translate }}</label><input id="correo-emisor" name="correo" [(ngModel)]="formulario.correo" type="email" maxlength="254" /></div>
+        <div class="campo"><label for="telefono-emisor">{{ 'Teléfono' | translate }}</label><input id="telefono-emisor" name="telefono" [(ngModel)]="formulario.telefono" maxlength="20" /></div>
+        <div class="acciones"><button class="btn-principal" type="submit" [disabled]="guardando">{{ (guardando ? 'Guardando…' : (datosGuardados ? 'Guardar cambios' : 'Registrar datos fiscales')) | translate }}</button></div>
+      </form>
+    }
+  </section>
+
+  @if (datosGuardados) {
+    <section class="tarjeta">
+      <div class="tarjeta-cabecera"><div><span class="etiqueta">{{ 'Configuración vigente' | translate }}</span><h2>{{ datosGuardados.razon_social }}</h2></div><span class="contador">RFC: {{ datosGuardados.rfc }}</span></div>
+      <div class="formulario-grid">
+        <div><strong>{{ 'Régimen fiscal' | translate }}</strong><p>{{ datosGuardados.regimen_fiscal }}</p></div>
+        <div><strong>{{ 'Domicilio fiscal' | translate }}</strong><p>{{ datosGuardados.calle }} {{ datosGuardados.numero_exterior }} {{ datosGuardados.numero_interior || '' }}, {{ datosGuardados.colonia || '' }}, {{ datosGuardados.municipio || '' }}, {{ datosGuardados.estado || '' }} · CP {{ datosGuardados.codigo_postal }}</p></div>
+        <div><strong>{{ 'Correo electrónico' | translate }}</strong><p>{{ datosGuardados.correo || '—' }}</p></div>
+        <div><strong>{{ 'Teléfono' | translate }}</strong><p>{{ datosGuardados.telefono || '—' }}</p></div>
+      </div>
+    </section>
+  }
+</div>

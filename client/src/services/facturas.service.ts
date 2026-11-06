@@ -33,6 +33,14 @@ export class FacturasService {
     return this.http.get<Factura>(`${this.apiUrl}/venta/${idVenta}`, this.options);
   }
 
+  descargarXmlDemostrativo(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/xml-demostrativo`, { ...this.options, responseType: 'blob' });
+  }
+
+  descargarPdfDemostrativo(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/${id}/pdf-demostrativo`, { ...this.options, responseType: 'blob' });
+  }
+
   cancelar(id: number, motivo: string): Observable<Factura> {
     return this.http.patch<Factura>(`${this.apiUrl}/${id}/cancelar`, { motivo }, this.options);
   }

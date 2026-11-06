@@ -119,7 +119,7 @@
               @if (facturaEmitida(); as f) {
                 <p class="factura__folio">{{ 'Folio' | translate }}: {{ f.folio_texto }}</p>
               }
-              <p class="factura__aviso">{{ 'Sin timbrar: no tiene validez fiscal hasta que se timbre con un PAC.' | translate }}</p>
+              <p class="factura__aviso">{{ 'Documento demostrativo, sin validez fiscal.' | translate }}</p>
             </div>
             <span class="factura__fecha">{{ fecha | date:'dd/MM/yyyy HH:mm' }}</span>
           </div>
@@ -127,7 +127,11 @@
           <div class="factura__partes">
             <div>
               <p class="factura__etiqueta">{{ 'Emisor' | translate }}</p>
-              <p>Olimpo Haute Joaillerie</p>
+              <p>{{ emisor()?.razon_social || 'Olimpo Haute Joaillerie' }}</p>
+              @if (emisor(); as fiscal) {
+                <p>RFC: {{ fiscal.rfc }} · {{ 'Régimen fiscal' | translate }} {{ fiscal.regimen_fiscal }}</p>
+                <p>{{ fiscal.calle }} {{ fiscal.numero_exterior }} {{ fiscal.numero_interior || '' }}, {{ fiscal.codigo_postal }}</p>
+              }
               @if (carrito.sucursal()) { <p>{{ 'Sucursal' | translate }}: {{ carrito.sucursal() }}</p> }
             </div>
             <div>
@@ -170,9 +174,21 @@
         @if (!facturaEmitida()) {
           <button type="button" class="btn btn--texto" (click)="editarFactura()">{{ 'Editar datos' | translate }}</button>
         }
+        @if (facturaEmitida()) {
+          <div class="descargas-factura">
+            <p>{{ 'Descarga archivos de demostración; no son CFDI timbrados.' | translate }}</p>
+            <div>
+              <button type="button" class="btn btn--texto" [disabled]="!!descargando()" (click)="descargarArchivo('xml')">{{ (descargando() === 'xml' ? 'Preparando…' : 'Descargar XML') | translate }}</button>
+              <button type="button" class="btn btn--texto" [disabled]="!!descargando()" (click)="descargarArchivo('pdf')">{{ (descargando() === 'pdf' ? 'Preparando…' : 'Descargar PDF') | translate }}</button>
+            </div>
+            @if (errorDescarga()) { <p class="error-descarga" role="alert">{{ errorDescarga() | translate }}</p> }
+          </div>
+        }
       } @else {
         <form class="formulario" [formGroup]="formulario" (ngSubmit)="generarFactura()" novalidate>
           <p class="formulario__titulo">{{ 'Datos de facturación' | translate }}</p>
+          <p class="aviso-datos">{{ 'Datos ficticios para demostración escolar; no son información de un cliente real.' | translate }}</p>
+          <button type="button" class="btn btn--texto" (click)="usarDatosDeEjemplo()">{{ 'Rellenar con datos de ejemplo' | translate }}</button>
 
           <label class="campo" [class.campo--error]="error('rfc')">
             <span>RFC</span>
