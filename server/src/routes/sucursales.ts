@@ -66,7 +66,8 @@ router.delete('/:id', verificarToken, permitirRoles('Administrador'), async (req
     res.json({ mensaje: 'Sucursal eliminada correctamente', sucursal: result.rows[0] });
   } catch (error: any) {
     console.error('Error al eliminar sucursal:', error);
-    if (error.code === '23503') {
+    // 23503 = llave foránea; con ON DELETE RESTRICT (como en DB_v3) Postgres responde 23001
+    if (error.code === '23503' || error.code === '23001') {
       return res.status(409).json({
         error: 'No se puede eliminar la sucursal porque tiene empleados, inventario o ventas asociadas.'
       });

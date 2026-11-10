@@ -1,0 +1,271 @@
+/* Misma presencia que el login: fondo con brillo dorado arriba, emblema y tarjeta.
+   Colores de styles/tema.css, así responde al modo claro. */
+:host {
+  display: block;
+  min-height: 100vh;
+  padding: 44px 20px 56px;
+  background:
+    radial-gradient(circle at 50% 0%, var(--oro-tenue), transparent 60%),
+    var(--fondo);
+  color: var(--texto);
+  font-family: var(--serif);
+}
+
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Marca --- */
+.brand { display: flex; flex-direction: column; align-items: center; }
+
+.crest {
+  display: block;
+  width: 120px;
+  height: auto;
+}
+
+.nombre-marca {
+  margin: 8px 0 0;
+  padding-left: 11px;
+  font-family: 'Cinzel', serif;
+  font-weight: 500;
+  font-size: 32px;
+  letter-spacing: 11px;
+  color: var(--oro);
+}
+
+.divider { display: flex; align-items: center; gap: 14px; margin-top: 6px; }
+.divider span:not(.tagline) { width: 40px; height: 1px; background: var(--oro-medio); }
+.tagline { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 5px; color: var(--texto-2); }
+
+/* --- Tarjeta --- */
+.card {
+  width: 100%;
+  margin-top: 26px;
+  padding: 34px 34px 28px;
+  border-radius: 20px;
+  border: 1.5px solid var(--oro-borde);
+  background: linear-gradient(180deg, var(--superficie) 0%, var(--superficie-2) 100%);
+  box-shadow: var(--sombra);
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.15;
+  color: var(--oro);
+}
+
+.sub {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 17px;
+  color: var(--texto-2);
+}
+
+.cargando {
+  margin: 0;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 14px;
+  color: var(--texto-3);
+}
+
+/* --- Los textos, en una caja con desplazamiento --- */
+.docs {
+  margin-top: 22px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 18px 22px;
+  border-radius: 10px;
+  border: 1px solid var(--oro-borde);
+  background: var(--superficie-3);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--texto-2);
+}
+
+.docs:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
+
+.docs article + article {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--oro-borde);
+}
+
+.docs h2 {
+  margin: 0 0 8px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 21px;
+  color: var(--texto);
+}
+
+.docs h3 {
+  margin: 14px 0 4px;
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--texto);
+}
+
+.docs p { margin: 0 0 8px; }
+.docs ul { margin: 0 0 8px; padding-left: 20px; }
+.docs li { margin-bottom: 4px; }
+.fecha-doc { margin-top: 16px !important; font-size: 12px; color: var(--texto-3); }
+
+.pista {
+  margin: 8px 0 0;
+  text-align: right;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--texto-3);
+}
+
+.pista--lista { color: var(--oro); }
+
+/* --- La casilla, igual que la que tenía el login --- */
+.casilla {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.casilla input {
+  appearance: none;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  border: 1.5px solid var(--oro-medio);
+  border-radius: 4px;
+  background: var(--superficie-3);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.casilla input::after {
+  content: '';
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid var(--sobre-oro);
+  border-bottom: 2px solid var(--sobre-oro);
+  transform: rotate(-45deg) translate(1px, -1px);
+  opacity: 0;
+}
+
+.casilla input:checked { background: var(--oro); border-color: var(--oro); }
+.casilla input:checked::after { opacity: 1; }
+.casilla input:disabled { opacity: 0.4; cursor: not-allowed; }
+.casilla input:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
+
+.casilla label {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--texto-2);
+  cursor: pointer;
+}
+
+.casilla a,
+.registro a {
+  color: var(--oro);
+  text-decoration: underline;
+  text-decoration-color: var(--oro-borde);
+  text-underline-offset: 3px;
+}
+
+.casilla a:hover { text-decoration-color: var(--oro); }
+.casilla a:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; border-radius: 2px; }
+
+.error {
+  margin: 14px 0 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--rojo);
+}
+
+/* --- Botón principal (como "INGRESAR A LA VITRINA") --- */
+.primary {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  border: 0;
+  border-radius: 8px;
+  background: linear-gradient(180deg, var(--oro-claro), var(--oro-medio));
+  color: var(--sobre-oro);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.primary:hover:not(:disabled) { filter: brightness(1.08); }
+.primary:disabled { opacity: 0.35; cursor: not-allowed; }
+.primary:focus-visible { outline: 3px solid var(--oro); outline-offset: 3px; }
+
+.nota {
+  margin: 12px 0 0;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--texto-3);
+}
+
+/* --- Confirmado --- */
+.sello {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border: 1.5px solid var(--oro);
+  border-radius: 50%;
+}
+
+.sello::after {
+  content: '';
+  position: absolute;
+  left: 20px;
+  top: 21px;
+  width: 22px;
+  height: 11px;
+  border-left: 2.5px solid var(--oro);
+  border-bottom: 2.5px solid var(--oro);
+  transform: rotate(-45deg);
+}
+
+.registro {
+  margin: 12px 0 0;
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--texto-2);
+}
+
+.registro strong { color: var(--texto); font-weight: 500; }
+
+@media (max-width: 560px) {
+  :host { padding-top: 28px; }
+  .card { padding: 26px 20px 22px; }
+  .docs { max-height: 300px; padding: 14px 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .casilla input,
+  .primary { transition: none; }
+}

@@ -44,7 +44,7 @@ export class MenuComponent implements OnInit {
   public readonly todosLosItems: MenuItem[] = [
     {
       vista: 'home',
-      titulo: 'Home',
+      titulo: 'Inicio',
       ruta: '/inicio',
       svgPath: [
         'M3 10.5 12 3l9 7.5',

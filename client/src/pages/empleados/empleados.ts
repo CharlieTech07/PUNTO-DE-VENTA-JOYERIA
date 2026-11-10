@@ -5,6 +5,20 @@ import { UsuariosService, Empleado, NuevoEmpleadoPayload } from '../../services/
 import { SucursalesService, Sucursal } from '../../services/sucursales.services';
 import { AuthService } from '../../services/auth.service';
 
+// Mismo formato que valida el servidor (y la base)
+const FORMATO_USUARIO = /^[a-z0-9._]{3,30}$/;
+
+// "Camila Ñúñez" -> "camila.nunez": sin acentos, minúsculas y solo caracteres válidos
+function limpiarUsuario(texto: string): string {
+  return texto
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, '.')
+    .replace(/[^a-z0-9._]/g, '')
+    .replace(/\.{2,}/g, '.')
+    .slice(0, 30);
+}
+
 @Component({
   selector: 'app-empleados',
   standalone: true,
@@ -25,6 +39,8 @@ export class EmpleadosComponent implements OnInit {
   public cargando: boolean = true;
   public guardando: boolean = false;
   public editandoId: number | null = null;
+  // Mientras no lo escriban a mano, el usuario se sugiere solo con nombre y apellido
+  private usuarioEscritoAMano = false;
 
   public formulario: NuevoEmpleadoPayload = this.formularioInicial();
 
@@ -63,6 +79,7 @@ export class EmpleadosComponent implements OnInit {
       nombres: '',
       apellido_paterno: '',
       apellido_materno: '',
+      nombre_usuario: '',
       correo: '',
       contrasena: '',
       rol: esAdmin ? 'Gerente' : 'Cajero',
@@ -109,12 +126,32 @@ export class EmpleadosComponent implements OnInit {
     }
   }
 
+  // Postgres manda los id como texto ("1") y el formulario los guarda como número (1):
+  // sin esto la lista de sucursales se veía vacía aunque sí había una elegida
+  public mismaSucursal = (a: unknown, b: unknown): boolean => a != null && b != null && Number(a) === Number(b);
+
+  public sugerirUsuario(): void {
+    if (this.editandoId || this.usuarioEscritoAMano) return;
+    const primerNombre = this.formulario.nombres.trim().split(/\s+/)[0] || '';
+    const apellido = this.formulario.apellido_paterno.trim();
+    this.formulario.nombre_usuario = limpiarUsuario([primerNombre, apellido].filter(Boolean).join('.'));
+  }
+
+  // Se limpia mientras escriben (minúsculas, sin acentos ni espacios), para que no haya sorpresas al guardar
+  public alEscribirUsuario(campo: HTMLInputElement): void {
+    const limpio = limpiarUsuario(campo.value);
+    if (campo.value !== limpio) campo.value = limpio;
+    this.formulario.nombre_usuario = limpio;
+    this.usuarioEscritoAMano = limpio !== '';
+  }
+
   public seleccionarParaEditar(emp: Empleado): void {
     this.editandoId = emp.id;
     this.formulario = {
       nombres: emp.nombres,
       apellido_paterno: emp.apellido_paterno,
       apellido_materno: emp.apellido_materno || '',
+      nombre_usuario: emp.nombre_usuario || '',
       correo: emp.correo,
       contrasena: '',
       rol: emp.rol,
@@ -124,6 +161,7 @@ export class EmpleadosComponent implements OnInit {
 
   public cancelarEdicion(): void {
     this.editandoId = null;
+    this.usuarioEscritoAMano = false;
     this.formulario = this.formularioInicial();
     if (this.esAdmin && this.listaSucursales.length > 0) {
       this.formulario.id_sucursal = Number(this.listaSucursales[0].id);
@@ -136,8 +174,19 @@ export class EmpleadosComponent implements OnInit {
       return;
     }
 
+    if (!FORMATO_USUARIO.test(this.formulario.nombre_usuario)) {
+      alert('El nombre de usuario debe tener de 3 a 30 caracteres: letras minúsculas, números, punto o guion bajo.');
+      return;
+    }
+
     if (!this.editandoId && !this.formulario.contrasena) {
       alert('La contraseña inicial es requerida.');
+      return;
+    }
+
+    // El login pide al menos 8: con menos, el empleado no podría entrar nunca
+    if (this.formulario.contrasena && this.formulario.contrasena.trim().length < 8) {
+      alert('La contraseña debe tener al menos 8 caracteres.');
       return;
     }
 
@@ -169,7 +218,9 @@ export class EmpleadosComponent implements OnInit {
       this.usuariosService.crearUsuario(payload).subscribe({
         next: (resp) => {
           this.guardando = false;
-          alert(`¡Empleado ${resp.usuario.nombres} creado correctamente!`);
+          alert(resp.correoEnviado
+            ? `¡Empleado ${resp.usuario.nombres} creado! Se le envió la bienvenida a ${resp.usuario.correo}.`
+            : `Empleado ${resp.usuario.nombres} creado, pero no se pudo enviar el correo de bienvenida. Revisa la cuenta de correo configurada en el servidor.`);
           this.cancelarEdicion();
           this.cargarDatos();
         },

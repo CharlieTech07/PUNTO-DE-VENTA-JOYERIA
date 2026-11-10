@@ -6,6 +6,7 @@ import { LanguageService } from '../../services/lenguage.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { ResumenVentaComponent } from './resumen/resumen';
 import { VentasService } from '../../services/ventas.service';
+import { Venta } from '../../models/venta';
 
 @Component({
   selector: 'app-ventas',
@@ -69,7 +70,8 @@ export class VentasComponent implements OnInit {
         cantidad: item.cantidad
       }))
     }).subscribe({
-      next: () => {
+      next: venta => {
+        this.ventaActual.set(venta);
         this.guardando.set(false);
         this.resumenAbierto.set(true);
         this.ventaRegistrada.emit();
@@ -83,6 +85,7 @@ export class VentasComponent implements OnInit {
 
   public cerrarResumen(): void {
     this.resumenAbierto.set(false);
+    this.ventaActual.set(null);
     this.carrito.vaciar();
   }
 }

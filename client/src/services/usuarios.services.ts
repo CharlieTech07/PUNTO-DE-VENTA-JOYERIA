@@ -9,17 +9,21 @@ export interface Empleado {
   nombres: string;
   apellido_paterno: string;
   apellido_materno?: string;
+  nombre_usuario: string;
   correo: string;
   rol: 'Administrador' | 'Gerente' | 'Cajero';
   id_sucursal: number | null;
   nombre_sucursal?: string;
   activo: boolean;
+  // Cuándo confirmó que leyó los términos vigentes; null si todavía no
+  terminos_aceptados_en?: string | null;
 }
 
 export interface NuevoEmpleadoPayload {
   nombres: string;
   apellido_paterno: string;
   apellido_materno?: string;
+  nombre_usuario: string;
   correo: string;
   contrasena: string;
   rol: 'Administrador' | 'Gerente' | 'Cajero';
@@ -42,14 +46,16 @@ export class UsuariosService {
     });
   }
 
-  // 1. Obtener todos los empleados
+  // 1. Obtener todos los empleados (pide sesión: la lista trae correos)
   obtenerUsuarios(): Observable<Empleado[]> {
-    return this.http.get<Empleado[]>(this.apiUrl);
+    return this.http.get<Empleado[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
-  // 2. Crear nuevo empleado
-  crearUsuario(datos: NuevoEmpleadoPayload): Observable<{ mensaje: string; usuario: Empleado }> {
-    return this.http.post<{ mensaje: string; usuario: Empleado }>(this.apiUrl, datos);
+  // 2. Crear nuevo empleado. El servidor le manda la bienvenida por correo y avisa si se pudo
+  crearUsuario(datos: NuevoEmpleadoPayload): Observable<{ mensaje: string; usuario: Empleado; correoEnviado: boolean }> {
+    return this.http.post<{ mensaje: string; usuario: Empleado; correoEnviado: boolean }>(this.apiUrl, datos, {
+      headers: this.getHeaders()
+    });
   }
 
   // 3. Editar datos o contraseña

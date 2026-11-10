@@ -6,16 +6,20 @@ import { Observable, tap } from 'rxjs';
 export interface UsuarioSesion {
   id: string | number;
   nombreCompleto: string;
+  nombre_usuario: string;
   correo: string;
   rol: 'Administrador' | 'Gerente' | 'Cajero';
   id_sucursal: number | null;
   nombre_sucursal: string;
+  // true mientras no confirme que leyó los términos y el aviso de privacidad vigentes
+  terminos_pendientes?: boolean;
 }
 
 export interface RespuestaLogin {
   mensaje: string;
   token: string;
   usuario: UsuarioSesion;
+  terminos_pendientes: boolean;
 }
 
 @Injectable({
@@ -27,14 +31,25 @@ export class AuthService {
   private readonly TOKEN_KEY = 'olimpo_token';
   private readonly USER_KEY = 'olimpo_usuario';
 
-  iniciarSesion(credenciales: { correo: string; contrasena: string }): Observable<RespuestaLogin> {
+  // Se entra con el nombre de usuario, ya no con el correo
+  iniciarSesion(credenciales: { usuario: string; contrasena: string }): Observable<RespuestaLogin> {
     return this.http.post<RespuestaLogin>(`${this.apiUrl}/login`, credenciales).pipe(
       tap(respuesta => {
         // Guardar sesión en el almacenamiento local del navegador
         localStorage.setItem(this.TOKEN_KEY, respuesta.token);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(respuesta.usuario));
+        localStorage.setItem(this.USER_KEY, JSON.stringify({ ...respuesta.usuario, terminos_pendientes: respuesta.terminos_pendientes }));
       })
     );
+  }
+
+  // Si falta que confirme los términos (el guard lo manda a /confirmar-lectura)
+  terminosPendientes(): boolean {
+    return this.obtenerUsuario()?.terminos_pendientes === true;
+  }
+
+  marcarTerminosAceptados(): void {
+    const usuario = this.obtenerUsuario();
+    if (usuario) localStorage.setItem(this.USER_KEY, JSON.stringify({ ...usuario, terminos_pendientes: false }));
   }
   private getHeaders(): HttpHeaders {
   const token = this.obtenerToken();
