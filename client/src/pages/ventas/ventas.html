@@ -16,15 +16,60 @@
             <span class="venta__detalle">{{ item.cantidad }} x {{ item.precio_unitario | currency:'USD':'symbol':'1.0-0' }}</span>
           </div>
           <span class="venta__importe">{{ item.precio_unitario * item.cantidad | currency:'USD':'symbol':'1.0-0' }}</span>
-          <button
-            type="button"
-            class="venta__quitar"
-            [attr.aria-label]="('Quitar de la venta' | translate) + ': ' + item.nombre"
-            (click)="carrito.quitar(item.id_inventario)">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9l1-12.5M10 11v5.5M14 11v5.5"></path>
-            </svg>
-          </button>
+          <div class="venta__acciones">
+            <button
+              type="button"
+              class="venta__menu-toggle"
+              [attr.aria-label]="((menuAccionesAbierto() === item.id_inventario ? 'Ocultar opciones de la pieza' : 'Mostrar opciones de la pieza') | translate) + ': ' + item.nombre"
+              [attr.aria-expanded]="menuAccionesAbierto() === item.id_inventario"
+              [attr.aria-controls]="'acciones-venta-' + item.id_inventario"
+              [disabled]="guardando()"
+              (click)="alternarAcciones(item.id_inventario)">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m7 10 5 5 5-5"></path>
+              </svg>
+            </button>
+
+            @if (menuAccionesAbierto() === item.id_inventario) {
+              <div
+                class="venta__menu"
+                role="group"
+                [id]="'acciones-venta-' + item.id_inventario"
+                [attr.aria-label]="('Opciones de la pieza' | translate) + ': ' + item.nombre"
+                (keydown.escape)="cerrarAcciones()">
+                <button
+                  type="button"
+                  class="venta__accion"
+                  [attr.aria-label]="('Quitar una pieza de la venta' | translate) + ': ' + item.nombre"
+                  [disabled]="guardando()"
+                  (click)="disminuirPieza(item.id_inventario)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h14"></path>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="venta__accion"
+                  [attr.aria-label]="('Agregar una pieza a la venta' | translate) + ': ' + item.nombre"
+                  [disabled]="guardando() || item.cantidad >= item.stock"
+                  (click)="aumentarPieza(item.id_inventario)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 5v14M5 12h14"></path>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  class="venta__accion venta__accion--eliminar"
+                  [attr.aria-label]="('Eliminar la pieza de la venta' | translate) + ': ' + item.nombre"
+                  [disabled]="guardando()"
+                  (click)="quitarPieza(item.id_inventario)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 12.5h9l1-12.5M10 11v5.5M14 11v5.5"></path>
+                  </svg>
+                </button>
+              </div>
+            }
+          </div>
         </li>
       }
     </ul>

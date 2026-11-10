@@ -88,24 +88,35 @@
   font-variant-numeric: tabular-nums;
 }
 
-.venta__quitar {
+.venta__acciones {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.venta__menu-toggle,
+.venta__accion {
+  display: grid;
+  place-items: center;
   width: 28px;
   height: 28px;
   padding: 5px;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
   color: var(--texto-3);
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
 
-.venta__quitar:hover {
+.venta__menu-toggle:hover,
+.venta__accion:hover {
   background: var(--oro-tenue);
-  color: var(--rojo);
+  color: var(--oro);
 }
 
-.venta__quitar svg {
+.venta__menu-toggle svg,
+.venta__accion svg {
   width: 100%;
   height: 100%;
   fill: none;
@@ -113,6 +124,36 @@
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.venta__menu-toggle[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+  color: var(--oro);
+}
+
+.venta__menu-toggle:disabled,
+.venta__accion:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.venta__menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px;
+  border: 1px solid var(--oro-borde);
+  border-radius: 10px;
+  background: var(--superficie-2);
+  box-shadow: var(--sombra);
+}
+
+.venta__accion--eliminar:hover {
+  color: var(--rojo);
 }
 
 /* ---------- Total ---------- */
@@ -192,7 +233,8 @@
 
 .venta__finalizar:focus-visible,
 .venta__vaciar:focus-visible,
-.venta__quitar:focus-visible {
+.venta__menu-toggle:focus-visible,
+.venta__accion:focus-visible {
   outline: 2px solid var(--oro);
   outline-offset: 2px;
 }
