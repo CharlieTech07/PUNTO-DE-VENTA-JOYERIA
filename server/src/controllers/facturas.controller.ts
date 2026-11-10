@@ -1,6 +1,7 @@
 // server/src/controllers/facturas.controller.ts
 import { Response } from 'express';
 import { RequestConUsuario } from '../middleware/verificarToken.js';
+import { generarPdfDemostrativo, generarXmlDemostrativo, obtenerDatosFacturaDocumento } from '../services/facturas-documentos.service.js';
 import {
   emitirFactura,
   listarFacturas,
@@ -51,6 +52,36 @@ export async function obtenerDeVenta(req: RequestConUsuario, res: Response) {
   try {
     const factura = await obtenerFacturaDeVenta(req.params.idVenta, req.usuarioToken!);
     res.json(factura);
+  } catch (error) {
+    manejarError(error, res);
+  }
+}
+
+export async function descargarXmlDemostrativo(req: RequestConUsuario, res: Response) {
+  try {
+    const datos = await obtenerDatosFacturaDocumento(req.params.id, req.usuarioToken!);
+    const contenido = generarXmlDemostrativo(datos);
+    const nombre = `factura-${datos.factura.folio_texto}-demostracion.xml`;
+    res.set({
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${nombre}"`,
+      'Cache-Control': 'private, no-store',
+    }).send(contenido);
+  } catch (error) {
+    manejarError(error, res);
+  }
+}
+
+export async function descargarPdfDemostrativo(req: RequestConUsuario, res: Response) {
+  try {
+    const datos = await obtenerDatosFacturaDocumento(req.params.id, req.usuarioToken!);
+    const contenido = generarPdfDemostrativo(datos);
+    const nombre = `factura-${datos.factura.folio_texto}-demostracion.pdf`;
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${nombre}"`,
+      'Cache-Control': 'private, no-store',
+    }).send(contenido);
   } catch (error) {
     manejarError(error, res);
   }

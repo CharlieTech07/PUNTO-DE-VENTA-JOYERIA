@@ -230,6 +230,11 @@
 .factura__totales div { display: flex; justify-content: space-between; }
 .factura__totales dd { margin: 0; }
 .factura__total { padding-top: 6px; border-top: 2px solid var(--tinta); font-weight: 700; font-size: 0.9rem; }
+.descargas-factura { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--oro-borde); border-radius: var(--radio-sm); background: var(--superficie-2); }
+.descargas-factura p { margin: 0; color: var(--texto-2); font-size: 0.78rem; }
+.descargas-factura > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.descargas-factura .btn:disabled { opacity: .55; cursor: wait; }
+.descargas-factura .error-descarga { color: var(--rojo); }
 
 /* Formulario de facturación */
 .formulario { display: grid; gap: 12px; }
