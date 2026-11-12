@@ -131,7 +131,8 @@ export class MenuComponent implements OnInit {
 
   public cerrarSesion(): void {
     this.authService.cerrarSesion();
-    this.router.navigate(['/login']);
+    // replaceUrl: la pantalla con sesión no queda como entrada del historial
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 
   private inicializarTema(): void {
