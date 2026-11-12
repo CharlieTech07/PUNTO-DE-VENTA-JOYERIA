@@ -1,0 +1,222 @@
+<!-- <dialog> nativo con showModal(), igual que el resumen: va encima de todo.
+     No se cierra con un clic en el fondo para no perder lo capturado. -->
+<dialog
+  #dialogo
+  class="dialogo"
+  aria-labelledby="cobro-titulo"
+  (cancel)="$event.preventDefault(); cerrarSiSePuede()">
+<div class="contenido">
+
+  <button type="button" class="cerrar" [attr.aria-label]="'Cerrar' | translate" [disabled]="guardando()" (click)="cerrarSiSePuede()">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+  </button>
+
+  @if (venta(); as registrada) {
+    <!-- ===================== Venta registrada ===================== -->
+    <section class="listo" aria-live="polite">
+      <svg class="listo__icono" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="9.5"></circle><path d="M7.5 12.5l3 3 6-6.5"></path>
+      </svg>
+      <h2 id="cobro-titulo" class="listo__titulo">{{ 'Venta registrada' | translate }}</h2>
+      <p>{{ 'Folio' | translate }} <span class="num">{{ registrada.folio }}</span></p>
+      @if (cambioEntregar() > 0) {
+        <p class="listo__cambio">
+          {{ 'Entrega de cambio' | translate }}: <b class="num">{{ cambioEntregar() | currency:'USD':'symbol':'1.2-2' }}</b>
+        </p>
+      }
+      <div class="listo__acciones">
+        <button #botonImprimir type="button" class="boton-principal" (click)="imprimir()">{{ 'Imprimir ticket' | translate }}</button>
+        <button type="button" class="boton-borde" (click)="facturar.emit()">{{ 'Generar factura' | translate }}</button>
+        <button type="button" class="boton-texto" (click)="cerrar.emit()">{{ 'Seguir vendiendo' | translate }}</button>
+      </div>
+    </section>
+  } @else {
+    <!-- ===================== Cobro ===================== -->
+    <section class="cobro">
+      <span class="etiqueta">{{ 'Finalizar venta' | translate }}</span>
+      <h2 id="cobro-titulo" class="titulo">{{ 'Cobrar' | translate }}</h2>
+      <p class="meta">
+        @if (carrito.sucursal()) { {{ 'Sucursal' | translate }}: {{ carrito.sucursal() }} }
+        @if (carrito.sucursal() && atiende) { · }
+        @if (atiende) { {{ 'Atiende' | translate }}: {{ atiende }} }
+      </p>
+
+      <div class="total-cobrar">
+        <span>{{ 'Total a cobrar' | translate }}</span>
+        <strong class="num">{{ total() | currency:'USD':'symbol':'1.2-2' }}</strong>
+      </div>
+
+      <div class="metodos" role="group" [attr.aria-label]="'Método de pago' | translate">
+        <button type="button" class="metodo" [attr.aria-pressed]="forma() === 'efectivo'" (click)="elegir('efectivo')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"></rect><circle cx="12" cy="12" r="2.6"></circle><path d="M6 9.5v5M18 9.5v5"></path></svg>
+          {{ 'Efectivo' | translate }}
+        </button>
+        <button type="button" class="metodo" [attr.aria-pressed]="forma() === 'tarjeta'" (click)="elegir('tarjeta')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2"></rect><path d="M2.5 10h19M6 15h4"></path></svg>
+          {{ 'Tarjeta' | translate }}
+        </button>
+        <button type="button" class="metodo" [attr.aria-pressed]="forma() === 'transferencia'" (click)="elegir('transferencia')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"></path></svg>
+          {{ 'Transferencia' | translate }}
+        </button>
+        <button type="button" class="metodo" [attr.aria-pressed]="forma() === 'mixto'" (click)="elegir('mixto')">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="12" r="5.5"></circle><circle cx="15" cy="12" r="5.5"></circle></svg>
+          {{ 'Mixto' | translate }}
+        </button>
+      </div>
+
+      @switch (forma()) {
+        @case ('efectivo') {
+          <div class="panel">
+            <div class="campo">
+              <label for="cobro-recibido">{{ 'Recibido' | translate }}</label>
+              <input #campoRecibido id="cobro-recibido" class="entrada entrada--grande num" inputmode="decimal"
+                     placeholder="$0.00" autocomplete="off"
+                     [value]="recibidoTexto()" (input)="recibidoTexto.set(valor($event))">
+            </div>
+            <div class="rapidos">
+              <button type="button" class="rapido" (click)="usarRecibido(total())">{{ 'Exacto' | translate }}</button>
+              @for (monto of sugeridos(); track monto) {
+                <button type="button" class="rapido num" (click)="usarRecibido(monto)">{{ monto | currency:'USD':'symbol':'1.0-0' }}</button>
+              }
+            </div>
+            <div class="cambio" [class.cambio--falta]="faltaEfectivo()">
+              <span>{{ (faltaEfectivo() ? 'Faltan' : 'Cambio') | translate }}</span>
+              <strong class="num">{{ montoCambio() | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </div>
+            <p class="ayuda">
+              {{ 'Límite de efectivo en joyería por la Ley Antilavado:' | translate }}
+              <span class="num">{{ limiteEfectivo | currency:'USD':'symbol':'1.2-2' }}</span>
+            </p>
+          </div>
+        }
+
+        @case ('tarjeta') {
+          <div class="panel">
+            <div class="campo">
+              <span class="rotulo" id="cobro-tipo-tarjeta">{{ 'Tipo de tarjeta' | translate }}</span>
+              <div class="segmento" role="group" aria-labelledby="cobro-tipo-tarjeta">
+                <button type="button" [attr.aria-pressed]="tipoTarjeta() === 'debito'" (click)="elegirTarjeta('debito')">{{ 'Débito' | translate }}</button>
+                <button type="button" [attr.aria-pressed]="tipoTarjeta() === 'credito'" (click)="elegirTarjeta('credito')">{{ 'Crédito' | translate }}</button>
+              </div>
+            </div>
+            <div class="campo">
+              <label for="cobro-autorizacion">{{ 'Número de autorización' | translate }}</label>
+              <input id="cobro-autorizacion" class="entrada num" inputmode="numeric" maxlength="12" autocomplete="off"
+                     [placeholder]="'Viene en el voucher, ej. 482913' | translate"
+                     [value]="autorizacion()" (input)="autorizacion.set(valor($event))">
+            </div>
+            @if (tipoTarjeta() === 'credito') {
+              <div class="campo">
+                <label for="cobro-meses">{{ 'Meses sin intereses' | translate }}</label>
+                <select id="cobro-meses" class="entrada" (change)="meses.set(+valor($event))">
+                  <option value="0" [selected]="meses() === 0">{{ 'Una sola exhibición' | translate }}</option>
+                  @for (m of mesesSinIntereses; track m) {
+                    <option [value]="m" [selected]="meses() === m">{{ m }} {{ 'meses' | translate }}</option>
+                  }
+                </select>
+              </div>
+            }
+            <div class="nota">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.5"></path></svg>
+              <span>
+                {{ 'Primero se cobra en la terminal del banco; aquí solo se anota la autorización del voucher.' | translate }}
+                <b>{{ 'Nunca escribas el número de la tarjeta.' | translate }}</b>
+              </span>
+            </div>
+          </div>
+        }
+
+        @case ('transferencia') {
+          <div class="panel">
+            <div class="campo">
+              <label for="cobro-referencia">{{ 'Clave de rastreo o referencia' | translate }}</label>
+              <input id="cobro-referencia" class="entrada num" maxlength="30" autocomplete="off"
+                     [placeholder]="'Ej. MBAN01002610290012345' | translate"
+                     [value]="referencia()" (input)="referencia.set(valor($event))">
+            </div>
+            <label class="casilla">
+              <input type="checkbox" [checked]="confirmada()" (change)="confirmada.set(marcado($event))">
+              {{ 'Ya vi el dinero en la cuenta de la joyería' | translate }}
+            </label>
+            <div class="nota">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v5M12 16.5v.5"></path></svg>
+              <span>{{ 'La pieza se entrega hasta que la transferencia aparece en la cuenta.' | translate }}</span>
+            </div>
+          </div>
+        }
+
+        @case ('mixto') {
+          <div class="panel">
+            <p class="ayuda">{{ 'Agrega cada pago hasta completar el total (por ejemplo, una parte en efectivo y el resto con tarjeta).' | translate }}</p>
+            @if (pagosMixto().length) {
+              <ul class="pagos">
+                @for (pago of pagosMixto(); track $index) {
+                  <li class="pago">
+                    <span>
+                      {{ nombreMetodo[pago.metodo] | translate }}
+                      @if (pago.referencia) { <small>{{ 'Ref.' | translate }} {{ pago.referencia }}</small> }
+                    </span>
+                    <span class="num">{{ pago.monto | currency:'USD':'symbol':'1.2-2' }}</span>
+                    <button type="button" [attr.aria-label]="'Quitar este pago' | translate" (click)="quitarPago($index)">
+                      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+            <!-- Cuando ya se cubrió el total ya no hace falta agregar más -->
+            @if (falta() > 0) {
+              <div class="fila-agregar">
+                <select class="entrada" [attr.aria-label]="'Método del pago' | translate" (change)="elegirMetodoMixto(valor($event))">
+                  @for (m of metodosMixto; track m) {
+                    <option [value]="m" [selected]="mixtoMetodo() === m">{{ nombreMetodo[m] | translate }}</option>
+                  }
+                </select>
+                <input class="entrada num" inputmode="decimal" autocomplete="off"
+                       [attr.aria-label]="'Monto del pago' | translate"
+                       [placeholder]="('Falta' | translate) + ' ' + (falta() | currency:'USD':'symbol':'1.2-2')"
+                       [value]="mixtoMonto()" (input)="mixtoMonto.set(valor($event))" (keydown.enter)="agregarPago()">
+                @if (mixtoMetodo() !== 'efectivo') {
+                  <input class="entrada num ancho" autocomplete="off"
+                         [attr.maxlength]="mixtoMetodo() === 'transferencia' ? 30 : 12"
+                         [attr.inputmode]="mixtoMetodo() === 'transferencia' ? 'text' : 'numeric'"
+                         [placeholder]="(mixtoMetodo() === 'transferencia' ? 'Clave de rastreo' : 'Número de autorización') | translate"
+                         [attr.aria-label]="(mixtoMetodo() === 'transferencia' ? 'Clave de rastreo' : 'Número de autorización') | translate"
+                         [value]="mixtoReferencia()" (input)="mixtoReferencia.set(valor($event))" (keydown.enter)="agregarPago()">
+                }
+                <button type="button" class="boton-borde ancho" (click)="agregarPago()">{{ 'Agregar pago' | translate }}</button>
+              </div>
+            }
+            <div class="barra" aria-hidden="true"><div [style.width.%]="avance()"></div></div>
+            <div class="faltante">
+              <span>{{ 'Pagado' | translate }} <b class="num">{{ pagado() | currency:'USD':'symbol':'1.2-2' }}</b></span>
+              <span>{{ 'Falta por cobrar' | translate }} <b class="num">{{ falta() | currency:'USD':'symbol':'1.2-2' }}</b></span>
+            </div>
+          </div>
+        }
+      }
+
+      <div class="pie">
+        <p class="error" role="alert">{{ mensajeError() | translate }}</p>
+        <button type="button" class="boton-principal" [disabled]="!revision().listo || guardando()" (click)="cobrar()">
+          @if (guardando()) {
+            {{ 'Registrando venta...' | translate }}
+          } @else {
+            {{ 'Cobrar' | translate }} {{ total() | currency:'USD':'symbol':'1.2-2' }}
+          }
+        </button>
+        <button type="button" class="boton-texto" [disabled]="guardando()" (click)="cerrarSiSePuede()">{{ 'Volver a la venta' | translate }}</button>
+      </div>
+    </section>
+  }
+
+  <!-- ===================== Ticket en vivo ===================== -->
+  <aside class="lado" [attr.aria-label]="'Vista previa del ticket' | translate">
+    <app-ticket-venta [fecha]="fecha" [folio]="venta()?.folio ?? null" [pagos]="pagosTicket()"></app-ticket-venta>
+    @if (!venta()) {
+      <p class="nota-lado">{{ 'El ticket se actualiza mientras capturas el pago.' | translate }}</p>
+    }
+  </aside>
+</div>
+</dialog>

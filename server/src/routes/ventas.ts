@@ -1,9 +1,9 @@
 import { Router, Response } from 'express';
 import { pool } from '../db.js';
 import { RequestConUsuario, verificarToken } from '../middleware/verificarToken.js';
+import { ErrorPago, Pago, cuadrarPagos, guardarPagos, leerPagos } from '../services/pagos.service.js';
 
 const router = Router();
-const metodosPago = ['efectivo', 'tarjeta', 'transferencia', 'mixto'];
 
 router.get('/', verificarToken, async (req: RequestConUsuario, res: Response) => {
   try {
@@ -21,16 +21,21 @@ router.get('/', verificarToken, async (req: RequestConUsuario, res: Response) =>
 });
 
 router.post('/', verificarToken, async (req: RequestConUsuario, res: Response) => {
-  const { items, metodo_pago } = req.body as {
+  // pagos: cómo se cobró (uno o varios). metodo_pago ya no se lee: sale de los pagos.
+  const { items, pagos } = req.body as {
     items?: Array<{ id_inventario: number; cantidad: number }>;
-    metodo_pago?: string;
+    pagos?: unknown;
   };
   const usuario = req.usuarioToken!;
   if (!Array.isArray(items) || items.length === 0 || items.length > 100) {
     return res.status(400).json({ error: 'La venta debe incluir entre 1 y 100 piezas' });
   }
-  if (!metodosPago.includes(metodo_pago ?? '')) {
-    return res.status(400).json({ error: 'El método de pago no es válido' });
+  let pagosLeidos: Pago[];
+  try {
+    pagosLeidos = leerPagos(pagos);
+  } catch (error) {
+    if (error instanceof ErrorPago) return res.status(400).json({ error: error.message });
+    throw error;
   }
   const normalizados = new Map<number, number>();
   for (const item of items) {
@@ -78,6 +83,7 @@ router.post('/', verificarToken, async (req: RequestConUsuario, res: Response) =
     total = Math.round(total * 100) / 100;
     const subtotal = Math.round((total / 1.16) * 100) / 100;
     const iva = Math.round((total - subtotal) * 100) / 100;
+    const metodo_pago = cuadrarPagos(pagosLeidos, total);
     const folio = `OL-${Date.now()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
     const { rows: ventas } = await client.query(
       `INSERT INTO ventas (folio, id_sucursal, id_usuario, subtotal, impuesto, total, metodo_pago, estado)
@@ -99,13 +105,15 @@ router.post('/', verificarToken, async (req: RequestConUsuario, res: Response) =
       );
       if (actualizacion.rowCount !== 1) throw new Error(`STOCK:${detalle.nombre}`);
     }
+    await guardarPagos(client, venta.id, pagosLeidos);
     await client.query('COMMIT');
-    res.status(201).json({ ...venta, detalles: detalles.map(d => ({
+    res.status(201).json({ ...venta, pagos: pagosLeidos, detalles: detalles.map(d => ({
       id_inventario: d.id_inventario, nombre: d.nombre, cantidad: d.cantidad,
       precio_unitario: d.precio, importe: d.precio * d.cantidad
     })) });
   } catch (error) {
     await client.query('ROLLBACK').catch(() => undefined);
+    if (error instanceof ErrorPago) return res.status(400).json({ error: error.message });
     if (error instanceof Error && error.message.startsWith('STOCK:')) {
       return res.status(409).json({ error: `Existencias insuficientes para ${error.message.slice(6)}` });
     }

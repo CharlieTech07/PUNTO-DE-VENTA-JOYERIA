@@ -2,11 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Venta } from '../models/venta';
+import { PagoVenta } from '../models/pago';
 import { AuthService } from './auth.service';
 
+// metodo_pago ya no se manda: el servidor lo saca de los pagos
 export interface CrearVenta {
-  metodo_pago: Venta['metodo_pago'];
   items: Array<{ id_inventario: number; cantidad: number }>;
+  pagos: PagoVenta[];
 }
 
 @Injectable({
