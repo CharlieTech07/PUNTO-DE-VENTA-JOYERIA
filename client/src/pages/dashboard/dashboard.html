@@ -473,33 +473,35 @@
             <div class="kpi__nota">{{ 'Preferencias del sistema' | translate }}</div>
           </div>
         </a>
-        <div class="kpi modulo-acceso modulo-acceso--estatico" aria-label="Datos bancarios">
-          <div class="modulo-acceso__ilustracion" aria-hidden="true">
-            <svg viewBox="0 0 64 64" fill="none">
-              <path d="m8 24 24-13 24 13H8ZM12 28h40M10 51h44M15 29v20m11-20v20m12-20v20m11-20v20" />
-              <path d="M6 55h52" />
-            </svg>
-          </div>
-          <div class="modulo-acceso__contenido">
-            <div class="etiqueta">{{ 'Finanzas' | translate }}</div>
-            <div class="kpi__valor">{{ 'Datos bancarios' | translate }}</div>
-            <div class="kpi__nota">{{ 'Cuentas y formas de pago' | translate }}</div>
-          </div>
-        </div>
-        <div class="kpi modulo-acceso modulo-acceso--estatico" aria-label="Datos de facturación">
-          <div class="modulo-acceso__ilustracion" aria-hidden="true">
-            <svg viewBox="0 0 64 64" fill="none">
-              <path d="M17 8h22l10 10v38H17V8Z" />
-              <path d="M39 9v11h10M24 30h18M24 38h18M24 46h12" />
-              <path d="M12 14v43h31" />
-            </svg>
-          </div>
-          <div class="modulo-acceso__contenido">
-            <div class="etiqueta">{{ 'Administración' | translate }}</div>
-            <div class="kpi__valor">{{ 'Datos de facturación' | translate }}</div>
-            <div class="kpi__nota">{{ 'Información fiscal del negocio' | translate }}</div>
-          </div>
-        </div>
+        @if (esAdmin) {
+          <a class="kpi modulo-acceso" routerLink="/datos-bancarios" aria-label="Abrir datos bancarios">
+            <div class="modulo-acceso__ilustracion" aria-hidden="true">
+              <svg viewBox="0 0 64 64" fill="none">
+                <path d="m8 24 24-13 24 13H8ZM12 28h40M10 51h44M15 29v20m11-20v20m12-20v20m11-20v20" />
+                <path d="M6 55h52" />
+              </svg>
+            </div>
+            <div class="modulo-acceso__contenido">
+              <div class="etiqueta">{{ 'Finanzas' | translate }}</div>
+              <div class="kpi__valor">{{ 'Datos bancarios' | translate }}</div>
+              <div class="kpi__nota">{{ 'Cuentas y formas de pago' | translate }} →</div>
+            </div>
+          </a>
+          <a class="kpi modulo-acceso" routerLink="/datos-facturacion" aria-label="Abrir datos de facturación">
+            <div class="modulo-acceso__ilustracion" aria-hidden="true">
+              <svg viewBox="0 0 64 64" fill="none">
+                <path d="M17 8h22l10 10v38H17V8Z" />
+                <path d="M39 9v11h10M24 30h18M24 38h18M24 46h12" />
+                <path d="M12 14v43h31" />
+              </svg>
+            </div>
+            <div class="modulo-acceso__contenido">
+              <div class="etiqueta">{{ 'Administración' | translate }}</div>
+              <div class="kpi__valor">{{ 'Datos de facturación' | translate }}</div>
+              <div class="kpi__nota">{{ 'Información fiscal del negocio' | translate }} →</div>
+            </div>
+          </a>
+        }
       </div>
     </section>
 

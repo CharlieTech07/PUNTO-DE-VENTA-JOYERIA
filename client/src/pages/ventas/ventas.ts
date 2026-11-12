@@ -30,6 +30,7 @@ export class VentasComponent implements OnInit {
 
   public vaciar(): void {
     if (confirm(this.language.t('¿Vaciar el carrito? Se quitarán todas las piezas.'))) {
+      this.cerrarAcciones();
       this.carrito.vaciar();
     }
   }
