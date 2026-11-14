@@ -10,6 +10,7 @@ import { FacturasService } from '../../../services/facturas.service';
 import { Factura, ReceptorFactura } from '../../../models/factura';
 import { Venta } from '../../../models/venta';
 import { formaPagoSat } from '../../../models/pago';
+import { DatosFacturacionGuardados, DatosNegocioService } from '../../../services/datos-negocio.service';
 import { TicketVentaComponent } from '../ticket/ticket';
 
 export type Vista = 'ninguna' | 'ticket' | 'factura';
@@ -76,6 +77,7 @@ export class ResumenVentaComponent implements OnInit {
   public readonly sinIva = sinIva;
   // Forma de pago del SAT para la factura, según cómo se cobró
   public readonly formaPago = computed(() => formaPagoSat(this.venta()?.pagos ?? []));
+  private consultoEmisor = false;
 
   public readonly formulario = this.fb.nonNullable.group({
     rfc: ['', [Validators.required, Validators.pattern(/^[A-ZÑ&]{3,4}\d{6}[A-Z\d]{3}$/i)]],
@@ -97,6 +99,8 @@ export class ResumenVentaComponent implements OnInit {
 
   ngOnInit(): void {
     this.vista.set(this.vistaInicial());
+    // El cobro abre directo en la factura: los datos del emisor se piden desde ya
+    if (this.vista() === 'factura') this.consultarEmisor();
   }
 
   // Un clic que cae directo en el <dialog> es un clic en el fondo oscuro:
@@ -108,13 +112,16 @@ export class ResumenVentaComponent implements OnInit {
   public ver(vista: Vista): void {
     const siguiente = this.vista() === vista ? 'ninguna' : vista;
     this.vista.set(siguiente);
-    if (siguiente === 'factura' && !this.consultoEmisor) {
-      this.consultoEmisor = true;
-      this.datosNegocioService.obtenerFacturacion().subscribe({
-        next: datos => this.emisor.set(datos),
-        error: error => console.error('No se pudieron consultar los datos fiscales del emisor:', error)
-      });
-    }
+    if (siguiente === 'factura') this.consultarEmisor();
+  }
+
+  private consultarEmisor(): void {
+    if (this.consultoEmisor) return;
+    this.consultoEmisor = true;
+    this.datosNegocioService.obtenerFacturacion().subscribe({
+      next: datos => this.emisor.set(datos),
+      error: error => console.error('No se pudieron consultar los datos fiscales del emisor:', error)
+    });
   }
 
   // El RFC siempre en mayúsculas, como viene en la constancia
