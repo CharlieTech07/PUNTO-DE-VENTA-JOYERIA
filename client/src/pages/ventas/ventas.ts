@@ -21,6 +21,7 @@ export class VentasComponent implements OnInit {
   private readonly ventasService = inject(VentasService);
 
   public readonly resumenAbierto = signal(false);
+  public readonly ventaActual = signal<Venta | null>(null);
   public readonly guardando = signal(false);
   public readonly errorVenta = signal('');
   public readonly menuAccionesAbierto = signal<number | null>(null);
