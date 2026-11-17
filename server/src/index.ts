@@ -20,6 +20,13 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '32kb' }));
 
+// Las respuestas de la API (sesión y datos del negocio) nunca se guardan en caché.
+// La traducción se excluye: sus respuestas sí conviene reutilizarlas.
+app.use('/api', (req, res, next) => {
+  if (!req.path.startsWith('/traduccion')) res.set('Cache-Control', 'no-store');
+  next();
+});
+
 app.get('/', (_req, res) => {
   res.send('Servidor del Punto de Venta funcionando');
 });

@@ -1,0 +1,406 @@
+/* El cobro: se abre con "Cobrar" en "Venta actual".
+   Colores de styles/tema.css; el ticket trae los suyos (ticket.css). */
+
+.dialogo {
+  width: min(calc(100% - 32px), 1040px);
+  max-width: none;
+  max-height: calc(100% - 32px);
+  margin: auto;
+  padding: 0;
+  overflow-y: auto;
+  border-radius: var(--radio);
+  border: 1px solid var(--oro-borde);
+  background-color: var(--superficie);
+  color: var(--texto);
+  font-family: var(--sans);
+  box-shadow: var(--sombra);
+}
+
+.dialogo::backdrop { background: rgba(0, 0, 0, 0.6); }
+
+.contenido {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 28px;
+  padding: 30px 28px 26px;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+
+.cerrar {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  padding: 7px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texto-3);
+  cursor: pointer;
+}
+
+.cerrar:hover:not(:disabled) { background: var(--oro-tenue); color: var(--texto); }
+.cerrar:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.cerrar svg,
+.pago button svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
+
+/* ---------- Encabezado y total ---------- */
+
+.cobro { min-width: 0; }
+
+.etiqueta {
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--oro-medio);
+}
+
+.titulo {
+  margin: 6px 0 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.meta { margin: 6px 0 0; font-size: 0.8rem; color: var(--texto-3); }
+
+.total-cobrar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--oro-borde);
+  background: var(--superficie-2);
+}
+
+.total-cobrar span,
+.cambio span {
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+
+.total-cobrar strong { font-family: var(--serif); font-weight: 500; font-size: 2rem; line-height: 1; }
+
+/* ---------- Método de pago ---------- */
+
+.metodos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 18px; }
+
+.metodo {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 12px 6px 10px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--oro-borde);
+  background: transparent;
+  color: var(--texto-2);
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.metodo svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.metodo:hover { background: var(--oro-tenue); color: var(--texto); }
+.metodo[aria-pressed="true"] { border-color: var(--oro); background: var(--oro-tenue); color: var(--oro-claro); }
+
+/* ---------- Campos ---------- */
+
+.panel { margin-top: 18px; }
+.campo { display: grid; gap: 6px; margin-top: 14px; }
+
+.campo label,
+.rotulo {
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--texto-2);
+}
+
+.entrada {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 14px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--oro-borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.entrada--grande { font-family: var(--serif); font-size: 1.5rem; }
+.entrada::placeholder { color: var(--texto-3); }
+.entrada:focus { outline: none; border-color: var(--oro); box-shadow: 0 0 0 3px var(--oro-tenue); }
+
+select.entrada {
+  appearance: none;
+  padding-right: 36px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--texto-3) 50%),
+    linear-gradient(135deg, var(--texto-3) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+}
+
+select.entrada option { background: var(--superficie); color: var(--texto); }
+
+.ayuda { margin: 10px 0 0; font-size: 0.74rem; color: var(--texto-3); }
+
+/* Efectivo */
+.rapidos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+
+.rapido {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--oro-borde);
+  background: transparent;
+  color: var(--texto-2);
+  font-family: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.rapido:hover { background: var(--oro-tenue); color: var(--texto); }
+
+.cambio {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--oro-borde);
+}
+
+.cambio strong { font-family: var(--serif); font-weight: 500; font-size: 1.7rem; color: var(--oro); }
+.cambio--falta strong { font-size: 1.2rem; color: var(--rojo); }
+
+/* Tarjeta */
+.segmento {
+  justify-self: start;
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid var(--oro-borde);
+}
+
+.segmento button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--texto-2);
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.segmento button[aria-pressed="true"] { background: var(--oro); color: var(--sobre-oro); }
+
+.nota {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-radius: var(--radio-sm);
+  background: var(--oro-tenue);
+  font-size: 0.78rem;
+  color: var(--texto-2);
+}
+
+.nota svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  fill: none;
+  stroke: var(--oro);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.nota b { font-weight: 600; color: var(--texto); }
+
+/* Transferencia */
+.casilla {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 14px;
+  font-size: 0.86rem;
+  color: var(--texto-2);
+  cursor: pointer;
+}
+
+.casilla input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--oro); }
+
+/* Mixto */
+.pagos { display: grid; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+
+.pago {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--oro-borde);
+  background: var(--superficie-2);
+  font-size: 0.88rem;
+}
+
+.pago small { display: block; font-size: 0.72rem; color: var(--texto-3); overflow-wrap: anywhere; }
+
+.pago button {
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--texto-3);
+  cursor: pointer;
+}
+
+.pago button:hover { background: var(--oro-tenue); color: var(--rojo); }
+
+.fila-agregar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.fila-agregar .ancho { grid-column: 1 / -1; }
+
+.barra { height: 6px; margin-top: 14px; overflow: hidden; border-radius: 999px; background: var(--superficie-3); }
+.barra div { height: 100%; background: var(--oro); transition: width 0.25s ease; }
+
+.faltante { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; margin-top: 8px; font-size: 0.84rem; color: var(--texto-2); }
+.faltante b { font-weight: 500; color: var(--texto); }
+
+/* ---------- Botones ---------- */
+
+.pie { display: grid; gap: 6px; margin-top: 22px; }
+
+.error { min-height: 1.2em; margin: 6px 0 0; font-size: 0.82rem; color: var(--rojo); }
+
+.boton-principal {
+  min-height: 46px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--radio-sm);
+  background: var(--texto);
+  color: var(--fondo);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.boton-principal:hover:not(:disabled) { opacity: 0.9; }
+.boton-principal:active:not(:disabled) { transform: scale(0.99); }
+.boton-principal:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.boton-borde {
+  min-height: 42px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--oro);
+  background: transparent;
+  color: var(--oro-claro);
+  font-family: inherit;
+  font-size: 0.78rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.boton-borde:hover { background: var(--oro-tenue); }
+
+.boton-texto {
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--texto-2);
+  font-family: inherit;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.boton-texto:hover:not(:disabled) { color: var(--texto); }
+.boton-texto:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- Ticket ---------- */
+
+/* El espacio de arriba deja libre la X de cerrar */
+.lado { min-width: 0; padding-top: 22px; }
+.nota-lado { margin: 10px 2px 0; text-align: center; font-size: 0.74rem; color: var(--texto-3); }
+
+/* ---------- Venta registrada ---------- */
+
+.listo { min-width: 0; padding: 10px 0 4px; text-align: center; }
+
+.listo__icono {
+  width: 46px;
+  height: 46px;
+  fill: none;
+  stroke: var(--verde);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.listo__titulo { margin: 6px 0 2px; font-family: var(--serif); font-weight: 500; font-size: 1.5rem; }
+.listo p { margin: 0; font-size: 0.88rem; color: var(--texto-2); overflow-wrap: anywhere; }
+.listo .listo__cambio { margin-top: 10px; }
+.listo__cambio b { font-weight: 500; color: var(--oro); }
+.listo__acciones { display: grid; gap: 8px; margin-top: 20px; }
+
+/* ---------- Pantalla angosta ---------- */
+
+@media (max-width: 880px) {
+  .contenido { grid-template-columns: minmax(0, 1fr); padding: 26px 18px 20px; }
+}
+
+@media (max-width: 460px) {
+  .metodos { grid-template-columns: repeat(2, 1fr); }
+  .titulo { font-size: 1.6rem; }
+  .total-cobrar strong { font-size: 1.6rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .metodo, .boton-principal, .barra div { transition: none; }
+}

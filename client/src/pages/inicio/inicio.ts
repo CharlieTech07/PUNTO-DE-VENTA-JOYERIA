@@ -89,7 +89,7 @@ export class InicioComponent implements OnInit {
           // Token vencido o inválido: se regresa al login
           if (err.status === 401) {
             this.authService.cerrarSesion();
-            this.router.navigate(['/login']);
+            this.router.navigate(['/login'], { replaceUrl: true });
             return;
           }
           this.errorCarga = true;

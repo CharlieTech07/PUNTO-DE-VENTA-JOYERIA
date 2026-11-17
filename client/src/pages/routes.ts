@@ -1,7 +1,7 @@
 // client/src/pages/routes.ts
 import { inject } from '@angular/core';
 import { Routes, Router, CanActivateFn } from '@angular/router';
-import { authGuard, roleGuard } from '../guards/auth.guard';
+import { authGuard, roleGuard, loginGuard } from '../guards/auth.guard';
 import { LoginComponent } from './login/login';
 import { InicioComponent } from './inicio/inicio';
 import { DashboardComponent } from './dashboard/dashboard';
@@ -24,7 +24,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // Ruta pública
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
 
   // Avisos legales: también públicos, se abren desde los enlaces del login
   { path: 'privacidad', component: LegalComponent, data: { documento: 'privacidad' } },
