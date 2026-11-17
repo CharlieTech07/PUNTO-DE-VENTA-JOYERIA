@@ -169,16 +169,21 @@ router.post('/', verificarToken, async (req: RequestConUsuario, res: Response) =
       [sucursalId, productoId]
     );
     const existente = await client.query(
-      `SELECT id FROM inventario_sucursal
+      `SELECT id, stock FROM inventario_sucursal
        WHERE id_sucursal = $1 AND id_producto = $2
        ORDER BY id LIMIT 1 FOR UPDATE`, [sucursalId, productoId]
     );
 
     let result;
     if (existente.rowCount) {
+      const stockActual = Number(existente.rows[0].stock);
+      if (!Number.isSafeInteger(stockActual + existencias) || stockActual + existencias > 2147483647) {
+        await client.query('ROLLBACK');
+        return res.status(400).json({ error: 'La cantidad supera el máximo permitido para el inventario' });
+      }
       result = await client.query(
         `UPDATE inventario_sucursal
-         SET stock = $1, stock_minimo = $2, ubicacion_vitrina = $3, actualizado_en = CURRENT_TIMESTAMP
+         SET stock = stock + $1, stock_minimo = $2, ubicacion_vitrina = $3, actualizado_en = CURRENT_TIMESTAMP
          WHERE id = $4 RETURNING *`,
         [existencias, minimo, ubicacion_vitrina || 'Vitrina Principal', existente.rows[0].id]
       );

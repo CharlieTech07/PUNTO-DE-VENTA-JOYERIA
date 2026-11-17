@@ -1,7 +1,7 @@
 // client/src/pages/routes.ts
 import { inject } from '@angular/core';
 import { Routes, Router, CanActivateFn } from '@angular/router';
-import { authGuard, roleGuard } from '../guards/auth.guard';
+import { authGuard, roleGuard, loginGuard } from '../guards/auth.guard';
 import { LoginComponent } from './login/login';
 import { InicioComponent } from './inicio/inicio';
 import { DashboardComponent } from './dashboard/dashboard';
@@ -12,6 +12,8 @@ import { LegalComponent } from './legal/legal';
 import { ConfirmarLecturaComponent } from './confirmar-lectura/confirmar-lectura';
 import { ProveedoresComponent } from './proveedores/proveedores';
 import { OpcionesComponent } from './opciones/opciones';
+import { DatosBancariosComponent } from './datos-bancarios/datos-bancarios';
+import { DatosFacturacionComponent } from './datos-facturacion/datos-facturacion';
 
 // Las sucursales ahora viven dentro del dashboard: esta ruta solo redirige hacia allá
 const irASucursalesEnDashboard: CanActivateFn = () =>
@@ -22,7 +24,7 @@ export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
   // Ruta pública
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
 
   // Avisos legales: también públicos, se abren desde los enlaces del login
   { path: 'privacidad', component: LegalComponent, data: { documento: 'privacidad' } },
@@ -58,6 +60,14 @@ export const routes: Routes = [
     data: { roles: ['Administrador', 'Gerente'] }
   },
   { path: 'opciones', component: OpcionesComponent, canActivate: [authGuard] },
+  {
+    path: 'datos-bancarios', component: DatosBancariosComponent,
+    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador'] }
+  },
+  {
+    path: 'datos-facturacion', component: DatosFacturacionComponent,
+    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador'] }
+  },
   // Inventario: solo Gerente
   {
     path: 'inventario',

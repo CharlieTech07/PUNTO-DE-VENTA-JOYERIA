@@ -1,0 +1,57 @@
+<div #papel class="papel ticket">
+  <p class="ticket__marca">OLIMPO</p>
+  <p class="ticket__lema">HAUTE JOAILLERIE</p>
+  <div class="ticket__datos">
+    @if (carrito.sucursal()) { <span>{{ 'Sucursal' | translate }}: {{ carrito.sucursal() }}</span> }
+    <span>{{ fecha() | date:'dd/MM/yyyy HH:mm' }}</span>
+    @if (atendio) { <span>{{ 'Atendió' | translate }}: {{ atendio }}</span> }
+  </div>
+  <div class="ticket__corte"></div>
+  @for (item of carrito.items(); track item.id_inventario) {
+    <div class="ticket__renglon">
+      <span>{{ item.nombre }}</span>
+      <span>{{ item.precio_unitario * item.cantidad | currency:'USD':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="ticket__sub">{{ item.cantidad }} x {{ item.precio_unitario | currency:'USD':'symbol':'1.2-2' }}</div>
+  }
+  <div class="ticket__corte"></div>
+  <div class="ticket__renglon"><span>{{ 'Subtotal' | translate }}</span><span>{{ carrito.subtotal() | currency:'USD':'symbol':'1.2-2' }}</span></div>
+  <div class="ticket__renglon"><span>{{ 'IVA 16%' | translate }}</span><span>{{ carrito.iva() | currency:'USD':'symbol':'1.2-2' }}</span></div>
+  <div class="ticket__renglon ticket__total"><span>{{ 'Total' | translate }}</span><span>{{ carrito.total() | currency:'USD':'symbol':'1.2-2' }}</span></div>
+
+  @if (pagos(); as lista) {
+    <div class="ticket__corte"></div>
+    <p class="ticket__titulo">{{ 'Forma de pago' | translate }}</p>
+    @for (pago of lista; track $index) {
+      <div class="ticket__renglon">
+        <span>{{ nombreMetodo[pago.metodo] | translate }}</span>
+        <span>{{ pago.monto | currency:'USD':'symbol':'1.2-2' }}</span>
+      </div>
+      <!-- Recibido y cambio solo si el cliente no pagó exacto -->
+      @if (pago.recibido != null && pago.recibido !== pago.monto) {
+        <div class="ticket__renglon ticket__sub"><span>{{ 'Recibido' | translate }}</span><span>{{ pago.recibido | currency:'USD':'symbol':'1.2-2' }}</span></div>
+        <div class="ticket__renglon ticket__sub"><span>{{ 'Cambio' | translate }}</span><span>{{ (pago.cambio ?? 0) | currency:'USD':'symbol':'1.2-2' }}</span></div>
+      }
+      @if (pago.referencia) {
+        <div class="ticket__renglon ticket__sub">
+          <span>{{ (pago.metodo === 'transferencia' ? 'Referencia' : 'Autorización') | translate }}</span>
+          <span>{{ pago.referencia }}</span>
+        </div>
+      }
+      @if (pago.meses) {
+        <div class="ticket__renglon ticket__sub"><span>{{ 'Meses sin intereses' | translate }}</span><span>{{ pago.meses }}</span></div>
+      }
+    } @empty {
+      <div class="ticket__sub">{{ 'Sin pagos todavía' | translate }}</div>
+    }
+  }
+
+  <div class="ticket__corte"></div>
+  <p class="ticket__gracias">{{ 'Gracias por su compra' | translate }}</p>
+  <p class="ticket__privacidad">{{ 'Sus datos se tratan conforme a nuestro aviso de privacidad, disponible en sucursal.' | translate }}</p>
+  @if (folio(); as numero) {
+    <p class="ticket__aviso">{{ 'Folio' | translate }}: {{ numero }}</p>
+  } @else {
+    <p class="ticket__aviso">{{ 'Vista previa · sin folio' | translate }}</p>
+  }
+</div>

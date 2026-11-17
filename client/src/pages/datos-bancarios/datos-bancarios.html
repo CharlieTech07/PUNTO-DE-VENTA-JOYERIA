@@ -1,0 +1,61 @@
+<div class="datos-layout">
+  <header class="datos-header">
+    <div>
+      <span class="etiqueta">{{ 'Finanzas' | translate }}</span>
+      <h1 class="titulo-pantalla">{{ 'Datos bancarios' | translate }}</h1>
+      <p class="subtitulo">{{ 'Registra y mantén actualizadas las cuentas y formas de pago del negocio.' | translate }}</p>
+    </div>
+    <button type="button" class="btn-secundario" (click)="volverAlDashboard()">← {{ 'Volver a módulos' | translate }}</button>
+  </header>
+
+  @if (aviso) { <div class="aviso aviso-ok" role="status">{{ aviso | translate }}</div> }
+  @if (error) { <div class="aviso aviso-error" role="alert">{{ error | translate }}</div> }
+
+  <section class="tarjeta">
+    <div class="tarjeta-cabecera">
+      <div>
+        <span class="etiqueta">{{ (enEdicion ? 'Actualizar registro' : 'Nuevo registro') | translate }}</span>
+        <h2>{{ (enEdicion ? 'Editar cuenta bancaria' : 'Dar de alta cuenta bancaria') | translate }}</h2>
+      </div>
+      @if (enEdicion) { <button type="button" class="btn-secundario" (click)="cancelarEdicion()">{{ 'Cancelar edición' | translate }}</button> }
+    </div>
+    <form (ngSubmit)="guardar()" class="formulario-grid">
+      <div class="campo"><label for="sucursal-cuenta">{{ 'Sucursal' | translate }} *</label><select id="sucursal-cuenta" name="id_sucursal" [(ngModel)]="formulario.id_sucursal" required><option [ngValue]="0" disabled>{{ 'Selecciona una sucursal' | translate }}</option>@for (sucursal of sucursales; track sucursal.id) { <option [ngValue]="sucursal.id">{{ sucursal.nombre }}</option> }</select></div>
+      <div class="campo"><label for="alias-cuenta">{{ 'Alias de la cuenta' | translate }} *</label><input id="alias-cuenta" name="alias" [(ngModel)]="formulario.alias" maxlength="80" required placeholder="Ej. Cuenta principal" /></div>
+      <div class="campo"><label for="banco">{{ 'Banco' | translate }} *</label><input id="banco" name="banco" [(ngModel)]="formulario.banco" maxlength="100" required placeholder="Ej. BBVA" /></div>
+      <div class="campo"><label for="titular">{{ 'Titular de la cuenta' | translate }} *</label><input id="titular" name="titular" [(ngModel)]="formulario.titular" maxlength="200" required /></div>
+      <div class="campo"><label for="tipo-cuenta">{{ 'Tipo de cuenta' | translate }} *</label><select id="tipo-cuenta" name="tipo_cuenta" [(ngModel)]="formulario.tipo_cuenta" required><option value="Cuenta">{{ 'Cuenta' | translate }}</option><option value="Ahorro">{{ 'Ahorro' | translate }}</option><option value="Cheques">{{ 'Cheques' | translate }}</option><option value="Débito">{{ 'Débito' | translate }}</option><option value="Otro">{{ 'Otro' | translate }}</option></select></div>
+      <div class="campo"><label for="numero-cuenta">{{ 'Número de cuenta' | translate }}</label><input id="numero-cuenta" name="numero_cuenta" [(ngModel)]="formulario.numero_cuenta" maxlength="30" autocomplete="off" /></div>
+      <div class="campo"><label for="clabe">{{ 'CLABE interbancaria' | translate }}</label><input id="clabe" name="clabe" [(ngModel)]="formulario.clabe" inputmode="numeric" maxlength="18" pattern="[0-9]{18}" autocomplete="off" /><small>{{ 'Escribe 18 dígitos. Se requiere CLABE o número de cuenta.' | translate }}</small></div>
+      <div class="campo"><label for="moneda">{{ 'Moneda' | translate }} *</label><input id="moneda" name="moneda" [(ngModel)]="formulario.moneda" maxlength="3" required /></div>
+      <div class="campo"><label for="forma-pago">{{ 'Forma de pago asociada' | translate }}</label><input id="forma-pago" name="forma_pago" [(ngModel)]="formulario.forma_pago" maxlength="100" placeholder="Ej. Transferencia" /></div>
+      <div class="acciones"><button class="btn-principal" type="submit" [disabled]="guardando">{{ (guardando ? 'Guardando…' : (enEdicion ? 'Guardar cambios' : 'Registrar cuenta')) | translate }}</button></div>
+    </form>
+  </section>
+
+  <section class="tarjeta">
+    <div class="tarjeta-cabecera"><div><span class="etiqueta">{{ 'Directorio' | translate }}</span><h2>{{ 'Cuentas bancarias registradas' | translate }}</h2></div><span class="contador">{{ cuentas.length }} {{ 'registros' | translate }}</span></div>
+    <div class="campo filtro-sucursal"><label for="filtro-sucursal">{{ 'Ver datos bancarios de la sucursal' | translate }}</label><select id="filtro-sucursal" [value]="filtroSucursalId ?? ''" (change)="filtrarSucursal($any($event.target).value)"><option value="">{{ 'Todas las sucursales' | translate }}</option>@for (sucursal of sucursales; track sucursal.id) { <option [value]="sucursal.id">{{ sucursal.nombre }}</option> }</select></div>
+    @if (cargando) { <p class="estado">{{ 'Cargando cuentas bancarias…' | translate }}</p> }
+    @else {
+      <div class="tabla-envoltura">
+        <table>
+          <thead><tr><th>{{ 'Sucursal' | translate }}</th><th>{{ 'Cuenta' | translate }}</th><th>{{ 'Titular' | translate }}</th><th>{{ 'CLABE / Cuenta' | translate }}</th><th>{{ 'Forma de pago' | translate }}</th><th>{{ 'Estado' | translate }}</th><th>{{ 'Acciones' | translate }}</th></tr></thead>
+          <tbody>
+            @for (cuenta of cuentas; track cuenta.id) {
+              <tr>
+                <td>{{ cuenta.sucursal || 'Global / sin sucursal' }}</td>
+                <td><strong>{{ cuenta.alias }}</strong><small>{{ cuenta.banco }} · {{ cuenta.tipo_cuenta }} · {{ cuenta.moneda }}</small></td>
+                <td>{{ cuenta.titular }}</td>
+                <td>{{ cuenta.clabe || cuenta.numero_cuenta || '—' }}</td>
+                <td>{{ cuenta.forma_pago || '—' }}</td>
+                <td><span class="estado-cuenta" [class.estado-cuenta--inactiva]="!cuenta.activa">{{ (cuenta.activa ? 'Activa' : 'Inactiva') | translate }}</span></td>
+                <td><button type="button" class="btn-editar" (click)="editar(cuenta)">{{ 'Editar' | translate }}</button> <button type="button" class="btn-editar" (click)="cambiarEstado(cuenta)">{{ (cuenta.activa ? 'Desactivar' : 'Activar') | translate }}</button></td>
+              </tr>
+            } @empty { <tr><td colspan="7" class="estado">{{ 'Aún no hay cuentas bancarias registradas.' | translate }}</td></tr> }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</div>

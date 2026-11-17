@@ -60,6 +60,11 @@
         },
         "serve": {
           "builder": "@angular/build:dev-server",
+          "options": {
+            "headers": {
+              "Cache-Control": "no-store"
+            }
+          },
           "configurations": {
             "production": {
               "buildTarget": "client:build:production"

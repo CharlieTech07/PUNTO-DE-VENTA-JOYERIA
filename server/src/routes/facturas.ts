@@ -1,7 +1,7 @@
 // server/src/routes/facturas.ts
 import { Router } from 'express';
 import { verificarToken, permitirRoles } from '../middleware/verificarToken.js';
-import { emitir, listar, obtener, obtenerDeVenta, cancelar } from '../controllers/facturas.controller.js';
+import { emitir, listar, obtener, obtenerDeVenta, cancelar, descargarXmlDemostrativo, descargarPdfDemostrativo } from '../controllers/facturas.controller.js';
 
 const router = Router();
 
@@ -13,6 +13,10 @@ router.get('/', verificarToken, permitirRoles('Gerente', 'Administrador'), lista
 
 // Va antes de '/:id' para que 'venta' no se lea como un id
 router.get('/venta/:idVenta', verificarToken, obtenerDeVenta);
+
+// Archivos de demostración: expresamente no son CFDI ni tienen validez fiscal.
+router.get('/:id/xml-demostrativo', verificarToken, descargarXmlDemostrativo);
+router.get('/:id/pdf-demostrativo', verificarToken, descargarPdfDemostrativo);
 
 // Usuarios de esa sucursal; el Administrador, todas
 router.get('/:id', verificarToken, obtener);

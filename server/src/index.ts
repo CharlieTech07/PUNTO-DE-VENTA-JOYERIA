@@ -8,9 +8,10 @@ import inventarioRoutes from './routes/inventario.js';
 import traduccionRoutes from './routes/traduccion.js';
 import ventasRoutes from './routes/ventas.js';
 import metalesRoutes from './routes/metales.js';
-import terminosRoutes from './routes/terminos.js';
-import proveedoresRoutes from './routes/proveedores.js';
 import facturasRoutes from './routes/facturas.js';
+import proveedoresRoutes from './routes/proveedores.js';
+import terminosRoutes from './routes/terminos.js';
+import datosNegocioRoutes from './routes/datos-negocio.js';
 
 dotenv.config();
 
@@ -18,6 +19,13 @@ const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: '32kb' }));
+
+// Las respuestas de la API (sesión y datos del negocio) nunca se guardan en caché.
+// La traducción se excluye: sus respuestas sí conviene reutilizarlas.
+app.use('/api', (req, res, next) => {
+  if (!req.path.startsWith('/traduccion')) res.set('Cache-Control', 'no-store');
+  next();
+});
 
 app.get('/', (_req, res) => {
   res.send('Servidor del Punto de Venta funcionando');
@@ -30,9 +38,10 @@ app.use('/api/inventario', inventarioRoutes);
 app.use('/api/traduccion', traduccionRoutes);
 app.use('/api/ventas', ventasRoutes);
 app.use('/api/metales', metalesRoutes);
-app.use('/api/terminos', terminosRoutes);
-app.use('/api/proveedores', proveedoresRoutes);
 app.use('/api/facturas', facturasRoutes);
+app.use('/api/proveedores', proveedoresRoutes);
+app.use('/api/terminos', terminosRoutes);
+app.use('/api/datos-negocio', datosNegocioRoutes);
 
 const PORT = process.env.PORT || 3000;
 

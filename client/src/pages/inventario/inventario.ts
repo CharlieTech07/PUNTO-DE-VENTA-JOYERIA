@@ -39,7 +39,7 @@ export class InventarioComponent implements OnInit {
   public nuevoRegistro = {
     id_sucursal: (this.usuario?.id_sucursal ?? null) as number | null, // siempre la del gerente
     id_producto: null as number | null,
-    stock: 1,
+    stock: 0,
     stock_minimo: 1,
     ubicacion_vitrina: 'Vitrina Central - Charola 1'
   };
@@ -69,6 +69,19 @@ export class InventarioComponent implements OnInit {
 
   public productName(name: string): string {
     return this.translatedProductNames.get(name) ?? name;
+  }
+
+  public get stockActualSeleccionado(): number | null {
+    const productoId = Number(this.nuevoRegistro.id_producto);
+    const item = this.listaInventario.find(inventario =>
+      Number(inventario.id_sucursal) === Number(this.usuario?.id_sucursal) &&
+      Number(inventario.id_producto) === productoId
+    );
+    return item ? Number(item.stock) : null;
+  }
+
+  public get stockTotalEstimado(): number {
+    return (this.stockActualSeleccionado ?? 0) + (Number(this.nuevoRegistro.stock) || 0);
   }
 
   public volverAlDashboard(): void {
@@ -185,7 +198,9 @@ export class InventarioComponent implements OnInit {
     this.nuevoRegistro = {
       id_sucursal: Number(item.id_sucursal),
       id_producto: Number(item.id_producto),
-      stock: Number(item.stock),
+      // En este formulario se captura cuánto se agrega. Al abrir la edición,
+      // se deja en cero para no volver a sumar las existencias actuales.
+      stock: 0,
       stock_minimo: Number(item.stock_minimo),
       ubicacion_vitrina: item.ubicacion_vitrina ?? ''
     };
@@ -197,7 +212,7 @@ export class InventarioComponent implements OnInit {
     this.nuevoRegistro = {
       id_sucursal: this.usuario?.id_sucursal ?? null,
       id_producto: this.catalogoProductos[0] ? Number(this.catalogoProductos[0].id) : null,
-      stock: 1,
+      stock: 0,
       stock_minimo: 1,
       ubicacion_vitrina: 'Vitrina Central - Charola 1'
     };
