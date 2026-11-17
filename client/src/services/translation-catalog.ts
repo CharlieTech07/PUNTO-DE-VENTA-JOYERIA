@@ -644,7 +644,6 @@ export const translationCatalog: Record<string, Translation> = {
   'Faltan': { es: 'Faltan', en: 'Short by' },
   'Límite de efectivo en joyería por la Ley Antilavado:': { es: 'Límite de efectivo en joyería por la Ley Antilavado:', en: 'Cash limit for jewelry under the Anti-Money Laundering Law:' },
   'Tipo de tarjeta': { es: 'Tipo de tarjeta', en: 'Card type' },
-  'Débito': { es: 'Débito', en: 'Debit' },
   'Crédito': { es: 'Crédito', en: 'Credit' },
   'Tarjeta de débito': { es: 'Tarjeta de débito', en: 'Debit card' },
   'Tarjeta de crédito': { es: 'Tarjeta de crédito', en: 'Credit card' },

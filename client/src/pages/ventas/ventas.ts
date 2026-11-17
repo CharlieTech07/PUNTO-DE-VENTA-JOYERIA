@@ -1,5 +1,5 @@
 // client/src/pages/ventas/ventas.ts
-import { Component, OnInit, inject, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, output, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
 import { CarritoService } from '../../services/carrito.service';
 import { LanguageService } from '../../services/lenguage.service';
@@ -22,6 +22,9 @@ export class VentasComponent implements OnInit {
   public readonly cobroAbierto = signal(false);
   public readonly resumenAbierto = signal(false);
   public readonly ventaActual = signal<Venta | null>(null);
+  public readonly menuAccionesAbierto = signal<number | null>(null);
+  // Mientras el cobro está abierto (ahí se registra la venta) no se cambian las piezas
+  public readonly guardando = computed(() => this.cobroAbierto());
   public readonly ventaRegistrada = output<void>();
 
   ngOnInit(): void {
@@ -35,9 +38,32 @@ export class VentasComponent implements OnInit {
     }
   }
 
+  public alternarAcciones(idInventario: number): void {
+    this.menuAccionesAbierto.update(actual => actual === idInventario ? null : idInventario);
+  }
+
+  public cerrarAcciones(): void {
+    this.menuAccionesAbierto.set(null);
+  }
+
+  public aumentarPieza(idInventario: number): void {
+    this.carrito.aumentar(idInventario);
+  }
+
+  public disminuirPieza(idInventario: number): void {
+    this.carrito.disminuir(idInventario);
+  }
+
+  public quitarPieza(idInventario: number): void {
+    this.carrito.quitar(idInventario);
+    this.cerrarAcciones();
+  }
+
   // La venta se registra en el cobro (cobro.ts), al confirmar cómo pagó el cliente
   public abrirCobro(): void {
-    if (!this.carrito.vacio()) this.cobroAbierto.set(true);
+    if (this.carrito.vacio()) return;
+    this.cerrarAcciones();
+    this.cobroAbierto.set(true);
   }
 
   public alRegistrar(venta: Venta): void {
