@@ -14,6 +14,7 @@ import { ProveedoresComponent } from './proveedores/proveedores';
 import { OpcionesComponent } from './opciones/opciones';
 import { DatosBancariosComponent } from './datos-bancarios/datos-bancarios';
 import { DatosFacturacionComponent } from './datos-facturacion/datos-facturacion';
+import { CajaComponent } from './caja/caja';
 
 // Las sucursales ahora viven dentro del dashboard: esta ruta solo redirige hacia allá
 const irASucursalesEnDashboard: CanActivateFn = () =>
@@ -40,6 +41,12 @@ export const routes: Routes = [
     component: InicioComponent,
     canActivate: [authGuard]
   },
+  {
+    path: 'caja',
+    component: CajaComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Administrador', 'Gerente', 'Cajero'] }
+  },
   // El dashboard lo usan los tres roles; cada rol solo ve sus módulos dentro de él
   {
     path: 'dashboard',
@@ -62,11 +69,11 @@ export const routes: Routes = [
   { path: 'opciones', component: OpcionesComponent, canActivate: [authGuard] },
   {
     path: 'datos-bancarios', component: DatosBancariosComponent,
-    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador'] }
+    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador', 'Gerente'] }
   },
   {
     path: 'datos-facturacion', component: DatosFacturacionComponent,
-    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador'] }
+    canActivate: [authGuard, roleGuard], data: { roles: ['Administrador', 'Gerente'] }
   },
   // Inventario: solo Gerente
   {

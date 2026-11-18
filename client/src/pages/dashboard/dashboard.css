@@ -71,9 +71,8 @@ table {
 .app {
   display: flex;
   min-height: 100vh;
-  /* Deja libre el espacio del menú fijo para que no se traslape */
-  margin-left: var(--barra-ancho, 264px);
-  width: calc(100% - var(--barra-ancho, 264px));
+  /* tema.css ya reserva el espacio de la pestaña/barra en el body. */
+  width: 100%;
   box-sizing: border-box;
 }
 
@@ -750,8 +749,7 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
 
 @media (max-width: 1024px) {
   .app {
-    margin-left: 76px;
-    width: calc(100% - 76px);
+    width: 100%;
   }
 
   .contenido {
@@ -783,12 +781,11 @@ html[data-tema="claro"] #degradadoOro stop:last-child {
   cursor: not-allowed;
 }
 /* Tarjeta de navegación de la vista Módulos */
-.modulo-acceso { grid-column: span 2; display: flex; align-items: center; gap: 22px; width: 66%; min-height: 128px; padding: 26px 30px; box-sizing: border-box; color: inherit; text-decoration: none; cursor: pointer; transition: transform .18s, border-color .18s; }
+.modulo-acceso { grid-column: span 2; display: flex; align-items: center; gap: 24px; width: 100%; min-height: 166px; padding: 30px 36px; box-sizing: border-box; color: inherit; text-decoration: none; cursor: pointer; transition: transform .18s, border-color .18s; }
 .modulo-acceso:hover { transform: translateY(-3px); border-color: var(--oro, #e0c289); }
 .modulo-acceso--estatico { cursor: default; }
 .modulo-acceso--estatico:hover { transform: none; border-color: var(--oro-borde, rgba(224, 194, 137, .25)); }
-.modulo-acceso__ilustracion { display: grid; width: 66px; height: 66px; flex: 0 0 66px; place-items: center; border: 1px solid var(--oro-borde, rgba(224, 194, 137, .3)); border-radius: 12px; background: rgba(224, 194, 137, .07); color: var(--oro, #e0c289); }
-.modulo-acceso__ilustracion svg { width: 48px; height: 48px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.modulo-acceso__contenido { min-width: 0; }
+.modulo-acceso__ilustracion { display: grid; width: 76px; height: 76px; flex: 0 0 76px; place-items: center; border: 1px solid var(--oro-borde, rgba(224, 194, 137, .3)); border-radius: 14px; background: rgba(224, 194, 137, .07); color: var(--oro, #e0c289); }
+.modulo-acceso__ilustracion svg { width: 54px; height: 54px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.modulo-acceso__contenido { min-width: 0; flex: 1; }
 @media (max-width: 560px) { .modulo-acceso { grid-column: 1 / -1; align-items: center; gap: 14px; min-height: 112px; padding: 20px; } .modulo-acceso__ilustracion { width: 56px; height: 56px; flex-basis: 56px; } .modulo-acceso__ilustracion svg { width: 42px; height: 42px; } }
-@media (max-width: 1180px) { .modulo-acceso { width: 100%; } }

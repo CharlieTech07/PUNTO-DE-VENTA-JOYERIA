@@ -3,7 +3,7 @@
     <div>
       <span class="etiqueta">{{ 'Finanzas' | translate }}</span>
       <h1 class="titulo-pantalla">{{ 'Datos bancarios' | translate }}</h1>
-      <p class="subtitulo">{{ 'Registra y mantén actualizadas las cuentas y formas de pago del negocio.' | translate }}</p>
+      <p class="subtitulo">{{ (esAdmin ? 'Registra y mantén actualizadas las cuentas y formas de pago del negocio.' : 'Consulta las cuentas bancarias disponibles para tu sucursal.') | translate }}</p>
     </div>
     <button type="button" class="btn-secundario" (click)="volverAlDashboard()">← {{ 'Volver a módulos' | translate }}</button>
   </header>
@@ -11,6 +11,7 @@
   @if (aviso) { <div class="aviso aviso-ok" role="status">{{ aviso | translate }}</div> }
   @if (error) { <div class="aviso aviso-error" role="alert">{{ error | translate }}</div> }
 
+  @if (esAdmin) {
   <section class="tarjeta">
     <div class="tarjeta-cabecera">
       <div>
@@ -32,15 +33,16 @@
       <div class="acciones"><button class="btn-principal" type="submit" [disabled]="guardando">{{ (guardando ? 'Guardando…' : (enEdicion ? 'Guardar cambios' : 'Registrar cuenta')) | translate }}</button></div>
     </form>
   </section>
+  }
 
   <section class="tarjeta">
     <div class="tarjeta-cabecera"><div><span class="etiqueta">{{ 'Directorio' | translate }}</span><h2>{{ 'Cuentas bancarias registradas' | translate }}</h2></div><span class="contador">{{ cuentas.length }} {{ 'registros' | translate }}</span></div>
-    <div class="campo filtro-sucursal"><label for="filtro-sucursal">{{ 'Ver datos bancarios de la sucursal' | translate }}</label><select id="filtro-sucursal" [value]="filtroSucursalId ?? ''" (change)="filtrarSucursal($any($event.target).value)"><option value="">{{ 'Todas las sucursales' | translate }}</option>@for (sucursal of sucursales; track sucursal.id) { <option [value]="sucursal.id">{{ sucursal.nombre }}</option> }</select></div>
+    @if (esAdmin) { <div class="campo filtro-sucursal"><label for="filtro-sucursal">{{ 'Ver datos bancarios de la sucursal' | translate }}</label><select id="filtro-sucursal" [value]="filtroSucursalId ?? ''" (change)="filtrarSucursal($any($event.target).value)"><option value="">{{ 'Todas las sucursales' | translate }}</option>@for (sucursal of sucursales; track sucursal.id) { <option [value]="sucursal.id">{{ sucursal.nombre }}</option> }</select></div> }
     @if (cargando) { <p class="estado">{{ 'Cargando cuentas bancarias…' | translate }}</p> }
     @else {
       <div class="tabla-envoltura">
         <table>
-          <thead><tr><th>{{ 'Sucursal' | translate }}</th><th>{{ 'Cuenta' | translate }}</th><th>{{ 'Titular' | translate }}</th><th>{{ 'CLABE / Cuenta' | translate }}</th><th>{{ 'Forma de pago' | translate }}</th><th>{{ 'Estado' | translate }}</th><th>{{ 'Acciones' | translate }}</th></tr></thead>
+          <thead><tr><th>{{ 'Sucursal' | translate }}</th><th>{{ 'Cuenta' | translate }}</th><th>{{ 'Titular' | translate }}</th><th>{{ 'CLABE / Cuenta' | translate }}</th><th>{{ 'Forma de pago' | translate }}</th><th>{{ 'Estado' | translate }}</th>@if (esAdmin) { <th>{{ 'Acciones' | translate }}</th> }</tr></thead>
           <tbody>
             @for (cuenta of cuentas; track cuenta.id) {
               <tr>
@@ -50,9 +52,9 @@
                 <td>{{ cuenta.clabe || cuenta.numero_cuenta || '—' }}</td>
                 <td>{{ cuenta.forma_pago || '—' }}</td>
                 <td><span class="estado-cuenta" [class.estado-cuenta--inactiva]="!cuenta.activa">{{ (cuenta.activa ? 'Activa' : 'Inactiva') | translate }}</span></td>
-                <td><button type="button" class="btn-editar" (click)="editar(cuenta)">{{ 'Editar' | translate }}</button> <button type="button" class="btn-editar" (click)="cambiarEstado(cuenta)">{{ (cuenta.activa ? 'Desactivar' : 'Activar') | translate }}</button></td>
+                @if (esAdmin) { <td><button type="button" class="btn-editar" (click)="editar(cuenta)">{{ 'Editar' | translate }}</button> <button type="button" class="btn-editar" (click)="cambiarEstado(cuenta)">{{ (cuenta.activa ? 'Desactivar' : 'Activar') | translate }}</button></td> }
               </tr>
-            } @empty { <tr><td colspan="7" class="estado">{{ 'Aún no hay cuentas bancarias registradas.' | translate }}</td></tr> }
+            } @empty { <tr><td [attr.colspan]="esAdmin ? 7 : 6" class="estado">{{ 'Aún no hay cuentas bancarias registradas.' | translate }}</td></tr> }
           </tbody>
         </table>
       </div>

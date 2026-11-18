@@ -11,26 +11,12 @@
  * tokens del sistema de diseño se usan los suyos; si no, entran los de
  * respaldo y el menú se ve bien sin configurar nada. */
 
-/* El espacio del menú se reserva desde el CSS, no desde JavaScript.
-   Si se agregara con JS, el contenido nacería pegado a la izquierda y
-   brincaría al montarse el menú: ese brinco es lo que se ve como
-   "la página cargando algo". Este archivo solo lo enlaza quien usa el
-   menú, así que ninguna otra pantalla se ve afectada. */
-/* Va como "html body" y no solo "body" a propósito: varias pantallas
-   declaran "body { padding: 0 }" en su propio CSS, y si ese archivo carga
-   después le ganaría a esta regla y el contenido se metería debajo del
-   menú. Con html body la especificidad es mayor y ya no depende del orden
-   en que se enlacen las hojas de estilo. */
-html body {
-  padding-left: var(--barra-ancho, 264px);
-}
-
 .menu-olimpo {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 40;
-  width: var(--barra-ancho, 264px);
+  width: min(var(--barra-ancho, 264px), calc(100vw - var(--menu-pestana, 36px)));
   height: 100vh;
   /* El menú completo nunca se desplaza: así el logo y el pie siempre
      quedan a la vista. Si algo no cabe, se desplaza solo la lista. */
@@ -43,6 +29,13 @@ html body {
   border-right: 1px solid var(--oro-borde, rgba(224, 194, 137, 0.18));
   font-family: var(--sans, "Jost", "Segoe UI", system-ui, sans-serif);
   text-align: left;
+  transform: translateX(calc(-100% + var(--menu-pestana, 36px)));
+  transition: transform 0.28s ease;
+}
+
+.menu-olimpo:hover,
+.menu-olimpo:focus-within {
+  transform: translateX(0);
 }
 
 .menu-olimpo *,
@@ -235,30 +228,10 @@ html body {
   color: var(--texto-3, #a08d76);
 }
 
-/* En pantallas angostas se encoge y deja solo los iconos */
-
 @media (max-width: 1024px) {
-  html body {
-    padding-left: 76px;
-  }
+  .menu-olimpo { padding: 20px 14px; }
+}
 
-  .menu-olimpo {
-    width: 76px;
-    padding: 20px 12px;
-  }
-
-  .menu-olimpo__nombre,
-  .menu-olimpo__rol,
-  .menu-olimpo__titulo,
-  .menu-olimpo__texto,
-  .menu-olimpo__insignia,
-  .menu-olimpo__usuario,
-  .menu-olimpo__accion span {
-    display: none;
-  }
-
-  .menu-olimpo__item {
-    justify-content: center;
-    padding: 12px 0;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .menu-olimpo { transition: none; }
 }

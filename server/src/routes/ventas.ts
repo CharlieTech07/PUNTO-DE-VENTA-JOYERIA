@@ -70,6 +70,16 @@ router.post('/', verificarToken, async (req: RequestConUsuario, res: Response) =
       await client.query('ROLLBACK');
       return res.status(403).json({ error: 'No puedes registrar ventas de otra sucursal' });
     }
+    const { rows: turnosCaja } = await client.query(
+      `SELECT id FROM caja_turnos
+       WHERE id_usuario_apertura = $1 AND id_sucursal = $2 AND estado = 'abierta'
+       FOR UPDATE`,
+      [Number(usuario.id), sucursalId]
+    );
+    if (!turnosCaja.length) {
+      await client.query('ROLLBACK');
+      return res.status(409).json({ error: 'Debes abrir caja en esta sucursal antes de registrar una venta' });
+    }
     let total = 0;
     const detalles = existencias.map(row => {
       const cantidad = normalizados.get(Number(row.id_inventario))!;
@@ -86,11 +96,11 @@ router.post('/', verificarToken, async (req: RequestConUsuario, res: Response) =
     const metodo_pago = cuadrarPagos(pagosLeidos, total);
     const folio = `OL-${Date.now()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`;
     const { rows: ventas } = await client.query(
-      `INSERT INTO ventas (folio, id_sucursal, id_usuario, subtotal, impuesto, total, metodo_pago, estado)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'Completada')
+      `INSERT INTO ventas (folio, id_sucursal, id_usuario, id_caja_turno, subtotal, impuesto, total, metodo_pago, estado)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'Completada')
        RETURNING id, folio, id_sucursal, id_usuario, fecha_venta AS fecha,
-                 subtotal, impuesto AS iva, total, metodo_pago, estado`,
-      [folio, sucursalId, usuario.id, subtotal, iva, total, metodo_pago]
+                 id_caja_turno, subtotal, impuesto AS iva, total, metodo_pago, estado`,
+      [folio, sucursalId, usuario.id, Number(turnosCaja[0].id), subtotal, iva, total, metodo_pago]
     );
     const venta = ventas[0];
     for (const detalle of detalles) {
