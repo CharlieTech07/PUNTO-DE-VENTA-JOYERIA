@@ -3,7 +3,7 @@
     <div>
       <span class="etiqueta">{{ 'Administración' | translate }}</span>
       <h1 class="titulo-pantalla">{{ 'Datos de facturación' | translate }}</h1>
-      <p class="subtitulo">{{ 'Captura la información fiscal del negocio que aparecerá como emisor.' | translate }}</p>
+      <p class="subtitulo">{{ (esAdmin ? 'Captura la información fiscal del negocio que aparecerá como emisor.' : 'Consulta la información fiscal registrada para el negocio.') | translate }}</p>
     </div>
     <button type="button" class="btn-secundario" (click)="volverAlDashboard()">← {{ 'Volver a módulos' | translate }}</button>
   </header>
@@ -11,6 +11,9 @@
   @if (aviso) { <div class="aviso aviso-ok" role="status">{{ aviso | translate }}</div> }
   @if (error) { <div class="aviso aviso-error" role="alert">{{ error | translate }}</div> }
 
+  @if (cargando && !esAdmin) { <section class="tarjeta"><p class="estado">{{ 'Cargando datos fiscales…' | translate }}</p></section> }
+
+  @if (esAdmin) {
   <section class="tarjeta">
     <div class="tarjeta-cabecera">
       <div>
@@ -37,6 +40,7 @@
       </form>
     }
   </section>
+  }
 
   @if (datosGuardados) {
     <section class="tarjeta">
@@ -48,5 +52,8 @@
         <div><strong>{{ 'Teléfono' | translate }}</strong><p>{{ datosGuardados.telefono || '—' }}</p></div>
       </div>
     </section>
+  }
+  @if (!cargando && !error && !esAdmin && !datosGuardados) {
+    <section class="tarjeta"><p class="estado">{{ 'Los datos fiscales aún no están configurados. Contacta a un administrador.' | translate }}</p></section>
   }
 </div>

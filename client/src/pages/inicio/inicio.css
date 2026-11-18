@@ -32,9 +32,9 @@
 }
 
 .container {
-  width: 90%;
-  max-width: 1100px;
-  padding: 40px 20px 64px;
+  width: 100%;
+  max-width: none;
+  padding: 40px clamp(20px, 3vw, 56px) 64px;
 }
 
 /* ---------- Cabecera ---------- */
@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 15px 22px;
+  padding: 17px 24px;
   border-radius: 12px;
   margin-bottom: 36px;
   background-color: var(--search-bg-dark);
@@ -126,7 +126,7 @@
   outline: none;
   width: 100%;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1.06rem;
   color: var(--text-color-dark);
 }
 
@@ -142,9 +142,9 @@
 /* Carrito conectado a la vitrina: permanece visible mientras se seleccionan piezas. */
 .ventas-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 320px);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
   align-items: start;
-  gap: 24px;
+  gap: 28px;
 }
 
 .vitrina { min-width: 0; }
@@ -160,15 +160,15 @@
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-  gap: 26px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 28px;
 }
 
 .card {
   background-color: var(--card-bg-dark);
   border: 1px solid var(--border-color-dark);
   border-radius: 14px;
-  padding: 16px;
+  padding: 19px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -183,7 +183,7 @@
 
 .card-image {
   width: 100%;
-  height: 250px;
+  height: 280px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 16px;
@@ -197,7 +197,7 @@
 }
 
 .product-category {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   letter-spacing: 2px;
   text-transform: uppercase;
   margin-bottom: 6px;
@@ -206,14 +206,14 @@
 
 .product-title {
   font-family: var(--font-secondary);
-  font-size: 1.45rem;
+  font-size: 1.55rem;
   font-weight: 500;
   margin: 0 0 6px 0;
   color: var(--text-color-dark);
 }
 
 .product-desc {
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   margin-bottom: 20px;
   color: var(--subtitle-color-dark);
 }
@@ -231,12 +231,12 @@
 .price {
   font-family: var(--font-secondary);
   font-weight: 600;
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   color: var(--btn-bg-dark);
 }
 
 .btn-add {
-  padding: 9px 20px;
+  padding: 10px 22px;
   border: none;
   border-radius: 8px;
   font-family: inherit;
@@ -271,7 +271,7 @@
 
 @media (max-width: 720px) {
   .container {
-    width: 94%;
+    width: 100%;
     padding: 28px 12px 48px;
   }
 

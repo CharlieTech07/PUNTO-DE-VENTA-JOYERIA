@@ -64,6 +64,7 @@ button, input, select, textarea {
 
   /* Métrica */
   --barra-ancho: 264px;
+  --menu-pestana: 36px;
   --radio: 14px;
   --radio-sm: 10px;
   --sombra: 0 18px 40px rgba(0, 0, 0, 0.28);
@@ -111,4 +112,22 @@ body {
   font-family: var(--sans);
   line-height: 1.5;
   transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* El menú compartido deja una pestaña estrecha; hover o foco de teclado lo abren. */
+html body:has(app-menu) {
+  padding-left: var(--menu-pestana) !important;
+  transition: padding-left 0.28s ease;
+}
+
+html body:has(app-menu):has(.menu-olimpo:hover),
+html body:has(app-menu):has(.menu-olimpo:focus-within) {
+  padding-left: var(--barra-ancho) !important;
+}
+
+@media (max-width: 640px) {
+  html body:has(app-menu):has(.menu-olimpo:hover),
+  html body:has(app-menu):has(.menu-olimpo:focus-within) {
+    padding-left: var(--menu-pestana) !important;
+  }
 }

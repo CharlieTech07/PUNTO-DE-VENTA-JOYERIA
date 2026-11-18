@@ -1,0 +1,161 @@
+<app-menu></app-menu>
+
+<main class="caja-page">
+  <header class="caja-header">
+    <div>
+      <span class="caja-eyebrow">{{ 'Operación diaria' | translate }}</span>
+      <h1>{{ 'Caja y corte' | translate }}</h1>
+      <p>{{ 'Controla el efectivo, los pagos registrados y el cierre de tu turno.' | translate }}</p>
+    </div>
+    <a class="caja-link" routerLink="/inicio">{{ 'Volver a la vitrina' | translate }}</a>
+  </header>
+
+  @if (aviso()) { <p class="caja-alerta caja-alerta--ok" role="status">{{ aviso() | translate }}</p> }
+  @if (error()) { <p class="caja-alerta caja-alerta--error" role="alert">{{ error() | translate }}</p> }
+
+  @if (cargando()) {
+    <section class="caja-card caja-cargando">{{ 'Consultando estado de caja...' | translate }}</section>
+  } @else if (estado().turno; as turno) {
+    @if (estado().resumen; as resumen) {
+      <section class="caja-card caja-turno">
+        <div class="caja-section-title">
+          <div>
+            <span class="caja-eyebrow">{{ 'Turno activo' | translate }}</span>
+            <h2>{{ 'Caja abierta' | translate }}</h2>
+          </div>
+          <span class="caja-insignia">{{ 'Abierta' | translate }}</span>
+        </div>
+        <p class="caja-meta">
+          {{ 'Apertura' | translate }}: {{ turno.fecha_apertura | date:'dd/MM/yyyy HH:mm' }}
+          · {{ 'Fondo inicial' | translate }}: {{ turno.efectivo_inicial | currency:'MXN':'symbol-narrow':'1.2-2' }}
+        </p>
+
+        <div class="caja-metricas">
+          <article><span>{{ 'Ventas en efectivo' | translate }}</span><strong>{{ resumen.ventas_efectivo | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+          <article><span>{{ 'Ventas con tarjeta' | translate }}</span><strong>{{ resumen.ventas_tarjeta | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+          <article><span>{{ 'Transferencias' | translate }}</span><strong>{{ resumen.ventas_transferencia | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+          <article><span>{{ 'Ventas totales' | translate }}</span><strong>{{ resumen.total_ventas | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+          <article><span>{{ 'Ingresos manuales' | translate }}</span><strong>{{ resumen.ingresos | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+          <article><span>{{ 'Egresos manuales' | translate }}</span><strong>{{ resumen.egresos | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+          <article class="caja-metrica-total"><span>{{ 'Efectivo esperado en caja' | translate }}</span><strong>{{ resumen.efectivo_esperado | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong></article>
+        </div>
+      </section>
+
+      <div class="caja-columnas">
+        <section class="caja-card">
+          <span class="caja-eyebrow">{{ 'Registrar movimiento' | translate }}</span>
+          <h2>{{ 'Entrada o salida de efectivo' | translate }}</h2>
+          <p class="caja-ayuda">{{ 'Registra retiros o ingresos extraordinarios con un motivo.' | translate }}</p>
+
+          <label class="caja-campo">
+            <span>{{ 'Tipo de movimiento' | translate }}</span>
+            <select name="tipoMovimiento" [(ngModel)]="tipoMovimiento" [disabled]="guardando()">
+              <option value="INGRESO">{{ 'Ingreso' | translate }}</option>
+              <option value="EGRESO">{{ 'Egreso' | translate }}</option>
+            </select>
+          </label>
+          <label class="caja-campo">
+            <span>{{ 'Monto' | translate }}</span>
+            <input name="montoMovimiento" type="number" min="0.01" step="0.01" inputmode="decimal"
+                   [(ngModel)]="montoMovimiento" [disabled]="guardando()">
+          </label>
+          <label class="caja-campo">
+            <span>{{ 'Motivo' | translate }}</span>
+            <input name="motivoMovimiento" type="text" maxlength="240" [(ngModel)]="motivoMovimiento"
+                   [disabled]="guardando()" [placeholder]="'Ej. Retiro para cambio' | translate">
+          </label>
+          <button type="button" class="caja-boton caja-boton--secundario" (click)="guardarMovimiento()" [disabled]="guardando()">
+            {{ 'Guardar movimiento' | translate }}
+          </button>
+        </section>
+
+        <section class="caja-card caja-cierre">
+          <span class="caja-eyebrow">{{ 'Fin del turno' | translate }}</span>
+          <h2>{{ 'Hacer corte de caja' | translate }}</h2>
+          <p class="caja-ayuda">{{ 'Cuenta el efectivo físico y compáralo con el efectivo esperado.' | translate }}</p>
+          <label class="caja-campo">
+            <span>{{ 'Efectivo contado' | translate }}</span>
+            <input name="efectivoContado" type="number" min="0" step="0.01" inputmode="decimal"
+                   [(ngModel)]="efectivoContado" [disabled]="guardando()">
+          </label>
+          @if (diferenciaTentativa !== null) {
+            <div class="caja-diferencia" [class.caja-diferencia--negativa]="diferenciaTentativa < 0" [class.caja-diferencia--positiva]="diferenciaTentativa > 0">
+              <span>{{ 'Diferencia estimada' | translate }}</span>
+              <strong>{{ diferenciaTentativa | currency:'MXN':'symbol-narrow':'1.2-2' }}</strong>
+            </div>
+          }
+          <button type="button" class="caja-boton caja-boton--principal" (click)="cerrarCaja()" [disabled]="guardando()">
+            {{ guardando() ? ('Guardando...' | translate) : ('Cerrar turno y guardar corte' | translate) }}
+          </button>
+        </section>
+      </div>
+    }
+  } @else {
+    <section class="caja-card caja-apertura">
+      <span class="caja-eyebrow">{{ 'Inicio del turno' | translate }}</span>
+      <h2>{{ 'Abrir caja' | translate }}</h2>
+      <p class="caja-ayuda">{{ 'Registra el efectivo con el que inicia el turno.' | translate }}</p>
+      @if (esAdministrador) {
+        <label class="caja-campo">
+          <span>{{ 'Sucursal' | translate }}</span>
+          <select name="idSucursal" [(ngModel)]="idSucursal" [disabled]="guardando()">
+            <option value="">{{ 'Selecciona una sucursal' | translate }}</option>
+            @for (sucursal of sucursales(); track sucursal.id) {
+              <option [value]="sucursal.id">{{ sucursal.nombre }}</option>
+            }
+          </select>
+        </label>
+      } @else {
+        <p class="caja-sucursal">{{ usuario?.nombre_sucursal }}</p>
+      }
+      <label class="caja-campo">
+        <span>{{ 'Fondo inicial' | translate }}</span>
+        <input name="efectivoInicial" type="number" min="0" step="0.01" inputmode="decimal"
+               [(ngModel)]="efectivoInicial" [disabled]="guardando()">
+      </label>
+      <button type="button" class="caja-boton caja-boton--principal" (click)="abrirCaja()" [disabled]="guardando()">
+        {{ guardando() ? ('Guardando...' | translate) : ('Iniciar turno' | translate) }}
+      </button>
+    </section>
+  }
+
+  <section class="caja-card caja-historial">
+    <div class="caja-section-title">
+      <div>
+        <span class="caja-eyebrow">{{ 'Registro' | translate }}</span>
+        <h2>{{ 'Cortes anteriores' | translate }}</h2>
+      </div>
+      <button type="button" class="caja-link caja-recargar" (click)="cargar()">{{ 'Actualizar' | translate }}</button>
+    </div>
+    @if (historial().length === 0) {
+      <p class="caja-ayuda">{{ 'Todavía no hay cortes de caja cerrados.' | translate }}</p>
+    } @else {
+      <div class="caja-tabla-envoltura">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'Cierre' | translate }}</th>
+              @if (esAdministrador || usuario?.rol === 'Gerente') { <th>{{ 'Sucursal' | translate }}</th><th>{{ 'Cajero' | translate }}</th> }
+              <th>{{ 'Efectivo esperado' | translate }}</th>
+              <th>{{ 'Efectivo contado' | translate }}</th>
+              <th>{{ 'Diferencia' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (corte of historial(); track corte.id) {
+              <tr>
+                <td>{{ corte.fecha_cierre | date:'dd/MM/yyyy HH:mm' }}</td>
+                @if (esAdministrador || usuario?.rol === 'Gerente') { <td>{{ corte.nombre_sucursal }}</td><td>{{ corte.usuario_apertura }}</td> }
+                <td>{{ corte.efectivo_esperado | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
+                <td>{{ corte.efectivo_contado | currency:'MXN':'symbol-narrow':'1.2-2' }}</td>
+                <td [class.caja-importe--negativo]="corte.diferencia < 0" [class.caja-importe--positivo]="corte.diferencia > 0">
+                  {{ corte.diferencia | currency:'MXN':'symbol-narrow':'1.2-2' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </section>
+</main>

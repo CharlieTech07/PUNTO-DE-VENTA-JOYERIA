@@ -74,6 +74,10 @@ export class DashboardComponent implements OnInit {
     return this.usuario?.rol === 'Administrador';
   }
 
+  public get puedeConsultarDatosNegocio(): boolean {
+    return this.usuario?.rol === 'Administrador' || this.usuario?.rol === 'Gerente';
+  }
+
   public get notaPiezas(): string {
     const t = (frase: string) => this.languageService.t(frase);
     return this.esAdmin

@@ -39,7 +39,7 @@ export class MenuComponent implements OnInit {
 
   public usuarioActual: UsuarioSesionLocal | null = null;
 
-  // Orden del menú: Home, Productos, Inventario, Sucursales, Empleados, Precio del metal, Módulos.
+  // Orden del menú: Inicio, Caja, Productos, Inventario, Sucursales, Empleados, Precio del metal, Módulos.
   // Qué ve cada rol se define en models/permisos.ts
   public readonly todosLosItems: MenuItem[] = [
     {
@@ -51,6 +51,12 @@ export class MenuComponent implements OnInit {
         'M5.5 9.5V20a1 1 0 001 1h11a1 1 0 001-1V9.5',
         'M9.5 21v-6h5v6'
       ]
+    },
+    {
+      vista: 'caja',
+      titulo: 'Caja y corte',
+      ruta: '/caja',
+      svgPath: ['M3 7h18v13H3z', 'M3 10h18', 'M7 15h4', 'M7 4h10']
     },
     {
       vista: 'productos',
