@@ -16,8 +16,8 @@
         class="menu-olimpo__item" 
         [routerLink]="item.ruta"
         [fragment]="item.fragmento"
-        routerLinkActive="activo"
-        [routerLinkActiveOptions]="{ exact: item.ruta === '/inicio' }">
+        [class.activo]="estaActivo(item)"
+        [attr.aria-current]="estaActivo(item) ? 'page' : null">
         
         <svg viewBox="0 0 24 24">
           @for (d of item.svgPath; track $index) {

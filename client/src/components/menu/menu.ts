@@ -1,7 +1,7 @@
 // client/src/components/menu/menu.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 import { puedeVer } from '../../models/permisos';
@@ -28,7 +28,7 @@ export interface MenuItem {
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, TranslatePipe],
+  imports: [CommonModule, RouterLink, TranslatePipe],
   templateUrl: './menu.html',
   styleUrls: ['./menu.css']
 })
@@ -133,6 +133,15 @@ export class MenuComponent implements OnInit {
     const rol = this.usuarioActual?.rol;
     // Sin sesión no se muestra ningún módulo; Home es para todos los roles
     return this.todosLosItems.filter(item => item.vista === 'home' ? !!rol : puedeVer(rol, item.vista));
+  }
+
+  public estaActivo(item: MenuItem): boolean {
+    const url = this.router.parseUrl(this.router.url);
+    const segmentos = url.root.children['primary']?.segments.map(segmento => segmento.path) ?? [];
+    const rutaActual = `/${segmentos.join('/')}`;
+
+    if (rutaActual !== item.ruta) return false;
+    return item.fragmento ? url.fragment === item.fragmento : true;
   }
 
   public cerrarSesion(): void {
