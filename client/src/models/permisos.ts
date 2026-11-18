@@ -5,9 +5,9 @@ export type RolUsuario = 'Administrador' | 'Gerente' | 'Cajero';
 
 // El orden de cada lista es el orden en que aparecen en el menú (después de Home).
 export const VISTAS_POR_ROL: Record<RolUsuario, string[]> = {
-  Administrador: ['productos', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
-  Gerente: ['inventario', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
-  Cajero: ['metal', 'apartados']
+  Administrador: ['caja', 'productos', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
+  Gerente: ['caja', 'inventario', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
+  Cajero: ['caja', 'metal', 'apartados']
 };
 
 export function puedeVer(rol: string | null | undefined, vista: string): boolean {
