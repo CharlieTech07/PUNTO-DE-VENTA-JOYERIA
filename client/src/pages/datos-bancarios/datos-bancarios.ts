@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CuentaBancaria, DatosCuentaBancaria, DatosNegocioService } from '../../services/datos-negocio.service';
 import { Sucursal, SucursalesService } from '../../services/sucursales.services';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 
 @Component({
@@ -16,6 +17,7 @@ import { TranslatePipe } from '../../services/translate.pipe';
 export class DatosBancariosComponent implements OnInit {
   private readonly service = inject(DatosNegocioService);
   private readonly sucursalesService = inject(SucursalesService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly cd = inject(ChangeDetectorRef);
 
@@ -30,16 +32,26 @@ export class DatosBancariosComponent implements OnInit {
   formulario: DatosCuentaBancaria = this.formularioVacio();
 
   get enEdicion(): boolean { return this.editandoId !== null; }
+  get esAdmin(): boolean { return this.authService.obtenerUsuario()?.rol === 'Administrador'; }
 
   private formularioVacio(): DatosCuentaBancaria {
     return { id_sucursal: 0, alias: '', banco: '', titular: '', tipo_cuenta: 'Cuenta', numero_cuenta: '', clabe: '', moneda: 'MXN', forma_pago: '' };
   }
 
   ngOnInit(): void {
-    this.sucursalesService.getSucursales().subscribe({
-      next: datos => { this.sucursales = datos.filter(sucursal => sucursal.activa !== false); this.cd.detectChanges(); },
-      error: () => { this.error = 'No se pudieron cargar las sucursales.'; this.cd.detectChanges(); }
-    });
+    if (this.esAdmin) {
+      this.sucursalesService.getSucursales().subscribe({
+        next: datos => { this.sucursales = datos.filter(sucursal => sucursal.activa !== false); this.cd.detectChanges(); },
+        error: () => { this.error = 'No se pudieron cargar las sucursales.'; this.cd.detectChanges(); }
+      });
+    } else {
+      this.filtroSucursalId = this.authService.obtenerUsuario()?.id_sucursal ?? null;
+      if (!this.filtroSucursalId) {
+        this.error = 'Tu usuario no tiene una sucursal asignada.';
+        this.cargando = false;
+        return;
+      }
+    }
     this.cargar();
   }
 
@@ -72,11 +84,13 @@ export class DatosBancariosComponent implements OnInit {
   cancelarEdicion(): void { this.editandoId = null; this.formulario = this.formularioVacio(); }
 
   filtrarSucursal(id: string): void {
+    if (!this.esAdmin) return;
     this.filtroSucursalId = id ? Number(id) : null;
     this.cargar();
   }
 
   guardar(): void {
+    if (!this.esAdmin) return;
     const datos: DatosCuentaBancaria = {
       ...this.formulario,
       alias: this.formulario.alias.trim(),
@@ -121,6 +135,7 @@ export class DatosBancariosComponent implements OnInit {
   }
 
   cambiarEstado(cuenta: CuentaBancaria): void {
+    if (!this.esAdmin) return;
     this.service.cambiarEstadoCuenta(cuenta.id, !cuenta.activa).subscribe({
       next: () => { this.aviso = cuenta.activa ? 'Cuenta bancaria desactivada.' : 'Cuenta bancaria activada.'; this.cargar(); },
       error: err => { this.error = err.error?.error ?? 'No se pudo cambiar el estado de la cuenta.'; this.cd.detectChanges(); }

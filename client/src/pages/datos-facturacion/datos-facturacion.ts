@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DatosFacturacionGuardados, DatosFacturacionNegocio, DatosNegocioService } from '../../services/datos-negocio.service';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../services/translate.pipe';
 
 @Component({
@@ -14,6 +15,7 @@ import { TranslatePipe } from '../../services/translate.pipe';
 })
 export class DatosFacturacionComponent implements OnInit {
   private readonly service = inject(DatosNegocioService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly cd = inject(ChangeDetectorRef);
 
@@ -23,6 +25,8 @@ export class DatosFacturacionComponent implements OnInit {
   error = '';
   aviso = '';
   formulario: DatosFacturacionNegocio = this.formularioVacio();
+
+  get esAdmin(): boolean { return this.authService.obtenerUsuario()?.rol === 'Administrador'; }
 
   ngOnInit(): void { this.cargar(); }
 
@@ -47,6 +51,7 @@ export class DatosFacturacionComponent implements OnInit {
   }
 
   guardar(): void {
+    if (!this.esAdmin) return;
     const datos: DatosFacturacionNegocio = {
       ...this.formulario,
       razon_social: this.formulario.razon_social.trim(),

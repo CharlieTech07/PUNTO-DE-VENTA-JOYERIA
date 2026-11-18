@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { pool } from '../db.js';
-import { permitirRoles, verificarToken } from '../middleware/verificarToken.js';
+import { permitirRoles, RequestConUsuario, verificarToken } from '../middleware/verificarToken.js';
 
 const router = Router();
 router.use(verificarToken);
@@ -56,7 +56,7 @@ function normalizarDatosFiscales(body: Record<string, unknown>): DatosFiscales |
   };
 }
 
-router.get('/facturacion', async (_req: Request, res: Response) => {
+router.get('/facturacion', permitirRoles('Administrador', 'Gerente'), async (_req: Request, res: Response) => {
   try {
     const { rows } = await pool.query('SELECT * FROM public.datos_facturacion_empresa WHERE id = 1');
     res.json(rows[0] ?? null);
@@ -66,9 +66,7 @@ router.get('/facturacion', async (_req: Request, res: Response) => {
   }
 });
 
-router.use(permitirRoles('Administrador'));
-
-router.put('/facturacion', async (req: Request, res: Response) => {
+router.put('/facturacion', permitirRoles('Administrador'), async (req: Request, res: Response) => {
   const datos = normalizarDatosFiscales(req.body ?? {});
   if (!datos) return res.status(400).json({ error: 'Revisa los datos fiscales: razón social, RFC, régimen, código postal y domicilio son obligatorios.' });
   try {
@@ -123,10 +121,19 @@ function normalizarCuenta(body: Record<string, unknown>): DatosCuenta | null {
   return { id_sucursal, alias: alias!, banco: banco!, titular: titular!, tipo_cuenta: tipo_cuenta!, numero_cuenta, clabe, moneda: monedaRaw!.toUpperCase(), forma_pago };
 }
 
-router.get('/bancarios', async (req: Request, res: Response) => {
+router.get('/bancarios', permitirRoles('Administrador', 'Gerente'), async (req: RequestConUsuario, res: Response) => {
   const rawSucursal = req.query['sucursalId'];
   let idSucursal: number | null = null;
-  if (rawSucursal !== undefined) {
+  if (req.usuarioToken?.rol === 'Gerente') {
+    const sucursalAsignada = req.usuarioToken.id_sucursal;
+    if (!Number.isSafeInteger(sucursalAsignada) || !sucursalAsignada) {
+      return res.status(403).json({ error: 'Tu usuario no tiene una sucursal asignada.' });
+    }
+    if (rawSucursal !== undefined && Number(rawSucursal) !== sucursalAsignada) {
+      return res.status(403).json({ error: 'Solo puedes consultar las cuentas de tu sucursal.' });
+    }
+    idSucursal = sucursalAsignada;
+  } else if (rawSucursal !== undefined) {
     idSucursal = Number(rawSucursal);
     if (!Number.isSafeInteger(idSucursal) || idSucursal <= 0) {
       return res.status(400).json({ error: 'Selecciona una sucursal válida.' });
@@ -147,6 +154,8 @@ router.get('/bancarios', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'No se pudieron consultar las cuentas bancarias' });
   }
 });
+
+router.use(permitirRoles('Administrador'));
 
 router.post('/bancarios', async (req: Request, res: Response) => {
   const datos = normalizarCuenta(req.body ?? {});
