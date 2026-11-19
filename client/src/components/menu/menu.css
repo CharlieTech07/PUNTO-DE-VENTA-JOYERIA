@@ -38,6 +38,57 @@
   transform: translateX(0);
 }
 
+.menu-olimpo--fijado {
+  transform: translateX(0);
+}
+
+.menu-olimpo.menu-olimpo--cerrado-por-boton,
+.menu-olimpo.menu-olimpo--cerrado-por-boton:hover,
+.menu-olimpo.menu-olimpo--cerrado-por-boton:focus-within {
+  transform: translateX(calc(-100% + var(--menu-pestana, 36px)));
+}
+
+.menu-olimpo__fijar {
+  position: absolute;
+  top: 12px;
+  right: 2px;
+  z-index: 1;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--texto-3, #a08d76);
+  cursor: pointer;
+  transition: color .18s ease, background .18s ease, border-color .18s ease;
+}
+
+.menu-olimpo__fijar:hover,
+.menu-olimpo__fijar:focus-visible,
+.menu-olimpo__fijar[aria-pressed="true"] {
+  border-color: var(--oro-borde, rgba(224, 194, 137, .3));
+  background: var(--oro-tenue, rgba(224, 194, 137, .14));
+  color: var(--oro, #e0c289);
+}
+
+.menu-olimpo__fijar:focus-visible {
+  outline: 2px solid var(--oro, #e0c289);
+  outline-offset: 2px;
+}
+
+.menu-olimpo__fijar svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .menu-olimpo *,
 .menu-olimpo *::before,
 .menu-olimpo *::after {
