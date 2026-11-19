@@ -14,6 +14,8 @@ export const translationCatalog: Record<string, Translation> = {
   'Una apariencia luminosa con tonos marfil y oro.': { es: 'Una apariencia luminosa con tonos marfil y oro.', en: 'A bright appearance with ivory and gold tones.' },
   'Una apariencia cálida y elegante para trabajar.': { es: 'Una apariencia cálida y elegante para trabajar.', en: 'A warm and elegant appearance for work.' },
   'Idioma': { es: 'Idioma', en: 'Language' },
+  'Fijar barra lateral': { es: 'Fijar barra lateral', en: 'Pin sidebar' },
+  'Desfijar barra lateral': { es: 'Desfijar barra lateral', en: 'Unpin sidebar' },
   'El idioma se aplica inmediatamente en el sistema.': { es: 'El idioma se aplica inmediatamente en el sistema.', en: 'The language is applied immediately throughout the system.' },
   'Español': { es: 'Español', en: 'Spanish' },
   'Inglés': { es: 'Inglés', en: 'English' },

@@ -1,4 +1,22 @@
-<aside class="menu-olimpo">
+<aside
+  class="menu-olimpo"
+  [class.menu-olimpo--fijado]="menuFijado"
+  [class.menu-olimpo--cerrado-por-boton]="menuCerradoPorBoton"
+  (mouseenter)="alEnfocarElMenu()"
+  (mouseleave)="alSalirDelMenu($event)"
+  (focusin)="alEnfocarElMenu()"
+  (focusout)="alSalirDelFoco($event)">
+  <button
+    type="button"
+    class="menu-olimpo__fijar"
+    [attr.aria-label]="(menuFijado ? 'Desfijar barra lateral' : 'Fijar barra lateral') | translate"
+    [attr.title]="(menuFijado ? 'Desfijar barra lateral' : 'Fijar barra lateral') | translate"
+    [attr.aria-pressed]="menuFijado"
+    (click)="alternarMenuFijado()">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m16 3 5 5-4 1-4 4 2 2-1.5 1.5-3-3L6 19l-1 1 1-1 5.5-5.5-3-3L10 9l2 2 4-4z" />
+    </svg>
+  </button>
   <a
     class="menu-olimpo__marca"
     routerLink="/inicio"
@@ -16,8 +34,8 @@
         class="menu-olimpo__item" 
         [routerLink]="item.ruta"
         [fragment]="item.fragmento"
-        routerLinkActive="activo"
-        [routerLinkActiveOptions]="{ exact: item.ruta === '/inicio' }">
+        [class.activo]="estaActivo(item)"
+        [attr.aria-current]="estaActivo(item) ? 'page' : null">
         
         <svg viewBox="0 0 24 24">
           @for (d of item.svgPath; track $index) {

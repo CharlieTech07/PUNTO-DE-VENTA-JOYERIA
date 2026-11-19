@@ -1,23 +1,11 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ 'Olimpo · Home' | translate }}</title>
-    <link rel="stylesheet" href="../../styles/tema.css">
-    <link rel="stylesheet" href="../../components/menu/menu.css">
-    <script src="../../components/menu/menu.ts" data-activo="home"></script>
-    <link rel="stylesheet" href="../inicio/inicio.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-</head>
-<body class="dark-mode">
 <app-menu></app-menu>
 
-<div class="container">
-  <header>
+<main class="container">
+  <header class="inicio-header">
     <div class="header-top">
-      <span class="subtitle">{{ 'VITRINA DE MERCANCÍA' | translate }}@if (nombreSucursal) { · {{ nombreSucursal | uppercase }} }</span>
+      <span class="subtitle">
+        {{ 'VITRINA DE MERCANCÍA' | translate }}@if (nombreSucursal) { · {{ nombreSucursal | uppercase }} }
+      </span>
       <div class="header-actions">
         <span class="item-count">{{ productosFiltrados.length }} {{ 'piezas en inventario' | translate }}</span>
         <button type="button" class="btn-dashboard" routerLink="/dashboard">
@@ -32,12 +20,13 @@
     <span class="material-icons search-icon" aria-hidden="true">search</span>
     <input
       type="search"
+      [attr.aria-label]="'Buscar pieza, piedra o metal...' | translate"
       [(ngModel)]="terminoBusqueda"
       [placeholder]="'Buscar pieza, piedra o metal...' | translate">
   </div>
 
   <div class="ventas-layout">
-    <div class="vitrina">
+    <section class="vitrina" [attr.aria-label]="'VITRINA DE MERCANCÍA' | translate">
       @if (cargando) {
         <p class="no-results">{{ 'Consultando joyas en PostgreSQL...' | translate }}</p>
       } @else if (errorCarga) {
@@ -45,29 +34,30 @@
       } @else {
         <div class="grid-container" id="product-grid">
           @for (product of productosFiltrados; track product.id_inventario) {
-            <div class="card">
+            <article class="card">
               <img
-                [src]="product.imagen_base64 ? ('data:image/jpeg;base64,' + product.imagen_base64) : 'https://images.unsplash.com/photo-1605100804763-247f67b4549e?auto=format&fit=crop&q=80&w=600'"
+                [src]="imagenProducto(product)"
+                (error)="recuperarImagenProducto($event, product)"
                 [alt]="product.nombre"
                 class="card-image">
               <div class="product-category">
                 {{ productText(product, 'tipo_metal') }} {{ product.kilataje || '' }}
               </div>
-              <h3 class="product-title">{{ product.nombre }}</h3>
+              <h2 class="product-title">{{ product.nombre }}</h2>
               <div class="product-desc">
                 {{ product.descripcion ? productText(product, 'descripcion') : ('Pieza de joyería fina' | translate) }}
               </div>
               @if (esAdmin && product.nombre_sucursal) {
                 <div class="product-desc">{{ 'Sucursal' | translate }}: {{ product.nombre_sucursal }}</div>
               }
-              <div class="product-desc">{{ 'Disponibles' | translate }}: {{ product.stock }}</div>
+              <div class="product-stock">{{ 'Disponibles' | translate }}: {{ product.stock }}</div>
               <div class="card-footer">
                 <span class="price">{{ product.precio_venta | currency:'USD':'symbol':'1.0-0' }}</span>
                 <button type="button" class="btn-add" [disabled]="product.stock === 0" (click)="agregarAlCarrito(product)">
                   {{ (product.stock === 0 ? 'AGOTADO' : 'AGREGAR') | translate }}
                 </button>
               </div>
-            </div>
+            </article>
           } @empty {
             <p class="no-results">
               {{ 'No hay productos en el inventario. Asigna existencias desde la página de Inventario para verlos aquí.' | translate }}
@@ -75,9 +65,8 @@
           }
         </div>
       }
-    </div>
+    </section>
+
     <app-ventas class="ventas-panel" (ventaRegistrada)="cargarVitrina()"></app-ventas>
   </div>
-</div>
-</body>
-</html>
+</main>
