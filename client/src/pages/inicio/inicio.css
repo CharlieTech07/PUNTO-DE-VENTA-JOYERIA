@@ -22,8 +22,7 @@
   --btn-bg-dark: var(--oro);
   --btn-text-dark: var(--sobre-oro);
 
-  display: flex;
-  justify-content: center;
+  display: block;
   width: 100%;
   min-height: 100vh;
   font-family: var(--font-secondary);
@@ -33,8 +32,9 @@
 
 .container {
   width: 100%;
-  max-width: none;
-  padding: 40px clamp(20px, 3vw, 56px) 64px;
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 36px clamp(20px, 3vw, 52px) 60px;
 }
 
 /* ---------- Cabecera ---------- */
@@ -42,21 +42,25 @@
 .header-top {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 5px;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 10px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .btn-dashboard {
   background: transparent;
   border: 1px solid var(--border-color-dark);
   color: var(--btn-bg-dark);
-  padding: 7px 16px;
+  min-height: 40px;
+  padding: 8px 16px;
   border-radius: 8px;
   font-family: inherit;
   font-size: 0.75rem;
@@ -81,6 +85,10 @@
 .item-count {
   font-size: 0.82rem;
   color: var(--subtitle-color-dark);
+  padding: 8px 12px;
+  border: 1px solid var(--border-color-dark);
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 /* El color va explícito, no heredado: inicio.html todavía es un documento
@@ -91,9 +99,9 @@
 .title {
   font-family: var(--font-primary);
   font-weight: 500;
-  font-size: 3rem;
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
   line-height: 1.1;
-  margin: 6px 0 28px 0;
+  margin: 0;
   color: var(--text-color-dark);
 }
 
@@ -106,9 +114,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 17px 24px;
+  min-height: 58px;
+  padding: 14px 20px;
   border-radius: 12px;
-  margin-bottom: 36px;
+  margin-bottom: 24px;
   background-color: var(--search-bg-dark);
   border: 1px solid var(--border-color-dark);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
@@ -142,9 +151,9 @@
 /* Carrito conectado a la vitrina: permanece visible mientras se seleccionan piezas. */
 .ventas-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 380px);
   align-items: start;
-  gap: 28px;
+  gap: 24px;
 }
 
 .vitrina { min-width: 0; }
@@ -152,6 +161,7 @@
 .ventas-panel {
   position: sticky;
   top: 24px;
+  min-width: 0;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
 }
@@ -160,15 +170,18 @@
 
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  align-items: stretch;
+  gap: 22px;
 }
 
 .card {
   background-color: var(--card-bg-dark);
   border: 1px solid var(--border-color-dark);
-  border-radius: 14px;
-  padding: 19px;
+  border-radius: 16px;
+  min-width: 0;
+  min-height: 500px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -176,14 +189,15 @@
 }
 
 .card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-3px);
   border-color: var(--oro-medio, #c9a96a);
   box-shadow: var(--sombra, 0 18px 40px rgba(0, 0, 0, 0.28));
 }
 
 .card-image {
   width: 100%;
-  height: 280px;
+  height: auto;
+  aspect-ratio: 1.2;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 16px;
@@ -197,25 +211,48 @@
 }
 
 .product-category {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid var(--border-color-dark);
+  border-radius: 999px;
+  background: var(--oro-tenue, rgba(224, 194, 137, 0.14));
   font-size: 0.72rem;
   letter-spacing: 2px;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   color: var(--oro-medio, #c9a96a);
+  overflow-wrap: anywhere;
 }
 
 .product-title {
   font-family: var(--font-secondary);
-  font-size: 1.55rem;
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+  line-height: 1.25;
   font-weight: 500;
-  margin: 0 0 6px 0;
+  margin: 0 0 8px;
   color: var(--text-color-dark);
 }
 
 .product-desc {
   font-size: 0.9rem;
-  margin-bottom: 20px;
+  line-height: 1.45;
+  margin: 0 0 8px;
   color: var(--subtitle-color-dark);
+}
+
+.product-stock {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: 4px 0 14px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-color-dark);
+  border-radius: 999px;
+  color: var(--subtitle-color-dark);
+  font-size: 0.78rem;
 }
 
 .card-footer {
@@ -231,7 +268,7 @@
 .price {
   font-family: var(--font-secondary);
   font-weight: 600;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 1.8vw, 1.5rem);
   color: var(--btn-bg-dark);
 }
 
@@ -264,27 +301,14 @@
   text-align: center;
   color: var(--subtitle-color-dark);
   font-style: italic;
-  padding: 40px;
+  padding: 40px 24px;
+  border: 1px dashed var(--border-color-dark);
+  border-radius: 14px;
 }
 
-/* ---------- Pantallas angostas ---------- */
-
-@media (max-width: 720px) {
-  .container {
-    width: 100%;
-    padding: 28px 12px 48px;
-  }
-
-  .title {
-    font-size: 2.2rem;
-  }
-
-  .grid-container {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 1050px) {
+/* En pantallas medianas el carrito baja debajo de la vitrina para conservar
+   el espacio necesario para leer y operar las tarjetas. */
+@media (max-width: 1120px) {
   .ventas-layout { grid-template-columns: 1fr; }
   .ventas-panel {
     position: static;
@@ -293,22 +317,23 @@
   }
 }
 
-/* ---------------------------------------------------------------
-   PENDIENTE PARA EL EQUIPO
-   inicio.html sigue siendo un documento HTML completo (<!DOCTYPE>,
-   <html>, <head>, <body>) aunque ya es la plantilla de un componente
-   Angular. Eso trae dos efectos:
+@media (max-width: 760px) {
+  .container { padding: 26px 16px 44px; }
+  .header-top { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .header-actions { width: 100%; justify-content: space-between; }
+  .title { font-size: 2.35rem; }
+  .search-bar { margin-bottom: 20px; padding: 12px 15px; }
+  .grid-container { grid-template-columns: 1fr; gap: 16px; }
+  .card { min-height: auto; }
+  .card-image { aspect-ratio: 1.35; }
+}
 
-   1. Angular renderiza ese <html> y <body> como elementos dentro de
-      <app-inicio>. El <html> interno no lleva data-tema, así que corta
-      la herencia del color y hay que declararlo a mano (ver .title).
-
-   2. Los <link rel="stylesheet"> de su <head> los inlinea Angular como
-      estilos de este componente, de modo que tema.css y menu.css se
-      descargan una segunda vez.
-
-   El arreglo es quitar la envoltura de documento y dejar solo el
-   contenido, pero entonces el hueco del menú hay que reservarlo desde
-   styles/tema.css, porque hoy funciona gracias a ese mismo <body>
-   anidado. Toca archivos compartidos, por eso no se hizo aquí.
-   --------------------------------------------------------------- */
+@media (max-width: 420px) {
+  .container { padding-inline: 12px; }
+  .header-actions { align-items: stretch; flex-direction: column; }
+  .header-actions > * { justify-content: center; text-align: center; }
+  .btn-dashboard { width: 100%; }
+  .card { padding: 14px; }
+  .card-footer { align-items: flex-end; }
+  .btn-add { padding: 9px 14px; }
+}

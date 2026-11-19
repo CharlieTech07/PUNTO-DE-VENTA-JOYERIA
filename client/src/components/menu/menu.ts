@@ -34,10 +34,13 @@ export interface MenuItem {
 })
 export class MenuComponent implements OnInit {
   private readonly CLAVE_TEMA = 'olimpo:tema';
+  private readonly CLAVE_MENU_FIJADO = 'olimpo:menu-fijado';
   private authService = inject(AuthService);
   private router = inject(Router);
 
   public usuarioActual: UsuarioSesionLocal | null = null;
+  public menuFijado = false;
+  public menuCerradoPorBoton = false;
 
   // Orden del menú: Inicio, Caja, Productos, Inventario, Sucursales, Empleados, Precio del metal, Módulos.
   // Qué ve cada rol se define en models/permisos.ts
@@ -127,6 +130,11 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
     this.inicializarTema();
     this.usuarioActual = this.authService.obtenerUsuario();
+    try {
+      this.menuFijado = localStorage.getItem(this.CLAVE_MENU_FIJADO) === 'true';
+    } catch {
+      this.menuFijado = false;
+    }
   }
 
   get itemsMenu(): MenuItem[] {
@@ -142,6 +150,36 @@ export class MenuComponent implements OnInit {
 
     if (rutaActual !== item.ruta) return false;
     return item.fragmento ? url.fragment === item.fragmento : true;
+  }
+
+  public alternarMenuFijado(): void {
+    const estabaFijado = this.menuFijado;
+    this.menuFijado = !this.menuFijado;
+    this.menuCerradoPorBoton = estabaFijado;
+    try {
+      localStorage.setItem(this.CLAVE_MENU_FIJADO, String(this.menuFijado));
+    } catch {
+      // El menú sigue funcionando en modo automático si el almacenamiento no está disponible.
+    }
+  }
+
+  public alSalirDelMenu(evento: MouseEvent): void {
+    const menu = evento.currentTarget as HTMLElement;
+    if (!menu.contains(document.activeElement)) {
+      this.menuCerradoPorBoton = false;
+    }
+  }
+
+  public alEnfocarElMenu(): void {
+    this.menuCerradoPorBoton = false;
+  }
+
+  public alSalirDelFoco(evento: FocusEvent): void {
+    const menu = evento.currentTarget as HTMLElement;
+    const siguiente = evento.relatedTarget;
+    if (!(siguiente instanceof Node) || !menu.contains(siguiente)) {
+      this.menuCerradoPorBoton = false;
+    }
   }
 
   public cerrarSesion(): void {
