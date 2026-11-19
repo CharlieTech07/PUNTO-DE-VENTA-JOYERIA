@@ -65,7 +65,7 @@ A diferencia de un punto de venta común, contempla las necesidades propias del 
 | **Caja** | Registro de ventas |
 | **Inventario** | Existencias y alertas de stock |
 | **Apartados** | Anticipos y calendario de abonos |
-| **Reportes** | Ventas, ingresos y auditoría |
+| **Reportes** | Reportes PDF por rango de fechas con resultados por empleado, métodos de pago y productos; se envían al correo del Administrador o Gerente que los genera |
 
 ---
 

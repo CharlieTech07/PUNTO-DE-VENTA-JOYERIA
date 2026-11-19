@@ -5,8 +5,8 @@ export type RolUsuario = 'Administrador' | 'Gerente' | 'Cajero';
 
 // El orden de cada lista es el orden en que aparecen en el menú (después de Home).
 export const VISTAS_POR_ROL: Record<RolUsuario, string[]> = {
-  Administrador: ['caja', 'productos', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
-  Gerente: ['caja', 'inventario', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
+  Administrador: ['caja', 'reportes', 'productos', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
+  Gerente: ['caja', 'reportes', 'inventario', 'sucursales', 'empleados', 'metal', 'apartados', 'proveedores'],
   Cajero: ['caja', 'metal', 'apartados']
 };
 

@@ -13,6 +13,7 @@ import proveedoresRoutes from './routes/proveedores.js';
 import terminosRoutes from './routes/terminos.js';
 import datosNegocioRoutes from './routes/datos-negocio.js';
 import cajaRoutes from './routes/caja.js';
+import reportesRoutes from './routes/reportes.js';
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.use('/api/proveedores', proveedoresRoutes);
 app.use('/api/terminos', terminosRoutes);
 app.use('/api/datos-negocio', datosNegocioRoutes);
 app.use('/api/caja', cajaRoutes);
+app.use('/api/reportes', reportesRoutes);
 
 const PORT = process.env.PORT || 3000;
 
