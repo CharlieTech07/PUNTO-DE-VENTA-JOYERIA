@@ -1,0 +1,39 @@
+:host { display: block; min-height: 100vh; }
+
+.reportes {
+  width: 100%;
+  min-width: 0;
+  min-height: 100vh;
+  padding: clamp(24px, 5vw, 58px);
+  color: var(--texto, #f6eee2);
+  background: var(--fondo, #241c14);
+}
+
+.reportes__cabecera { width: 100%; margin: 0 0 30px; }
+.reportes__eyebrow { margin: 0 0 8px; color: var(--oro, #e0c289); letter-spacing: .14em; text-transform: uppercase; font-size: .75rem; }
+.reportes h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); }
+.reportes__cabecera p:last-child { color: var(--texto-secundario, #c7bba9); }
+.reportes__panel { width: 100%; padding: clamp(22px, 4vw, 36px); border: 1px solid var(--oro-borde, rgba(224,194,137,.18)); border-radius: 16px; background: var(--superficie, #3a2e22); box-shadow: 0 18px 50px #0002; }
+.reportes__panel h2 { margin: 0 0 24px; font-size: 1.35rem; }
+.reportes__periodos { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 22px; }
+.reportes__periodos button { min-height: 38px; padding: 8px 16px; border: 1px solid var(--oro-borde, rgba(224,194,137,.25)); color: var(--texto, #f6eee2); background: var(--fondo-barra, #1c1610); font-weight: 500; transition: box-shadow .16s ease, transform .16s ease, background-color .16s ease; }
+.reportes__periodos button.activo,
+.reportes__periodos button[aria-pressed="true"] { color: var(--sobre-oro, #2e2418); border: 2px solid #fff0cc; outline: 2px solid var(--oro, #e0c289); outline-offset: 2px; background: var(--oro, #e0c289); box-shadow: inset 0 0 0 1px #80643c, 0 4px 12px #0005; font-weight: 800; transform: translateY(-1px); }
+.reportes__periodos button.activo::after,
+.reportes__periodos button[aria-pressed="true"]::after { content: " ✓"; font-weight: 900; }
+.reportes__periodos button:focus-visible { outline: 3px solid #fff0cc; outline-offset: 3px; }
+.reportes form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: end; }
+.reportes label { display: grid; gap: 8px; font-size: .9rem; color: var(--texto-secundario, #c7bba9); }
+.reportes input, .reportes select { width: 100%; min-height: 46px; padding: 10px 12px; border: 1px solid var(--oro-borde, rgba(224,194,137,.25)); border-radius: 8px; color: var(--texto, #f6eee2); background: var(--fondo-barra, #1c1610); }
+.reportes input[readonly] { opacity: .8; }
+.reportes button { min-height: 46px; border: 0; border-radius: 8px; padding: 11px 18px; color: var(--sobre-oro, #2e2418); background: var(--oro, #e0c289); font-weight: 700; cursor: pointer; }
+.reportes button:disabled { cursor: wait; opacity: .55; }
+.reportes__nota { margin: 22px 0 0; color: var(--texto-secundario, #c7bba9); font-size: .88rem; line-height: 1.6; }
+.reportes__mensaje { display: grid; gap: 5px; margin: 20px 0 0; padding: 14px 16px; border-radius: 9px; }
+.reportes__mensaje--error { color: #ffd4ca; background: #8c302533; border: 1px solid #ce7664; }
+.reportes__mensaje--ok { color: #efe5d2; background: #56754133; border: 1px solid #8da76a; }
+
+@media (max-width: 760px) {
+  .reportes { padding: 80px 18px 28px; }
+  .reportes form { grid-template-columns: 1fr; }
+}
