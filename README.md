@@ -68,7 +68,6 @@ Las opciones disponibles dependen del rol del usuario. El servidor también vali
 
 ---
 
-<<<<<<< HEAD
 ## Módulos
 
 | Módulo | Descripción |
@@ -82,8 +81,6 @@ Las opciones disponibles dependen del rol del usuario. El servidor también vali
 
 ---
 
-=======
->>>>>>> origin/main
 ## Tecnologías
 
 | Capa | Tecnologías |

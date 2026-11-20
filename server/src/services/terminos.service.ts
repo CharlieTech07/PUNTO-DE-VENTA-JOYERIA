@@ -16,7 +16,7 @@ export type MedioAceptacion = 'correo' | 'primer_acceso';
 const huella = (clave: string) => crypto.createHash('sha256').update(clave).digest('hex');
 
 export function enlaceTerminos(clave: string): string {
-  const base = (process.env.APP_URL || 'http://localhost:4300').replace(/\/+$/, '');
+  const base = (process.env.APP_URL || 'http://localhost:4200').replace(/\/+$/, '');
   return `${base}/confirmar-lectura?clave=${encodeURIComponent(clave)}`;
 }
 

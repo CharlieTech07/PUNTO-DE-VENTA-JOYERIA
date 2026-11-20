@@ -39,11 +39,9 @@ router.post('/', verificarToken, permitirRoles('Administrador', 'Gerente'), asyn
       idSucursal, fechaInicio, fechaFin, correo, idioma,
       generadoPor: (usuario as typeof usuario & { nombreCompleto?: string }).nombreCompleto ?? 'Usuario POS'
     });
-    void enviarReporte({
+    await enviarReporte({
       correo: reporte.correo, archivo: reporte.archivo, buffer: reporte.buffer,
       sucursal: reporte.sucursal, fechaInicio, fechaFin, idioma
-    }).catch(error => {
-      console.error('Error al enviar el PDF del reporte:', error);
     });
 
     res.status(202).json({
