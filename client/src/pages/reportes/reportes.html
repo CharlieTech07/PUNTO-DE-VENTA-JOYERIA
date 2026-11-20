@@ -1,0 +1,66 @@
+<app-menu></app-menu>
+
+<main class="reportes">
+  <header class="reportes__cabecera">
+    <div>
+      <p class="reportes__eyebrow">{{ 'POS Olimpo · Análisis' | translate }}</p>
+      <h1>{{ 'Reportes de ventas' | translate }}</h1>
+      <p>{{ 'Elige el periodo y enviaremos el PDF a' | translate }} <strong>{{ usuario?.correo }}</strong>.</p>
+    </div>
+  </header>
+
+  <section class="reportes__panel" aria-labelledby="titulo-rango">
+    <h2 id="titulo-rango">{{ 'Periodo del reporte' | translate }}</h2>
+    <div class="reportes__periodos" role="group" [attr.aria-label]="'Seleccionar periodo rápido' | translate">
+      <button type="button" [disabled]="cargando" [class.activo]="periodoSeleccionado === 'dia'" [attr.aria-pressed]="periodoSeleccionado === 'dia'" (click)="seleccionarPeriodo('dia')">{{ 'Día' | translate }}</button>
+      <button type="button" [disabled]="cargando" [class.activo]="periodoSeleccionado === 'semana'" [attr.aria-pressed]="periodoSeleccionado === 'semana'" (click)="seleccionarPeriodo('semana')">{{ 'Semana' | translate }}</button>
+      <button type="button" [disabled]="cargando" [class.activo]="periodoSeleccionado === 'mes'" [attr.aria-pressed]="periodoSeleccionado === 'mes'" (click)="seleccionarPeriodo('mes')">{{ 'Mes' | translate }}</button>
+      <button type="button" [disabled]="cargando" [class.activo]="periodoSeleccionado === 'anio'" [attr.aria-pressed]="periodoSeleccionado === 'anio'" (click)="seleccionarPeriodo('anio')">{{ 'Año' | translate }}</button>
+    </div>
+    <form (ngSubmit)="generar()">
+      @if (esAdministrador) {
+        <label>
+          {{ 'Sucursal' | translate }}
+          <select name="sucursal" [(ngModel)]="idSucursal" [disabled]="cargandoSucursales || cargando" required>
+            @for (sucursal of sucursales; track sucursal.id) {
+              <option [ngValue]="sucursal.id">{{ sucursal.nombre }}</option>
+            }
+          </select>
+        </label>
+      } @else {
+        <label>
+          {{ 'Sucursal' | translate }}
+          <input type="text" [value]="usuario?.nombre_sucursal || ('Tu sucursal' | translate)" readonly />
+        </label>
+      }
+
+      <label>
+        {{ 'Fecha de inicio' | translate }}
+        <input type="date" name="fechaInicio" [(ngModel)]="fechaInicio" (ngModelChange)="rangoEditado()" [max]="fechaFin" [disabled]="cargando" required />
+      </label>
+
+      <label>
+        {{ 'Fecha de finalización' | translate }}
+        <input type="date" name="fechaFin" [(ngModel)]="fechaFin" (ngModelChange)="rangoEditado()" [min]="fechaInicio" [disabled]="cargando" required />
+      </label>
+
+      <button type="submit" [disabled]="cargando || cargandoSucursales || !fechaInicio || !fechaFin">
+        {{ cargando ? ('Reporte enviado' | translate) : ('Generar y enviar PDF' | translate) }}
+      </button>
+    </form>
+
+    <p class="reportes__nota">{{ 'El reporte incluye ventas, ingresos, ticket promedio, piezas vendidas, resultados por empleado, métodos de pago y productos más vendidos.' | translate }}</p>
+    @if (error) {
+      <p class="reportes__mensaje reportes__mensaje--error" role="alert">{{ error | translate }}</p>
+    }
+    @if (estadoEnvio === 'generando' || estadoEnvio === 'enviado') {
+      <div class="reportes__mensaje reportes__mensaje--ok" role="status">
+        <strong>{{ 'Reporte enviado correctamente.' | translate }}</strong>
+        @if (mensajeEnvio) { <span>{{ mensajeEnvio }}</span> }
+        @if (respuesta) {
+          <span>{{ respuesta.ventas }} {{ 'ventas' | translate }} · {{ respuesta.total | currency:'MXN':'symbol':'1.2-2':(languageService.lang === 'en' ? 'en-US' : 'es-MX') }}</span>
+        }
+      </div>
+    }
+  </section>
+</main>

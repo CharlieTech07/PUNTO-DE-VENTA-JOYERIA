@@ -114,6 +114,11 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+/* Los controles de fecha nativos heredan el esquema del tema para que el
+   calendario del navegador conserve contraste en ambos modos. */
+.reportes input[type="date"] { color-scheme: dark; }
+html[data-tema="claro"] .reportes input[type="date"] { color-scheme: light; }
+
 /* El menú compartido deja una pestaña estrecha; hover o foco de teclado lo abren. */
 html body:has(app-menu) {
   padding-left: var(--menu-pestana) !important;

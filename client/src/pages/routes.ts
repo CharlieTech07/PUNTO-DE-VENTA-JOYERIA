@@ -47,6 +47,12 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['Administrador', 'Gerente', 'Cajero'] }
   },
+  {
+    path: 'reportes',
+    loadComponent: () => import('./reportes/reportes').then(modulo => modulo.ReportesComponent),
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['Administrador', 'Gerente'] }
+  },
   // El dashboard lo usan los tres roles; cada rol solo ve sus módulos dentro de él
   {
     path: 'dashboard',
