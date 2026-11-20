@@ -68,6 +68,22 @@ Las opciones disponibles dependen del rol del usuario. El servidor también vali
 
 ---
 
+<<<<<<< HEAD
+## Módulos
+
+| Módulo | Descripción |
+|---|---|
+| **Acceso** | Inicio de sesión y control por rol |
+| **Productos** | Catálogo de piezas con peso, metal y quilataje |
+| **Caja** | Registro de ventas |
+| **Inventario** | Existencias y alertas de stock |
+| **Apartados** | Anticipos y calendario de abonos |
+| **Reportes** | Reportes PDF por rango de fechas con resultados por empleado, métodos de pago y productos; se envían al correo del Administrador o Gerente que los genera |
+
+---
+
+=======
+>>>>>>> origin/main
 ## Tecnologías
 
 | Capa | Tecnologías |

@@ -37,3 +37,34 @@ export async function enviarBienvenida(datos: DatosBienvenida): Promise<void> {
     attachments: correo.adjuntos
   });
 }
+
+export async function enviarReporte(datos: {
+  correo: string;
+  archivo: string;
+  buffer: Buffer;
+  sucursal: string;
+  fechaInicio: string;
+  fechaFin: string;
+  idioma: 'es' | 'en';
+}): Promise<void> {
+  const sucursalSegura = datos.sucursal.replace(/[&<>"']/g, caracter => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[caracter]!);
+  const en = datos.idioma === 'en';
+  const asunto = en
+    ? `Sales report · ${datos.sucursal} · ${datos.fechaInicio} to ${datos.fechaFin}`
+    : `Reporte de ventas · ${datos.sucursal} · ${datos.fechaInicio} a ${datos.fechaFin}`;
+  const texto = en
+    ? `Attached is the sales report for ${datos.sucursal}, covering ${datos.fechaInicio} to ${datos.fechaFin}.`
+    : `Adjuntamos el reporte de ventas de ${datos.sucursal} para el periodo ${datos.fechaInicio} a ${datos.fechaFin}.`;
+  await obtenerTransporte().sendMail({
+    from: { name: 'POS Olimpo', address: process.env.CORREO_USUARIO! },
+    to: datos.correo,
+    subject: asunto,
+    text: texto,
+    html: en
+      ? `<p>Attached is the sales report for <strong>${sucursalSegura}</strong>, covering <strong>${datos.fechaInicio}</strong> to <strong>${datos.fechaFin}</strong>.</p>`
+      : `<p>Adjuntamos el reporte de ventas de <strong>${sucursalSegura}</strong> para el periodo <strong>${datos.fechaInicio}</strong> a <strong>${datos.fechaFin}</strong>.</p>`,
+    attachments: [{ filename: datos.archivo, content: datos.buffer, contentType: 'application/pdf' }]
+  });
+}
