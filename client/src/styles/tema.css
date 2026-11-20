@@ -130,9 +130,21 @@ html body:has(app-menu):has(.menu-olimpo:focus-within) {
   padding-left: var(--barra-ancho) !important;
 }
 
+html body:has(app-menu):has(.menu-olimpo--fijado) {
+  padding-left: var(--barra-ancho) !important;
+}
+
+html body:has(app-menu):has(.menu-olimpo--cerrado-por-boton) {
+  padding-left: var(--menu-pestana) !important;
+}
+
 @media (max-width: 640px) {
   html body:has(app-menu):has(.menu-olimpo:hover),
   html body:has(app-menu):has(.menu-olimpo:focus-within) {
+    padding-left: var(--menu-pestana) !important;
+  }
+
+  html body:has(app-menu):has(.menu-olimpo--fijado) {
     padding-left: var(--menu-pestana) !important;
   }
 }

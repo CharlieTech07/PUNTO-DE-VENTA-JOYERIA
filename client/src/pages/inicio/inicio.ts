@@ -64,6 +64,38 @@ export class InicioComponent implements OnInit {
     return this.translatedProducts.get(product.id)?.[field] ?? product[field];
   }
 
+  public imagenProducto(product: ProductoVisual): string {
+    const imagen = product.imagen_base64?.trim();
+    const indiceProducto = this.products.indexOf(product);
+    const base64Normalizado = imagen
+      ?.replace(/^data:image\/[^,]+;base64,/i, '')
+      .replace(/\s/g, '');
+    const yaSeMostro = !!base64Normalizado && indiceProducto > 0 &&
+      this.products.slice(0, indiceProducto).some(otro =>
+        otro.imagen_base64
+          ?.replace(/^data:image\/[^,]+;base64,/i, '')
+          .replace(/\s/g, '') === base64Normalizado
+      );
+
+    if (imagen && !yaSeMostro) {
+      return imagen.startsWith('data:image/')
+        ? imagen
+        : `data:image/jpeg;base64,${imagen}`;
+    }
+
+    return this.imagenLocalProducto(product);
+  }
+
+  public recuperarImagenProducto(event: Event, product: ProductoVisual): void {
+    const imagen = event.currentTarget as HTMLImageElement | null;
+    if (!imagen || imagen.dataset['respaldoAplicado'] === 'true') {
+      return;
+    }
+
+    imagen.dataset['respaldoAplicado'] = 'true';
+    imagen.src = this.imagenLocalProducto(product);
+  }
+
   public cargarVitrina(): void {
     this.cargando = true;
     this.errorCarga = false;
@@ -120,6 +152,54 @@ export class InicioComponent implements OnInit {
     if (resultado === 'sin-existencias') {
       alert(this.language.t('No hay más existencias disponibles para esta pieza.'));
     }
+  }
+
+  private imagenLocalProducto(product: ProductoVisual): string {
+    const texto = `${product.nombre} ${product.descripcion} ${product.tipo_metal}`
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLocaleLowerCase();
+    const esPlata = /\b(plata|silver)\b|\.925/.test(texto);
+
+    if (/\b(argolla|alianza|matrimonial|boda|wedding)\b/.test(texto)) {
+      return '/argolla-matrimonial.jpg';
+    }
+
+    if (/\b(pulsera|brazalete|esclava)\b/.test(texto)) {
+      if (/torzal|rope/.test(texto)) {
+        return '/pulsera-torzal-oro.jpg';
+      }
+      return esPlata ? '/cadena-plata.jpg' : '/pulsera-oro.jpg';
+    }
+
+    if (/\b(cadena|chain)\b/.test(texto) && esPlata) {
+      return '/cadena-plata.jpg';
+    }
+
+    if (/\b(arete|aretes|pendiente|pendientes|arracada|arracadas)\b/.test(texto)) {
+      return esPlata
+        ? '/pendientes-de-novia-estilo-vintage-en-plata-.jpg'
+        : '/pendientes.webp';
+    }
+
+    if (/\b(cadena|collar|gargantilla|dije|medalla)\b/.test(texto)) {
+      if (/\brubi\b|\bruby\b/.test(texto)) {
+        return '/collar-rubi.jpg';
+      }
+      if (/\b(perla|pearls?)\b/.test(texto)) {
+        return '/collar-perlas.jpg';
+      }
+      if (/diamante|diamond/.test(texto)) {
+        return '/collar-diamantes.jpg';
+      }
+      return /turquesa|turquoise/.test(texto) ? '/colla.webp' : '/collar2.webp';
+    }
+
+    if (/\b(anillo|argolla|alianza|solitario)\b/.test(texto)) {
+      return '/anillo.webp';
+    }
+
+    return '/anillo.webp';
   }
 
   private updateCatalogTranslations(lang: Lang): void {

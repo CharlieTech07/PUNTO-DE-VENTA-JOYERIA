@@ -1,18 +1,19 @@
 :host { display: block; min-height: 100vh; }
 
 .reportes {
-  margin-left: 264px;
+  width: 100%;
+  min-width: 0;
   min-height: 100vh;
   padding: clamp(24px, 5vw, 58px);
   color: var(--texto, #f6eee2);
   background: var(--fondo, #241c14);
 }
 
-.reportes__cabecera { max-width: 900px; margin: 0 auto 30px; }
+.reportes__cabecera { width: 100%; margin: 0 0 30px; }
 .reportes__eyebrow { margin: 0 0 8px; color: var(--oro, #e0c289); letter-spacing: .14em; text-transform: uppercase; font-size: .75rem; }
 .reportes h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); }
 .reportes__cabecera p:last-child { color: var(--texto-secundario, #c7bba9); }
-.reportes__panel { max-width: 900px; margin: 0 auto; padding: clamp(22px, 4vw, 36px); border: 1px solid var(--oro-borde, rgba(224,194,137,.18)); border-radius: 16px; background: var(--superficie, #3a2e22); box-shadow: 0 18px 50px #0002; }
+.reportes__panel { width: 100%; padding: clamp(22px, 4vw, 36px); border: 1px solid var(--oro-borde, rgba(224,194,137,.18)); border-radius: 16px; background: var(--superficie, #3a2e22); box-shadow: 0 18px 50px #0002; }
 .reportes__panel h2 { margin: 0 0 24px; font-size: 1.35rem; }
 .reportes__periodos { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 22px; }
 .reportes__periodos button { min-height: 38px; padding: 8px 16px; border: 1px solid var(--oro-borde, rgba(224,194,137,.25)); color: var(--texto, #f6eee2); background: var(--fondo-barra, #1c1610); font-weight: 500; transition: box-shadow .16s ease, transform .16s ease, background-color .16s ease; }
@@ -33,6 +34,6 @@
 .reportes__mensaje--ok { color: #efe5d2; background: #56754133; border: 1px solid #8da76a; }
 
 @media (max-width: 760px) {
-  .reportes { margin-left: 0; padding: 80px 18px 28px; }
+  .reportes { padding: 80px 18px 28px; }
   .reportes form { grid-template-columns: 1fr; }
 }
